@@ -4,11 +4,12 @@ import java.util.Arrays;
 
 public final class Task1 {
 
+    private final static int SECS_PER_MINUTE = 60;
+
     private Task1() {
 
     }
 
-    @SuppressWarnings("MagicNumber")
     public static long minutesToSeconds(String str) {
         String[] values;
         long[] converted;
@@ -21,6 +22,6 @@ public final class Task1 {
         } catch (NullPointerException | NumberFormatException e) {
             return -1;
         }
-        return converted[1] > 59 ? -1 : converted[0] * 60 + converted[1];
+        return converted[1] >= SECS_PER_MINUTE ? -1 : converted[0] * SECS_PER_MINUTE + converted[1];
     }
 }
