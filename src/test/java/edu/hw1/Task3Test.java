@@ -75,8 +75,8 @@ public class Task3Test {
     @Test
     @DisplayName("Testing with illegalArgs")
     void testWithIllegalArgs() {
-        int[] emptyValue = new int[]{};
-        int[] storedInts = new int[]{1, 2, 3, 4, 5};
+        int[] emptyValue = new int[] {};
+        int[] storedInts = new int[] {1, 2, 3, 4, 5};
         assertThat(Task3.isNestable(null, null)).isEqualTo(false);
         assertThat(Task3.isNestable(null, storedInts)).isEqualTo(false);
         assertThat(Task3.isNestable(null, emptyValue)).isEqualTo(false);
