@@ -9,9 +9,9 @@ public class Task4Test {
 
     private static String[][] provideStrsForFix() {
         return new String[][] {
-            {"This is test string", "hTsii  settss rtnig"},
-            {"Creature", "rCaeuter"},
-            {"Shape memory alloy", "hSpa eemomyra llyo"},
+            {"hTsii  settss rtnig", "This is test string"},
+            {"rCaeuter", "Creature"},
+            {"hSpa eemomyra llyo", "Shape memory alloy"},
             {"hTsii  s aimex dpus rtni.g", "This is a mixed up string."},
             {"", ""},
             {"g", "g"},

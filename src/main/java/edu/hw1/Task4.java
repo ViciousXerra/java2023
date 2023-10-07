@@ -10,9 +10,6 @@ public final class Task4 {
         if (str == null) {
             return "DEFAULT";
         }
-        if (str.length() <= 1) {
-            return str;
-        }
         StringBuilder sb = new StringBuilder();
         int i;
         for (i = 0; i < str.length() - 1; i += 2) {
