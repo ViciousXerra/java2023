@@ -5,7 +5,7 @@ import static java.lang.Character.getNumericValue;
 public final class Task5 {
 
     private final static int DECIMAL_BASE = 10;
-    private final static int SUMMING_UP_STRING_LEN_lIMIT = 3;
+    private final static int LEN_LIMIT = 3;
 
     private Task5() {
 
@@ -16,7 +16,7 @@ public final class Task5 {
         boolean result = false;
         while (number >= DECIMAL_BASE) {
             result = number == reverseNum(number);
-            if (result || String.valueOf(number).length() == SUMMING_UP_STRING_LEN_lIMIT) {
+            if (result || String.valueOf(number).length() == LEN_LIMIT) {
                 break;
             }
             number = sumUp(number);
