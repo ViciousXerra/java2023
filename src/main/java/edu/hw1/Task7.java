@@ -12,8 +12,8 @@ public final class Task7 {
         if (shift < 0) {
             throw new IllegalArgumentException();
         }
-        int bitSize = n < 0 ? INT_MAX_BIT_SIZE : (int) (Math.log(n) / Math.log(2)) + 1;
-        int actualShift = shift % bitSize;
+        int bitSize = getBitSize(n);
+        int actualShift = getActualShift(shift, bitSize);
         if (n == 0 || n == Integer.MAX_VALUE || n == -1 || actualShift == 0) {
             return n;
         }
@@ -24,12 +24,22 @@ public final class Task7 {
         if (shift < 0) {
             throw new IllegalArgumentException();
         }
-        int bitSize = n < 0 ? INT_MAX_BIT_SIZE : (int) (Math.log(n) / Math.log(2)) + 1;
-        int actualShift = shift % bitSize;
+        int bitSize = getBitSize(n);
+        int actualShift = getActualShift(shift, bitSize);
         if (n == 0 || n == Integer.MAX_VALUE || n == -1 || actualShift == 0) {
             return n;
         }
         return rotateRight(n, actualShift, bitSize);
+    }
+
+    private static int getBitSize(int num) {
+        return num < 0
+            ? INT_MAX_BIT_SIZE
+            : (int) (Math.log(num) / Math.log(2)) + 1;
+    }
+
+    private static int getActualShift(int shift, int bitSize) {
+        return shift % bitSize;
     }
 
     private static int rotateRight(int n, int actualShift, int bitSize) {
