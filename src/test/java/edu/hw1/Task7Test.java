@@ -72,7 +72,7 @@ public class Task7Test {
     })
     @DisplayName("Test with illegal arguments for left shift")
     void testIllegalArgsForLeftShift(int input, int shift) {
-        assertThatThrownBy(() -> Task7.rotateRight(input, shift)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Task7.rotateLeft(input, shift)).isInstanceOf(IllegalArgumentException.class);
     }
 
 }
