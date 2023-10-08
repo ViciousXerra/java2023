@@ -44,7 +44,13 @@ public final class Task6 {
         int num1 = parseByDigits(list, true);
         int num2 = parseByDigits(list, false);
         int result = Math.abs(num1 - num2);
-        return result == KARPEKAR_NUMBER ? 1 : 1 + countStepsForKarpekarRoutine(result);
+        if (result == KARPEKAR_NUMBER) {
+            return 1;
+        }
+        while (result < LOWER_NUM_RESTRICTION) {
+            result *= DECIMAL_BASE;
+        }
+        return 1 + countStepsForKarpekarRoutine(result);
     }
 
 }
