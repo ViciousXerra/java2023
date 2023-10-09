@@ -11,6 +11,20 @@ public final class Task5 {
 
     }
 
+    /**
+     *
+     * @param num int value to check.
+     * @return true - if unsigned value < 10 or it's descendant is a palindrome (most far checked number is a 2 digits value).
+     * <p>In any other cases return false.</p>
+     */
+    public static boolean isPalindromeDescendant(int num) {
+        int number = num;
+        if (number < 0) {
+            number *= -1;
+        }
+        return number < DECIMAL_BASE || checkDescendant(number);
+    }
+
     private static boolean checkDescendant(int num) {
         int number = num;
         boolean result = false;
@@ -52,15 +66,4 @@ public final class Task5 {
         return builder.toString();
     }
 
-    public static boolean isPalindromeDescendant(int num) {
-        int number = num;
-        if (number < 0) {
-            number *= -1;
-        }
-        return number < DECIMAL_BASE || checkDescendant(number);
-        /*
-        Если изначально было передано число по модулю < 10,
-        оно будет считаться палиндромом
-        */
-    }
 }

@@ -18,7 +18,6 @@ public final class Task1 {
      * <p>-1 - if passed value don't match time regular expression ^(\d+):([0-5]?[0-9])$</p>
      * @throws IllegalArgumentException if the passed value can't be converted to a numeric value.
      */
-
     public static long minutesToSeconds(@NotNull String str) {
         String[] values = str.split(":");
         if (values.length != 2) {
