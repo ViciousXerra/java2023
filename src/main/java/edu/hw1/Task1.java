@@ -1,5 +1,6 @@
 package edu.hw1;
 
+import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 public final class Task1 {
@@ -10,18 +11,26 @@ public final class Task1 {
 
     }
 
-    public static long minutesToSeconds(String str) {
-        String[] values;
+    /**
+     *
+     * @param str value to be converted
+     * @return <p>positive long value or 0, representing time in seconds.
+     * <p>-1 - if passed value don't match time regular expression ^(\d+):([0-5]?[0-9])$</p>
+     * @throws IllegalArgumentException if the passed value can't be converted to a numeric value.
+     */
+
+    public static long minutesToSeconds(@NotNull String str) {
+        String[] values = str.split(":");
+        if (values.length != 2) {
+            return -1;
+        }
         long[] converted;
         try {
-            values = str.split(":");
             converted = Arrays.stream(values).mapToLong(Long::valueOf).toArray();
-            if (converted.length != 2) {
-                return -1;
-            }
-        } catch (NullPointerException | NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return -1;
         }
         return converted[1] >= SECS_PER_MINUTE ? -1 : converted[0] * SECS_PER_MINUTE + converted[1];
     }
+
 }

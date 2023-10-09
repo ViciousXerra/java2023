@@ -32,7 +32,6 @@ public class Task1Test {
             "123:",
             ":4",
             "  :  ",
-            null
         };
     }
 
