@@ -10,12 +10,21 @@ public final class Task8 {
 
     }
 
-    public static boolean knightBoardCapture(int[][] board) throws IllegalArgumentException {
+    /**
+     * This is a static method, which check for anything knight's capture.
+     *
+     * @param board two dimension array representation of chessboard
+     * @return true - if capture is available, false - if not.
+     * @throws IllegalArgumentException if passed two dimension array with sides length unequal to 8 cells.
+     */
+    public static boolean knightBoardCapture(int[][] board) {
         if (!boardIsValid(board)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(
+                "Passed wrong sizes of chessboard (each side should be equal to 8 cells).");
         }
         boolean result = true;
-        out: for (int y = 0; y < board.length; y++) {
+        out:
+        for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board[y].length; x++) {
                 if (board[y][x] == 1 && knightIsCaptured(board, y, x)) {
                     result = false;
@@ -41,23 +50,26 @@ public final class Task8 {
     }
 
     private static boolean knightIsCaptured(int[][] board, int y, int x) {
-        boolean isCaptured = false;
-        out: for (int xDelta : X_AXIS_DELTA) {
+        int xTarget;
+        int yTarget;
+        for (int xDelta : X_AXIS_DELTA) {
+            xTarget = x + xDelta;
+            if (xTarget < 0 || xTarget >= CHESSBOARD_SIDE_LENGTH) {
+                continue;
+            }
             for (int yDelta : Y_AXIS_DELTA) {
-                if (xDelta % 2 == 0 && yDelta % 2 != 0
-                    || xDelta % 2 != 0 && yDelta % 2 == 0) {
-                    try {
-                        isCaptured = board[y + yDelta][x + xDelta] == 1;
-                    } catch (ArrayIndexOutOfBoundsException e) {
+                if (xDelta % 2 == 0 && yDelta % 2 != 0 || xDelta % 2 != 0 && yDelta % 2 == 0) {
+                    yTarget = y + yDelta;
+                    if (yTarget < 0 || yTarget >= CHESSBOARD_SIDE_LENGTH) {
                         continue;
                     }
-                    if (isCaptured) {
-                        break out;
+                    if (board[yTarget][xTarget] == 1) {
+                        return true;
                     }
                 }
             }
         }
-        return isCaptured;
+        return false;
     }
 
 }
