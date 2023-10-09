@@ -16,6 +16,7 @@ public final class Task6 {
 
     /**
      * This is a static method to count steps of Karpekar's routine for unsigned number.
+     *
      * @param num int value to pass. It must be >1000 and need to consist of at less 2 distinct digits
      * @return number of steps of Karpekar's routine.
      * @throws IllegalArgumentException if passed value <= 1000 or consist of 1 distinct digit.

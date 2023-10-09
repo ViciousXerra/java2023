@@ -8,28 +8,44 @@ public final class Task7 {
 
     }
 
-    public static int rotateLeft(int n, int shift) throws IllegalArgumentException {
-        if (shift < 0) {
-            throw new IllegalArgumentException();
-        }
-        int bitSize = getBitSize(n);
-        int actualShift = getActualShift(shift, bitSize);
-        if (n == 0 || n == Integer.MAX_VALUE || n == -1 || actualShift == 0) {
-            return n;
-        }
-        return rotateRight(n, bitSize - actualShift, bitSize);
+    /**
+     * This is a static method for left cycle bit shift of integer.
+     *
+     * @param n     int value over which cycle bit shift would be performed
+     * @param shift length of shifting (in bits)
+     * @return performed int value.
+     * @throws IllegalArgumentException if passed shift value is a negative number.
+     */
+    public static int rotateLeft(int n, int shift) {
+        return calcRotate(n, shift, true);
     }
 
-    public static int rotateRight(int n, int shift) throws IllegalArgumentException {
-        if (shift < 0) {
-            throw new IllegalArgumentException();
-        }
-        int bitSize = getBitSize(n);
+    /**
+     * This is a static method for right cycle bit shift of integer.
+     *
+     * @param n     int value over which cycle bit shift would be performed
+     * @param shift length of shifting (in bits)
+     * @return performed int value.
+     * @throws IllegalArgumentException if passed shift value is a negative number.
+     */
+    public static int rotateRight(int n, int shift) {
+        return calcRotate(n, shift, false);
+    }
+
+    private static int calcRotate(int num, int shift, boolean rotateLeft) {
+        validation(shift);
+        int bitSize = getBitSize(num);
         int actualShift = getActualShift(shift, bitSize);
-        if (n == 0 || n == Integer.MAX_VALUE || n == -1 || actualShift == 0) {
-            return n;
+        if (num == 0 || num == Integer.MAX_VALUE || num == -1 || actualShift == 0) {
+            return num;
         }
-        return rotateRight(n, actualShift, bitSize);
+        return rotateLeft ? rotateRight(num, bitSize - actualShift, bitSize) : rotateRight(num, actualShift, bitSize);
+    }
+
+    private static void validation(int shift) {
+        if (shift < 0) {
+            throw new IllegalArgumentException("Passed negative value of shift length.");
+        }
     }
 
     private static int getBitSize(int num) {
