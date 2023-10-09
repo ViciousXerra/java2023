@@ -10,6 +10,22 @@ public final class Task8 {
 
     }
 
+    public static boolean knightBoardCapture(int[][] board) throws IllegalArgumentException {
+        if (!boardIsValid(board)) {
+            throw new IllegalArgumentException();
+        }
+        boolean result = true;
+        out: for (int y = 0; y < board.length; y++) {
+            for (int x = 0; x < board[y].length; x++) {
+                if (board[y][x] == 1 && knightIsCaptured(board, y, x)) {
+                    result = false;
+                    break out;
+                }
+            }
+        }
+        return result;
+    }
+
     private static boolean boardIsValid(int[][] board) {
         if (board == null || board.length != CHESSBOARD_SIDE_LENGTH) {
             return false;
@@ -42,22 +58,6 @@ public final class Task8 {
             }
         }
         return isCaptured;
-    }
-
-    public static boolean knightBoardCapture(int[][] board) throws IllegalArgumentException {
-        if (!boardIsValid(board)) {
-            throw new IllegalArgumentException();
-        }
-        boolean result = true;
-        out: for (int y = 0; y < board.length; y++) {
-            for (int x = 0; x < board[y].length; x++) {
-                if (board[y][x] == 1 && knightIsCaptured(board, y, x)) {
-                    result = false;
-                    break out;
-                }
-            }
-        }
-        return result;
     }
 
 }
