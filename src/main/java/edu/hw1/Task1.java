@@ -14,9 +14,9 @@ public final class Task1 {
     /**
      * This is a static method to convert String representation of time to total number of seconds.
      * @param str value to be converted
-     * @return <p>positive long value or 0, representing time in seconds
-     *     <p>-1 - if passed value don't match time regular expression ^(\d+):([0-5]?[0-9])$</p>
-     * @throws IllegalArgumentException if the passed value can't be converted to a numeric value
+     * @return <p>positive long value or 0, representing time in seconds.
+     *     <p>-1 - if passed value don't match time regular expression ^(\d+):([0-5]?[0-9])$.</p>
+     * @throws IllegalArgumentException if the passed value can't be converted to a numeric value.
      */
     public static long minutesToSeconds(@NotNull String str) {
         String[] values = str.split(":");

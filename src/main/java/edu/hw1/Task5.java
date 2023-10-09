@@ -15,8 +15,8 @@ public final class Task5 {
      * This is a static method to check if a number or it's descendant is a palindrome.
      * @param num int value to check
      * @return true - if unsigned value < 10 or it's descendant is a palindrome (most far checked number is a 2 digits
-     * value)
-     * <p>In any other cases return false</p>
+     * value).
+     * <p>In any other cases return false.</p>
      */
     public static boolean isPalindromeDescendant(int num) {
         int number = num;
