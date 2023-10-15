@@ -12,14 +12,14 @@ abstract class AbstractConnection implements Connection {
     public abstract void execute(@NotNull String message);
 
     @Override
-    public final void close() throws Exception {
+    public void close() throws Exception {
         //Connection close code
 
         //Log connection close
         LOGGER.info("Connection closed");
     }
 
-    final void printLog(@NotBlank String message) {
+    public final void printLog(@NotBlank String message) {
         LOGGER.info(message);
     }
 
