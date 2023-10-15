@@ -12,11 +12,11 @@ public final class PopularCommandExecutor {
         this.maxAttempts = maxAttempts;
     }
 
-    public void updatePackages() throws Exception {
+    public void updatePackages() {
         tryExecute("apt update && apt upgrade -y");
     }
 
-    public void tryExecute(@NotNull String command) throws Exception {
+    public void tryExecute(@NotNull String command) {
         Connection con = manager.getConnection();
         for (int i = 1; i <= maxAttempts; i++) {
             try (con) {
@@ -26,7 +26,7 @@ public final class PopularCommandExecutor {
                 if (i == maxAttempts) {
                     throw new ConnectionException("Exceeding the maximum number of attempts", e);
                 }
-            }
+            } catch (Exception ignored) { }
         }
     }
 
