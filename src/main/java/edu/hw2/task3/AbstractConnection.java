@@ -12,7 +12,7 @@ abstract class AbstractConnection implements Connection {
     public abstract void execute(@NotNull String message);
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         //Connection close code
 
         //Log connection close

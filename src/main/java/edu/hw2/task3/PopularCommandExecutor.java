@@ -18,15 +18,11 @@ public final class PopularCommandExecutor {
 
     public void tryExecute(@NotNull String command) {
         Connection con = manager.getConnection();
-        for (int i = 1; i <= maxAttempts; i++) {
-            try (con) {
-                con.execute(command);
-                break;
-            } catch (ConnectionException e) {
-                if (i == maxAttempts) {
-                    throw new ConnectionException("Exceeding the maximum number of attempts", e);
-                }
-            } catch (Exception ignored) { }
+        Retryer<String, Connection> retryer = new Retryer<>(command, con);
+        try {
+            retryer.proceed(con::execute, maxAttempts);
+        } catch (Exception e) {
+            throw new ConnectionException("Exceeding the maximum number of attempts", (ConnectionException) e);
         }
     }
 

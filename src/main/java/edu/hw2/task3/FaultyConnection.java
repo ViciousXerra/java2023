@@ -4,16 +4,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class FaultyConnection extends AbstractConnection {
 
-    private static int totalCount = 0;
+    private final RandomEventHandler eventHandler;
+
+    public FaultyConnection(double throwingConnectionProbability) {
+        eventHandler = new RandomEventHandler(throwingConnectionProbability);
+    }
 
     @Override
     public void execute(@NotNull String message) {
-        //Attempt to establish connection with server
 
-        /*
-        Every second connection will throw ConnectionException
-         */
-        if (totalCount++ % 2 == 0) {
+        if (!eventHandler.getEventOutcome()) {
             throw new ConnectionException();
         }
         //Log printing
