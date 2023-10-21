@@ -29,6 +29,7 @@ public final class Hangman {
 
     public void run() throws FileNotFoundException {
         Scanner scanner = new Scanner(sourceString);
+        scanner.useDelimiter("[\r\n]+");
         Game game;
         try {
             game = new Game(new TextFileWordProvider(isRandomProvided, pathName), attemptsLimit);
