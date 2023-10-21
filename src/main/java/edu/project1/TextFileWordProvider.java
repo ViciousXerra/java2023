@@ -25,7 +25,7 @@ final class TextFileWordProvider implements WordProvider {
     TextFileWordProvider(boolean isRandomProvided, String pathName) throws FileNotFoundException {
         this.isRandomProvided = isRandomProvided;
         Scanner scanner = pathName == null ? new Scanner(FILE) : new Scanner(new File(pathName));
-        scanner.useDelimiter("\r\n");
+        scanner.useDelimiter("[\r\n]+");
         words = scanner
             .tokens()
             .filter(w -> w.length() > 1 && !w.contains("-") && !w.contains(" "))
