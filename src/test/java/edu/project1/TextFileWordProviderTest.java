@@ -30,8 +30,8 @@ public class TextFileWordProviderTest {
     }
 
     @Test
-    @DisplayName("Test words buffer exhaust")
-    void testWordsBufferExhaust() {
+    @DisplayName("Test words stock exhaust")
+    void testWordsStockExhaust() {
         assertThatThrownBy(() -> {
             TextFileWordProvider provider = new TextFileWordProvider(false,
                 "src/test/resources/project1testresources/UnacceptableWordDictionary.txt");
