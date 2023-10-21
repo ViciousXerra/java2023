@@ -36,7 +36,7 @@ final class Game {
     void reset() throws EmptyWordsStockException {
         guessedWord = provider.getRandomWord();
         userTable = new char[guessedWord.length()];
-        Arrays.fill(userTable, '*'/*(char) 0x2015*/);
+        Arrays.fill(userTable, '*');
         attempts = 0;
         totalCorrectGuessedChars = 0;
     }
