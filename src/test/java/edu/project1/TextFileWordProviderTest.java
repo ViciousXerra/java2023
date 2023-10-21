@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class TextFileWordProviderTest {
 
     @Test
-    @DisplayName("Test invalid filepath")
+    @DisplayName("Test invalid file path")
     void testInvalidFilePath() {
         assertThatThrownBy(() -> {
             TextFileWordProvider provider = new TextFileWordProvider(true, "/");
@@ -17,7 +17,7 @@ public class TextFileWordProviderTest {
     }
 
     @Test
-    @DisplayName("Test valid file with unacceptable words")
+    @DisplayName("Test valid file path with unacceptable words")
     void tesUnacceptableWordDictionary() {
         assertThatThrownBy(() -> {
             TextFileWordProvider provider = new TextFileWordProvider(true,
