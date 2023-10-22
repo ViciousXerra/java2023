@@ -1,6 +1,7 @@
 package edu.project1;
 
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,27 +9,27 @@ import org.apache.logging.log4j.Logger;
 public final class Hangman {
 
     private final static Logger LOGGER = LogManager.getLogger();
-    private final String sourceString;
+    private final InputStream source;
     private final boolean isRandomProvided;
     private final String pathName;
     private final int attemptsLimit;
 
     /**
      * Constructs new Hangman instance.
-     * @param sourceString An input string represents cconsole inputs
+     * @param source An input stream source represents console inputs
      * @param isRandomProvided If a random choice is expected, it has to be true. Otherwise, it has to be false
      * @param pathName A source filepath
      * @param attemptsLimit Maximum attempts allowed
      */
-    public Hangman(String sourceString, boolean isRandomProvided, String pathName, int attemptsLimit) {
-        this.sourceString = sourceString;
+    public Hangman(InputStream source, boolean isRandomProvided, String pathName, int attemptsLimit) {
+        this.source = source;
         this.isRandomProvided = isRandomProvided;
         this.pathName = pathName;
         this.attemptsLimit = attemptsLimit;
     }
 
     public void run() throws FileNotFoundException {
-        Scanner scanner = new Scanner(sourceString);
+        Scanner scanner = new Scanner(source);
         scanner.useDelimiter("[\r\n]+");
         Game game;
         try {

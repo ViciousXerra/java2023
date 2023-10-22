@@ -1,21 +1,29 @@
 package edu.project1;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class HangmanTest {
+
     @Test
     @DisplayName("Invalid source filepath test")
-    @Order(1)
     void testInvalidFileSource() {
+        //Given
+        String consoleInput = "";
+        InputStream source = new ByteArrayInputStream(consoleInput.getBytes(StandardCharsets.UTF_8));
+        String pathName = "/";
+        int attemptsLimit = 5;
+        //Then
         assertThatThrownBy(() -> {
-            Hangman hangman = new Hangman("", true, "", 5);
+            Hangman hangman = new Hangman(source, true, pathName, attemptsLimit);
             hangman.run();
         })
             .isInstanceOf(FileNotFoundException.class);
@@ -23,33 +31,22 @@ public class HangmanTest {
 
     @Test
     @DisplayName("Valid source filepath with unacceptable words")
-    @Order(2)
     void testUnacceptableWords() {
         //Given
+        String consoleInput = "";
+        InputStream source = new ByteArrayInputStream(consoleInput.getBytes(StandardCharsets.UTF_8));
         String filePath = "src/test/resources/project1testresources/UnacceptableWordDictionary.txt";
+        int attemptsLimit = 5;
         //Then
         assertThatCode(() -> {
-            Hangman hangman = new Hangman("", true, filePath, 5);
+            Hangman hangman = new Hangman(source, true, filePath, attemptsLimit);
             hangman.run();
         })
             .doesNotThrowAnyException();
     }
-    /*
-    В следующих тестах SUREFIRE ругается:
-    # Created at 2023-10-21T18:42:13.934
-    [SUREFIRE] std/in stream corrupted
-    Скорее всего, на следующий участок кода, поскольку изначально в сканер передавался поток ввода.
-
-    InputStream inputStream = new ByteArrayInputStream(consoleInput.getBytes(StandardCharsets.UTF_8));
-
-    Также, в Hangman в сканер передавался стандартный поток ввода System.in, как я его убрал из кода,
-    всё исчезло. Интернет не особо пестрит решениями этой проблемы, кроме как отвязки через
-    ProcessBuilder.
-    */
 
     @Test
     @DisplayName("Test immediate exit")
-    @Order(3)
     void testImmediateExit() {
         //Given
         String filePath = "src/test/resources/project1testresources/WordDictionary.txt";
@@ -58,9 +55,11 @@ public class HangmanTest {
             p
             r
             exit""";
+        InputStream source = new ByteArrayInputStream(consoleInput.getBytes(StandardCharsets.UTF_8));
+        int attemptsLimit = 5;
         //Then
         assertThatCode(() -> {
-            Hangman hangman = new Hangman(consoleInput, false, filePath, 5);
+            Hangman hangman = new Hangman(source, false, filePath, attemptsLimit);
             hangman.run();
         })
             .doesNotThrowAnyException();
@@ -68,11 +67,9 @@ public class HangmanTest {
 
     @Test
     @DisplayName("Test max attempts violation")
-    @Order(4)
     void testMaxAttemptsViolation() {
         //Given
         String filePath = "src/test/resources/project1testresources/WordDictionary.txt";
-        int attemptsLimit = 5;
         String consoleInput = """
             x
             b
@@ -80,9 +77,11 @@ public class HangmanTest {
             z
             v
             quit""";
+        InputStream source = new ByteArrayInputStream(consoleInput.getBytes(StandardCharsets.UTF_8));
+        int attemptsLimit = 5;
         //Then
         assertThatCode(() -> {
-            Hangman hangman = new Hangman(consoleInput, false, filePath, attemptsLimit);
+            Hangman hangman = new Hangman(source, false, filePath, attemptsLimit);
             hangman.run();
         })
             .doesNotThrowAnyException();
@@ -90,11 +89,9 @@ public class HangmanTest {
 
     @Test
     @DisplayName("Test correct guesses on 3 words")
-    @Order(5)
     void testCorrectGuesses() {
         //Given
         String filePath = "src/test/resources/project1testresources/WordDictionary.txt";
-        int attemptsLimit = 5;
         String consoleInput = """
             gzdoniggoa
             a
@@ -114,9 +111,11 @@ public class HangmanTest {
             l
             e
             new""";
+        InputStream source = new ByteArrayInputStream(consoleInput.getBytes(StandardCharsets.UTF_8));
+        int attemptsLimit = 5;
         //Then
         assertThatCode(() -> {
-            Hangman hangman = new Hangman(consoleInput, false, filePath, attemptsLimit);
+            Hangman hangman = new Hangman(source, false, filePath, attemptsLimit);
             hangman.run();
         })
             .doesNotThrowAnyException();
