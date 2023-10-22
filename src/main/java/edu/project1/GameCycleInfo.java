@@ -15,17 +15,16 @@ record GameCycleInfo(char[] currentTable, int attempt, int attemptLimit, int cor
         for (char x : currentTable()) {
             builder.append(x);
         }
-        if (isEnded()) {
-            builder.append("\nGame over.\n");
-        }
-        if (isPlayerWin()) {
+        if (isEnded() && isPlayerWin()) {
             builder.append("\nCongrats.\n");
+        } else if (isEnded() && !isPlayerWin()) {
+            builder.append("\nGame over.\n");
         }
         return builder.toString();
     }
 
     boolean isEnded() {
-        return attempt() >= attemptLimit();
+        return attempt() >= attemptLimit() || isPlayerWin();
     }
 
 }

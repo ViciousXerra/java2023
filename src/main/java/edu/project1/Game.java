@@ -17,7 +17,7 @@ final class Game {
         this.attemptsLimit = attemptsLimit;
     }
 
-    GameCycleInfo processAttempt(char input) {
+    @NotNull GameCycleInfo processAttempt(char input) {
         int correctGuessedChars = 0;
         for (int i = 0; i < guessedWord.length(); i++) {
             if (guessedWord.charAt(i) == input && userTable[i] != input) {

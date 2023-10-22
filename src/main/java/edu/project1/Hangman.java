@@ -9,6 +9,10 @@ import org.apache.logging.log4j.Logger;
 public final class Hangman {
 
     private final static Logger LOGGER = LogManager.getLogger();
+    private final static String DELIMETER_PATTERN = "[\r\n]+";
+    private final static String IMMEDIATELY_EXIT_KEYWORD = "exit";
+    private final static String NEW_GAME_KEYWORD = "new";
+    private final static String QUIT_GAME_KEYWORD = "quit";
     private final InputStream source;
     private final boolean isRandomProvided;
     private final String pathName;
@@ -29,66 +33,62 @@ public final class Hangman {
     }
 
     public void run() throws FileNotFoundException {
-        Scanner scanner = new Scanner(source);
-        scanner.useDelimiter("[\r\n]+");
         Game game;
-        try {
+        try (Scanner scanner = new Scanner(source)) {
+            scanner.useDelimiter(DELIMETER_PATTERN);
             game = new Game(new TextFileWordProvider(isRandomProvided, pathName), attemptsLimit);
-            game.reset();
-        } catch (FileNotFoundException e) {
-            scanner.close();
-            throw e;
+            do {
+                LOGGER.info("\nNEW SESSION\n");
+            } while (start(scanner, game));
         } catch (EmptyWordsStockException e) {
             LOGGER.info(e.getMessage());
-            scanner.close();
-            return;
         }
-        start(scanner, game);
-        scanner.close();
     }
 
-    private void start(Scanner scanner, Game game) {
-        GameCycleInfo gameInfo;
+    private boolean start(Scanner scanner, Game game) {
+        try {
+            game.reset();
+        } catch (EmptyWordsStockException e) {
+            LOGGER.info(e.getMessage());
+            return false;
+        }
         String input;
-        while (true) {
+        GameCycleInfo gameInfo;
+        boolean isGameEnded = false;
+        do {
             LOGGER.info("\nType \"exit\" if you want to end current game immediately.");
             LOGGER.info("\nGuess char:");
             input = scanner.nextLine();
-            if (input.equals("exit")) {
-                break;
+            if (input == null || input.equals(IMMEDIATELY_EXIT_KEYWORD)) {
+                return false;
             } else if (input.length() > 1) {
                 LOGGER.info("\nInvalid input (only 1 character and \"exit\" is valid)");
                 continue;
             }
             gameInfo = game.processAttempt(input.charAt(0));
+            isGameEnded = gameInfo.isEnded();
             LOGGER.info(gameInfo.toString());
-            if (gameInfo.isPlayerWin() || gameInfo.isEnded()) {
-                LOGGER.info(String.format("\nGuessed word: %s\n", game.getAnswer()));
-                if (isPlayerChooseQuit(scanner, game)) {
-                    break;
-                }
-            }
-        }
+        } while (!isGameEnded);
+        LOGGER.info(String.format("\nGuessed word: %s\n", game.getAnswer()));
+
+        return isPlayerChooseContinue(scanner, game);
     }
 
-    private boolean isPlayerChooseQuit(Scanner scanner, Game game) {
+    private boolean isPlayerChooseContinue(Scanner scanner, Game game) {
         String input;
-        while (true) {
+        boolean isChooseContinue = false;
+        boolean chooseNotAcceptedFlag = true;
+        do {
             LOGGER.info("\nType \"new\" to start new game or \"quit\" to quit game session");
             input = scanner.nextLine();
-            if (input.equals("new")) {
-                try {
-                    game.reset();
-                } catch (EmptyWordsStockException e) {
-                    LOGGER.info(e.getMessage());
-                    return true;
-                }
-                break;
-            } else if (input.equals("quit")) {
-                return true;
+            if (input == null || input.equals(QUIT_GAME_KEYWORD)) {
+                chooseNotAcceptedFlag = false;
+            } else if (input.equals(NEW_GAME_KEYWORD)) {
+                isChooseContinue = true;
+                chooseNotAcceptedFlag = false;
             }
-        }
-        return false;
+        } while (chooseNotAcceptedFlag);
+        return isChooseContinue;
     }
 
 }

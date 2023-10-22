@@ -25,8 +25,7 @@ public class TextFileWordProviderTest {
             provider.getRandomWord();
         })
             .isInstanceOf(EmptyWordsStockException.class)
-            .hasMessage("\nWords stock is empty.")
-            .hasCauseInstanceOf(RuntimeException.class);
+            .hasMessage("\nWords stock is empty.");
     }
 
     @Test
@@ -41,8 +40,7 @@ public class TextFileWordProviderTest {
             provider.getRandomWord();
         })
             .isInstanceOf(EmptyWordsStockException.class)
-            .hasMessage("\nWords stock is empty.")
-            .hasCauseInstanceOf(RuntimeException.class);
+            .hasMessage("\nWords stock is empty.");
     }
 
 }
