@@ -12,7 +12,7 @@ final class Game {
     private final int attemptsLimit;
     private final WordProvider provider;
 
-    Game(@NotNull WordProvider provider, int attemptsLimit) throws EmptyWordsStockException {
+    Game(@NotNull WordProvider provider, int attemptsLimit) {
         this.provider = provider;
         this.attemptsLimit = attemptsLimit;
     }

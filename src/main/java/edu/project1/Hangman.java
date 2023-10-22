@@ -40,8 +40,6 @@ public final class Hangman {
             do {
                 LOGGER.info("\nNEW SESSION\n");
             } while (start(scanner, game));
-        } catch (EmptyWordsStockException e) {
-            LOGGER.info(e.getMessage());
         }
     }
 
