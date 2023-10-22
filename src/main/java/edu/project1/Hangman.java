@@ -20,10 +20,11 @@ public final class Hangman {
 
     /**
      * Constructs new Hangman instance.
-     * @param source An input stream source represents console inputs
+     *
+     * @param source           An input stream source represents console inputs
      * @param isRandomProvided If a random choice is expected, it has to be true. Otherwise, it has to be false
-     * @param pathName A source filepath
-     * @param attemptsLimit Maximum attempts allowed
+     * @param pathName         A source filepath
+     * @param attemptsLimit    Maximum attempts allowed
      */
     public Hangman(InputStream source, boolean isRandomProvided, String pathName, int attemptsLimit) {
         this.source = source;
@@ -51,8 +52,7 @@ public final class Hangman {
             return false;
         }
         String input;
-        GameCycleInfo gameInfo;
-        boolean isGameEnded = false;
+        GameCycleInfo gameInfo = new GameCycleInfo(false);
         do {
             LOGGER.info("\nType \"exit\" if you want to end current game immediately.");
             LOGGER.info("\nGuess char:");
@@ -64,9 +64,8 @@ public final class Hangman {
                 continue;
             }
             gameInfo = game.processAttempt(input.charAt(0));
-            isGameEnded = gameInfo.isEnded();
             LOGGER.info(gameInfo.toString());
-        } while (!isGameEnded);
+        } while (!gameInfo.isEnded());
         LOGGER.info(String.format("\nGuessed word: %s\n", game.getAnswer()));
 
         return isPlayerChooseContinue(scanner);
