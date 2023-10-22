@@ -39,11 +39,11 @@ public final class Hangman {
             game = new Game(new TextFileWordProvider(isRandomProvided, pathName), attemptsLimit);
             do {
                 LOGGER.info("\nNEW SESSION\n");
-            } while (start(scanner, game));
+            } while (isContinue(scanner, game));
         }
     }
 
-    private boolean start(Scanner scanner, Game game) {
+    private boolean isContinue(Scanner scanner, Game game) {
         try {
             game.reset();
         } catch (EmptyWordsStockException e) {
@@ -57,7 +57,7 @@ public final class Hangman {
             LOGGER.info("\nType \"exit\" if you want to end current game immediately.");
             LOGGER.info("\nGuess char:");
             input = scanner.nextLine();
-            if (input == null || input.equals(IMMEDIATELY_EXIT_KEYWORD)) {
+            if (IMMEDIATELY_EXIT_KEYWORD.equals(input)) {
                 return false;
             } else if (input.length() > 1) {
                 LOGGER.info("\nInvalid input (only 1 character and \"exit\" is valid)");
@@ -69,19 +69,19 @@ public final class Hangman {
         } while (!isGameEnded);
         LOGGER.info(String.format("\nGuessed word: %s\n", game.getAnswer()));
 
-        return isPlayerChooseContinue(scanner, game);
+        return isPlayerChooseContinue(scanner);
     }
 
-    private boolean isPlayerChooseContinue(Scanner scanner, Game game) {
+    private boolean isPlayerChooseContinue(Scanner scanner) {
         String input;
         boolean isChooseContinue = false;
         boolean chooseNotAcceptedFlag = true;
         do {
             LOGGER.info("\nType \"new\" to start new game or \"quit\" to quit game session");
             input = scanner.nextLine();
-            if (input == null || input.equals(QUIT_GAME_KEYWORD)) {
+            if (QUIT_GAME_KEYWORD.equals(input)) {
                 chooseNotAcceptedFlag = false;
-            } else if (input.equals(NEW_GAME_KEYWORD)) {
+            } else if (NEW_GAME_KEYWORD.equals(input)) {
                 isChooseContinue = true;
                 chooseNotAcceptedFlag = false;
             }
