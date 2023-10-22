@@ -52,7 +52,7 @@ public final class Hangman {
             return false;
         }
         String input;
-        GameCycleInfo gameInfo = new GameCycleInfo(false);
+        GameCycleInfo gameInfo = new GameCycleInfo();
         do {
             LOGGER.info("\nType \"exit\" if you want to end current game immediately.");
             LOGGER.info("\nGuess char:");

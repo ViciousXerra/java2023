@@ -2,8 +2,8 @@ package edu.project1;
 
 record GameCycleInfo(char[] currentTable, int attempt, int attemptLimit, int correctGuess, boolean isPlayerWin) {
 
-    GameCycleInfo(boolean isPlayerWin) {
-        this(null, 0, 0, 0, isPlayerWin);
+    GameCycleInfo() {
+        this(null, 0, 0, 0, false);
     }
 
     @Override
