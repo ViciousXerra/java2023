@@ -26,13 +26,21 @@ public final class Task4 {
 
     }
 
-    /*public static String convertToRomanNumerals(int number) {
+    public static String convertToRomanNumerals(int number) {
         boolean isValid = number > 0 && number < 4000;
         if (!isValid) {
             throw new IllegalArgumentException("The number must be greater than zero and less than 4000.");
         }
-        int copyOfNumber = number;
-        int
-    }*/
+        return recursiveBuilding(number);
+    }
+
+    private static String recursiveBuilding(int number) {
+        int closestNum = ROMAN_LITERALS.floorKey(number);
+        if (number == closestNum) {
+            return ROMAN_LITERALS.get(closestNum);
+        } else {
+            return ROMAN_LITERALS.get(closestNum) + recursiveBuilding(number - closestNum);
+        }
+    }
 
 }
