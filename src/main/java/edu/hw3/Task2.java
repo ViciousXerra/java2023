@@ -1,10 +1,11 @@
 package edu.hw3;
 
-import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import org.jetbrains.annotations.NotNull;
 
 public final class Task2 {
 
@@ -12,6 +13,13 @@ public final class Task2 {
 
     }
 
+    /**
+     * Returns array of String values with balanced count of opening and closing brackets.
+     *
+     * @param input processing String value
+     * @return array of substrings. if input contains other characters or contains opening
+     * brackets without pair returns empty array
+     */
     public static String[] clusterize(@NotNull String input) {
         boolean isValid = input.length() > 1 && Pattern.matches("[()]++", input);
         if (!isValid) {
@@ -22,15 +30,18 @@ public final class Task2 {
         List<String> clusters = new ArrayList<>();
         for (int i = 0; i < input.length(); i++) {
             builder.append(input.charAt(i));
-            if (input.charAt(i) == '(') {
-                stack.push(input.charAt(i));
-                continue;
-            }
-            if (input.charAt(i) == ')') {
-                stack.pop();
-                if (stack.empty()) {
-                    clusters.add(builder.toString());
-                    builder.setLength(0);
+            switch (input.charAt(i)) {
+                case '(' -> stack.push(input.charAt(i));
+                case ')' -> {
+                    if (stack.empty()) {
+                        return new String[0];
+                    } else {
+                        stack.pop();
+                        if (stack.empty()) {
+                            clusters.add(builder.toString());
+                            builder.setLength(0);
+                        }
+                    }
                 }
             }
         }
