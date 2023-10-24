@@ -1,11 +1,11 @@
-package edu.hw3;
+package edu.hw3.task2;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
-import org.jetbrains.annotations.NotNull;
 
 public final class Task2 {
 
@@ -18,7 +18,7 @@ public final class Task2 {
      *
      * @param input processing String value
      * @return array of substrings. if input contains other characters or contains opening
-     * brackets without pair returns empty array
+     *     brackets without pair returns empty array
      */
     public static String[] clusterize(@NotNull String input) {
         boolean isValid = input.length() > 1 && Pattern.matches("[()]++", input);

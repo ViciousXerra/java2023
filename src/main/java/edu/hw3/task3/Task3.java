@@ -1,4 +1,4 @@
-package edu.hw3;
+package edu.hw3.task3;
 
 import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
