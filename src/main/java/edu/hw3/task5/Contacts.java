@@ -19,7 +19,7 @@ class Contacts {
         persons = new ArrayList<>();
     }
 
-    boolean add(@NotNull String name) {
+    boolean add(String name) {
         if (validate(name)) {
             return persons.add(new Person(name));
         }
@@ -27,18 +27,21 @@ class Contacts {
     }
 
     void sort(@NotNull String order) {
-        if (isAllPersonsHaveLastName() && order.equals("ASC")) {
-            persons.sort(COMPARING_BY_LASTNAME);
-            return;
-        }
-        if (isAllPersonsHaveLastName() && order.equals("DESC")) {
-            persons.sort(COMPARING_BY_LASTNAME.reversed());
-            return;
-        }
-        if (order.equals("ASC")) {
-            persons.sort(COMPARING_BY_FIRSTNAME);
-        } else {
-            persons.sort(COMPARING_BY_FIRSTNAME.reversed());
+        switch (order) {
+            case "ASC" -> {
+                if (isAllPersonsHaveLastName()) {
+                    persons.sort(COMPARING_BY_LASTNAME);
+                } else {
+                    persons.sort(COMPARING_BY_FIRSTNAME);
+                }
+            }
+            case "DESC" -> {
+                if (isAllPersonsHaveLastName()) {
+                    persons.sort(COMPARING_BY_LASTNAME.reversed());
+                } else {
+                    persons.sort(COMPARING_BY_FIRSTNAME.reversed());
+                }
+            }
         }
     }
 
@@ -50,7 +53,10 @@ class Contacts {
         return persons.size() == persons.stream().filter(Person::isLastNameExist).count();
     }
 
-    private boolean validate(@NotNull String name) {
+    private boolean validate(String name) {
+        if (name == null) {
+            return false;
+        }
         String[] splitted;
         splitted = name.split(" ");
         return switch (splitted.length) {
