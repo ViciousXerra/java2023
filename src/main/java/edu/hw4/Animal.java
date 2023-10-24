@@ -1,11 +1,9 @@
 package edu.hw4;
 
-import org.jetbrains.annotations.NotNull;
-
 public record Animal(
-    @NotNull String name,
-    @NotNull Type type,
-    @NotNull Sex sex,
+    String name,
+    Type type,
+    Sex sex,
     int age,
     int height,
     int weight,

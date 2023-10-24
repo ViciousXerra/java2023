@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 public final class HomeWork4Util {
@@ -42,7 +43,7 @@ public final class HomeWork4Util {
             .collect(
                 Collectors.toUnmodifiableMap(
                     Animal::type,
-                    frequency -> 1,
+                    animalCount -> 1,
                     Integer::sum
                 ));
     }
@@ -95,5 +96,113 @@ public final class HomeWork4Util {
         }
     }
 
+    public static Optional<Animal> getHeaviestAnimalWithHeightLessThan(@NotNull List<Animal> list, int height) {
+        if (height <= 0) {
+            throw new IllegalArgumentException("Height can't be less than or equal to 0.");
+        }
+        return list
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(animal -> animal.height() < height)
+            .reduce((
+                (animal1, animal2) -> animal1.weight() > animal2.weight() ? animal1 : animal2
+            ));
+    }
+
+    public static Integer totalPawsCount(@NotNull List<Animal> list) {
+        return list
+            .stream()
+            .filter(Objects::nonNull)
+            .mapToInt(Animal::paws)
+            .sum();
+    }
+
+    public static List<Animal> getAnimalsWithMismatchOfPawsAndAgeCount(@NotNull List<Animal> list) {
+        return list
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(animal -> animal.paws() != animal.age())
+            .toList();
+    }
+
+    public static List<Animal> getBitingAnimalWithHeightOfOneMeter(@NotNull List<Animal> list) {
+        return list
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(animal -> animal.bites() && animal.height() > 100)
+            .toList();
+    }
+
+    public static Integer getAnimalsWhichWeightGreaterThanHeight(@NotNull List<Animal> list) {
+        return (int) list
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(animal -> animal.weight() > animal.height())
+            .count();
+    }
+
+    public static List<Animal> getAnimalsWhichNameCountAtLeastTwoWords(@NotNull List<Animal> list) {
+        return list
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(animal -> {
+                String[] splitted = animal.name().split(" ");
+                if (splitted.length == 2 && !splitted[0].isEmpty() && !splitted[1].isEmpty()) {
+                    return true;
+                } else {
+                    throw new IllegalArgumentException(
+                        "\"Name\" field of record \"Animal\" must contains characters and can't be followed with several whitespaces");
+                }
+            })
+            .toList();
+    }
+
+    public static Boolean isListContainsDogsWithHeightGreaterThan(@NotNull List<Animal> list, int height) {
+        if (height <= 0) {
+            throw new IllegalArgumentException("Height can't be less than or equal to 0.");
+        }
+        long count = list
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(animal -> animal.type() == Animal.Type.DOG && animal.height() > height)
+            .count();
+        return count > 0;
+    }
+
+    public static Integer countTotalWeightOfAnimalsOfEachTypeInRangeOfAge(
+        @NotNull List<Animal> list,
+        int lowestAge,
+        int highestAge
+    ) {
+        if (lowestAge < 0 || highestAge < 0) {
+            throw new IllegalArgumentException("Age can't be negative.");
+        }
+        if (lowestAge >= highestAge) {
+            throw new IllegalArgumentException("Highest age must be higher than lowest age.");
+        }
+        return list
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(animal -> animal.age() >= lowestAge && animal.age() < highestAge)
+            .mapToInt(Animal::weight)
+            .sum();
+    }
+
+    //------------------------------------------------------------------
+    /*
+    Нужны проверки на animal == null, можно написать метод или просто фильтровать в стриме, второе предпочтительнее
+    Нужны проверки на ссылочные типы данных в рекорде, нужен метод.
+    Нужны проверки на численные отрицательные примитивы, нужен метод
+    Реализовать два метода снизу на генерацию валидных стримов и дефектных
+    Рефакторить два метода сверху, используя методы генерации валидных стримов
+     */
+
+    /*private static Stream<Animal> getPreparedStream(List<Animal> list) {
+
+    }*/
+
+    /*private static Stream<Animal> getStreamOfInvalidInstances(List<Animal> list) {
+
+    }*/
 
 }
