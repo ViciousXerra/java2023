@@ -1,8 +1,8 @@
 package edu.hw3.task1;
 
-import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public final class Task1 {
 

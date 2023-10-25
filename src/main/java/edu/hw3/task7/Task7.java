@@ -9,7 +9,7 @@ public final class Task7 {
 
     }
 
-    public static <K extends Comparable<K>> Comparator<K> getNullableTreeMapComparator(@NotNull Comparator<K> comparator) {
+    public static <K> Comparator<K> getNullableTreeMapComparator(@NotNull Comparator<K> comparator) {
         return Comparator.nullsFirst(comparator);
     }
 

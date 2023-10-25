@@ -21,9 +21,10 @@ public final class Task5 {
         for (String name : names) {
             if (!contacts.add(name)) {
                 throw new IllegalArgumentException(
-                    "Name must match the following pattern.\n${FIRST_NAME} ${LAST_NAME} or\n${FIRST_NAME}");
+                    "Name cannot be null or starts with whitespace, and must be separated by one whitespace.");
             }
         }
+        contacts.sort(order);
         return contacts.getNames().toArray(String[]::new);
     }
 

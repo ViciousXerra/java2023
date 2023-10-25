@@ -1,5 +1,7 @@
 package edu.hw3.task6;
 
+import java.util.Objects;
+
 public class Stock {
 
     private int price;
@@ -12,6 +14,22 @@ public class Stock {
 
     public int getPrice() {
         return price;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Stock stock)) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        return this.price == stock.price;
     }
 
 }

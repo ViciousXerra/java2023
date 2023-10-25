@@ -1,11 +1,10 @@
 package edu.hw3.task2;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import org.jetbrains.annotations.NotNull;
 
 public final class Task2 {
 
@@ -42,6 +41,9 @@ public final class Task2 {
                             builder.setLength(0);
                         }
                     }
+                }
+                default -> {
+                    return new String[0];
                 }
             }
         }

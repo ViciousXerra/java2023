@@ -1,11 +1,10 @@
 package edu.hw3.task5;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 
 class Contacts {
 
@@ -41,6 +40,8 @@ class Contacts {
                 } else {
                     persons.sort(COMPARING_BY_FIRSTNAME.reversed());
                 }
+            }
+            default -> {
             }
         }
     }
