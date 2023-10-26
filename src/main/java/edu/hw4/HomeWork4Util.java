@@ -1,26 +1,46 @@
 package edu.hw4;
 
-import org.jetbrains.annotations.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
 
 public final class HomeWork4Util {
+
+    private final static String INVALID_FIRST_COUNTERS = "The first counters must be greater or equal to 0.";
+    private final static String EMPTY_OR_NULL_FILLED_LIST = "An empty or null-filled list was passed.";
+    private final static String HEIGHT_RESTRICTION = "Height can't be less than or equal to 0.";
+    private final static String AGE_RESTRICTION = "Age can't be negative.";
+    private final static String AGE_RANGE_RESTRICTION = "Highest age must be higher than lowest age.";
+    private final static String NAME_FORMAT_RESTRICTION =
+        "\"Name\" field must contain characters and can't be followed with several whitespaces.";
+    private final static String HEAVIEST_FISH_UNEXIST = "The heaviest fish does not exist.";
+    private final static int ONE_METER = 100;
+
 
     private HomeWork4Util() {
 
     }
 
+    //#1
     public static List<Animal> sortByHeight(@NotNull List<Animal> list) {
         return getPreparedStream(list)
             .sorted(Comparator.comparing(Animal::height))
             .toList();
     }
 
+    //#2
     public static List<Animal> sortByDescentWeight(@NotNull List<Animal> list, int theFirstCounters) {
         if (theFirstCounters < 0) {
-            throw new IllegalArgumentException("The first counters must be greater or equal to 0.");
+            throw new IllegalArgumentException(INVALID_FIRST_COUNTERS);
         }
         return getPreparedStream(list)
             .sorted(Comparator.comparing(Animal::weight).reversed())
@@ -28,6 +48,7 @@ public final class HomeWork4Util {
             .toList();
     }
 
+    //#3
     public static Map<Animal.Type, Integer> getAnimalTypeFrequencyMapping(@NotNull List<Animal> list) {
         return getPreparedStream(list)
             .collect(
@@ -38,6 +59,7 @@ public final class HomeWork4Util {
                 ));
     }
 
+    //#4
     public static Animal getLongestName(@NotNull List<Animal> list) {
         Optional<Animal> animal =
             getPreparedStream(list)
@@ -45,12 +67,13 @@ public final class HomeWork4Util {
                     (animal1, animal2) -> animal1.name().length() > animal2.name().length() ? animal1 : animal2
                 ));
         if (animal.isEmpty()) {
-            throw new NoSuchElementException("An empty or null-filled list was passed.");
+            throw new NoSuchElementException(EMPTY_OR_NULL_FILLED_LIST);
         } else {
             return animal.get();
         }
     }
 
+    //#5
     public static Animal.Sex getPredominantSex(@NotNull List<Animal> list) {
         List<Animal> prepared = getPreparedStream(list).toList();
         long maleCount = prepared.stream().filter(a -> a.sex() == Animal.Sex.M).count();
@@ -58,6 +81,7 @@ public final class HomeWork4Util {
         return maleCount > femaleCount ? Animal.Sex.M : Animal.Sex.F;
     }
 
+    //#6
     public static Map<Animal.Type, Animal> getHeaviestAnimalOfEachType(@NotNull List<Animal> list) {
         return getPreparedStream(list)
             .collect(
@@ -68,6 +92,7 @@ public final class HomeWork4Util {
                 ));
     }
 
+    //#7
     public static Animal getOldestAnimal(@NotNull List<Animal> list) {
         Optional<Animal> animal =
             getPreparedStream(list)
@@ -75,15 +100,16 @@ public final class HomeWork4Util {
                     (animal1, animal2) -> animal1.age() > animal2.age() ? animal1 : animal2
                 ));
         if (animal.isEmpty()) {
-            throw new NoSuchElementException("An empty or null-filled list was passed.");
+            throw new NoSuchElementException(EMPTY_OR_NULL_FILLED_LIST);
         } else {
             return animal.get();
         }
     }
 
+    //#8
     public static Optional<Animal> getHeaviestAnimalWithHeightLessThan(@NotNull List<Animal> list, int height) {
         if (height <= 0) {
-            throw new IllegalArgumentException("Height can't be less than or equal to 0.");
+            throw new IllegalArgumentException(HEIGHT_RESTRICTION);
         }
         return getPreparedStream(list)
             .filter(animal -> animal.height() < height)
@@ -92,30 +118,35 @@ public final class HomeWork4Util {
             ));
     }
 
+    //#9
     public static Integer totalPawsCount(@NotNull List<Animal> list) {
         return getPreparedStream(list)
             .mapToInt(Animal::paws)
             .sum();
     }
 
+    //#10
     public static List<Animal> getAnimalsWithMismatchOfPawsAndAgeCount(@NotNull List<Animal> list) {
         return getPreparedStream(list)
             .filter(animal -> animal.paws() != animal.age())
             .toList();
     }
 
+    //#11
     public static List<Animal> getBitingAnimalWithHeightOfOneMeter(@NotNull List<Animal> list) {
         return getPreparedStream(list)
-            .filter(animal -> animal.bites() && animal.height() > 100)
+            .filter(animal -> animal.bites() && animal.height() > ONE_METER)
             .toList();
     }
 
+    //#12
     public static Integer getAnimalsWhichWeightGreaterThanHeight(@NotNull List<Animal> list) {
         return (int) getPreparedStream(list)
             .filter(animal -> animal.weight() > animal.height())
             .count();
     }
 
+    //#13
     public static List<Animal> getAnimalsWhichNameCountAtLeastTwoWords(@NotNull List<Animal> list) {
         return getPreparedStream(list)
             .filter(animal -> {
@@ -123,16 +154,16 @@ public final class HomeWork4Util {
                 if (splitted.length == 2 && !splitted[0].isEmpty() && !splitted[1].isEmpty()) {
                     return true;
                 } else {
-                    throw new IllegalArgumentException(
-                        "\"Name\" field of record \"Animal\" must contains characters and can't be followed with several whitespaces");
+                    throw new IllegalArgumentException(NAME_FORMAT_RESTRICTION);
                 }
             })
             .toList();
     }
 
+    //#14
     public static Boolean isListContainsDogsWithHeightGreaterThan(@NotNull List<Animal> list, int height) {
         if (height <= 0) {
-            throw new IllegalArgumentException("Height can't be less than or equal to 0.");
+            throw new IllegalArgumentException(HEIGHT_RESTRICTION);
         }
         long count = getPreparedStream(list)
             .filter(animal -> animal.type() == Animal.Type.DOG && animal.height() > height)
@@ -140,16 +171,17 @@ public final class HomeWork4Util {
         return count > 0;
     }
 
+    //#15
     public static Map<Animal.Type, Integer> countTotalWeightOfAnimalsOfEachTypeInRangeOfAge(
         @NotNull List<Animal> list,
         int lowestAge,
         int highestAge
     ) {
         if (lowestAge < 0 || highestAge < 0) {
-            throw new IllegalArgumentException("Age can't be negative.");
+            throw new IllegalArgumentException(AGE_RESTRICTION);
         }
         if (lowestAge >= highestAge) {
-            throw new IllegalArgumentException("Highest age must be higher than lowest age.");
+            throw new IllegalArgumentException(AGE_RANGE_RESTRICTION);
         }
         return getPreparedStream(list)
             .filter(animal -> animal.age() >= lowestAge && animal.age() < highestAge)
@@ -161,6 +193,7 @@ public final class HomeWork4Util {
             );
     }
 
+    //#16
     public static List<Animal> getSortedByTypeAndSexAndName(@NotNull List<Animal> list) {
         return getPreparedStream(list)
             .sorted(
@@ -171,6 +204,7 @@ public final class HomeWork4Util {
             .toList();
     }
 
+    //#17
     public static Boolean isSpiderBitesMoreOftenThanDogs(@NotNull List<Animal> list) {
         List<Animal> preparedBites = getPreparedStream(list).filter(Animal::bites).toList();
         long spiderWhichBites = preparedBites
@@ -184,8 +218,8 @@ public final class HomeWork4Util {
         return spiderWhichBites > dogsWhichBites;
     }
 
-    @SafeVarargs
-    public static Animal getHeaviestFish(@NotNull List<Animal>... lists) {
+    //#18
+    public static Animal getHeaviestFish(@NotNull List<Animal>[] lists) {
         List<Animal> copy = new ArrayList<>();
         for (List<Animal> list : lists) {
             copy.addAll(list.stream().filter(animal -> animal.type() == Animal.Type.FISH).toList());
@@ -193,13 +227,36 @@ public final class HomeWork4Util {
         Optional<Animal> heaviestFish = getPreparedStream(copy)
             .max(Comparator.comparing(Animal::weight));
         if (heaviestFish.isEmpty()) {
-            throw new NoSuchElementException("The heaviest fish does not exist.");
+            throw new NoSuchElementException(HEAVIEST_FISH_UNEXIST);
         } else {
             return heaviestFish.get();
         }
     }
 
-    //------------------------------------------------------------------
+    //#19
+    public static Map<String, Set<ValidationError>> getInstanceErrors(@NotNull List<Animal> list) {
+        return getStreamOfInvalidInstances(list)
+            .collect(Collectors.toUnmodifiableMap(
+                    Animal::name,
+                    ValidationError::getErrors
+                )
+            );
+    }
+
+    //#20
+    public static Map<String, String> getInstanceErrorsDescription(@NotNull List<Animal> list) {
+        return getStreamOfInvalidInstances(list)
+            .collect(Collectors.toUnmodifiableMap(
+                    Animal::name,
+                    animal -> {
+                        Set<ValidationError> errors = ValidationError.getErrors(animal);
+                        StringBuilder builder = new StringBuilder();
+                        errors.forEach(builder::append);
+                        return builder.toString();
+                    }
+                )
+            );
+    }
 
     private static Stream<Animal> getPreparedStream(List<Animal> list) {
         return list
