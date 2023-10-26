@@ -14,7 +14,7 @@ public record Animal(
     private final static int DOG_PAWS_QUANTITY = 4;
     private final static int BIRD_PAWS_QUANTITY = 2;
     private final static int FISH_PAWS_QUANTITY = 0;
-    private final static int SPIDER_PAWS_QUANTITY = 4;
+    private final static int SPIDER_PAWS_QUANTITY = 8;
 
     enum Type {
         CAT, DOG, BIRD, FISH, SPIDER

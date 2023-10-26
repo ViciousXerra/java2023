@@ -21,7 +21,7 @@ public final class HomeWork4Util {
     private final static String AGE_RESTRICTION = "Age can't be negative.";
     private final static String AGE_RANGE_RESTRICTION = "Highest age must be higher than lowest age.";
     private final static String NAME_FORMAT_RESTRICTION =
-        "\"Name\" field must contain characters and can't be followed with several whitespaces.";
+        "\"Name\" field must contain characters and can't be before the whitespace.";
     private final static String HEAVIEST_FISH_UNEXIST = "The heaviest fish does not exist.";
     private final static int ONE_METER = 100;
 
@@ -31,14 +31,14 @@ public final class HomeWork4Util {
     }
 
     //#1
-    public static List<Animal> sortByHeight(@NotNull List<Animal> list) {
+    public static List<Animal> getSortedByHeight(@NotNull List<Animal> list) {
         return getPreparedStream(list)
             .sorted(Comparator.comparing(Animal::height))
             .toList();
     }
 
     //#2
-    public static List<Animal> sortByDescentWeight(@NotNull List<Animal> list, int theFirstCounters) {
+    public static List<Animal> getSortedByDescentWeight(@NotNull List<Animal> list, int theFirstCounters) {
         if (theFirstCounters < 0) {
             throw new IllegalArgumentException(INVALID_FIRST_COUNTERS);
         }
@@ -133,7 +133,7 @@ public final class HomeWork4Util {
     }
 
     //#11
-    public static List<Animal> getBitingAnimalWithHeightOfOneMeter(@NotNull List<Animal> list) {
+    public static List<Animal> getBitingAnimalsWithHeightOverOneMeter(@NotNull List<Animal> list) {
         return getPreparedStream(list)
             .filter(animal -> animal.bites() && animal.height() > ONE_METER)
             .toList();
@@ -151,10 +151,14 @@ public final class HomeWork4Util {
         return getPreparedStream(list)
             .filter(animal -> {
                 String[] splitted = animal.name().split(" ");
-                if (splitted.length == 2 && !splitted[0].isEmpty() && !splitted[1].isEmpty()) {
-                    return true;
+                if (splitted.length == 2) {
+                    if (!splitted[0].isEmpty() && !splitted[1].isEmpty()) {
+                        return true;
+                    } else {
+                        throw new IllegalArgumentException(NAME_FORMAT_RESTRICTION);
+                    }
                 } else {
-                    throw new IllegalArgumentException(NAME_FORMAT_RESTRICTION);
+                    return false;
                 }
             })
             .toList();
