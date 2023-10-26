@@ -18,7 +18,7 @@ public class Stock {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this);
+        return Objects.hash(price);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class Stock {
         if (this == obj) {
             return true;
         }
-        return this.price == stock.price;
+        return this.hashCode() == stock.hashCode() && this.price == stock.price;
     }
 
 }

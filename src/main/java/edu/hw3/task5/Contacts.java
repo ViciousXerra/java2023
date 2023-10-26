@@ -3,10 +3,9 @@ package edu.hw3.task5;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-class Contacts {
+public class Contacts {
 
     private final static Comparator<Person> COMPARING_BY_LASTNAME = Comparator.comparing(Person::getLastName);
 
@@ -16,6 +15,10 @@ class Contacts {
 
     {
         persons = new ArrayList<>();
+    }
+
+    public List<Person> getPersons() {
+        return persons;
     }
 
     boolean add(String name) {
@@ -44,10 +47,6 @@ class Contacts {
             default -> {
             }
         }
-    }
-
-    List<String> getNames() {
-        return persons.stream().map(Person::toString).collect(Collectors.toList());
     }
 
     private boolean isAllPersonsHaveLastName() {

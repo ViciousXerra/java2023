@@ -1,5 +1,6 @@
 package edu.hw3.task5;
 
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public final class Task5 {
@@ -8,9 +9,9 @@ public final class Task5 {
 
     }
 
-    public static String[] sortContacts(String[] names, @NotNull String order) {
+    public static List<Person> sortContacts(String[] names, @NotNull String order) {
         if (names == null) {
-            return new String[0];
+            return List.of();
         }
         switch (order) {
             case "ASC", "DESC" -> {
@@ -25,7 +26,7 @@ public final class Task5 {
             }
         }
         contacts.sort(order);
-        return contacts.getNames().toArray(String[]::new);
+        return contacts.getPersons();
     }
 
 }
