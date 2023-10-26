@@ -223,12 +223,14 @@ public final class HomeWork4Util {
     }
 
     //#18
-    public static Animal getHeaviestFish(@NotNull List<Animal>[] lists) {
+    @SafeVarargs
+    public static Animal getHeaviestFish(@NotNull List<Animal>... lists) {
         List<Animal> copy = new ArrayList<>();
         for (List<Animal> list : lists) {
-            copy.addAll(list.stream().filter(animal -> animal.type() == Animal.Type.FISH).toList());
+            copy.addAll(getPreparedStream(list).filter(animal -> animal.type() == Animal.Type.FISH).toList());
         }
-        Optional<Animal> heaviestFish = getPreparedStream(copy)
+        Optional<Animal> heaviestFish = copy
+            .stream()
             .max(Comparator.comparing(Animal::weight));
         if (heaviestFish.isEmpty()) {
             throw new NoSuchElementException(HEAVIEST_FISH_UNEXIST);

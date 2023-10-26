@@ -14,6 +14,7 @@ class CountingTest {
         "\"Name\" field must contain characters and can't be before the whitespace.";
     private final static String AGE_RESTRICTION = "Age can't be negative.";
     private final static String AGE_RANGE_RESTRICTION = "Highest age must be higher than lowest age.";
+    private final static String HEAVIEST_FISH_UNEXIST = "The heaviest fish does not exist.";
 
     @Test
     @Order(1)
@@ -285,6 +286,30 @@ class CountingTest {
         ))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage(AGE_RANGE_RESTRICTION);
+    }
+
+    @Test
+    @Order(21)
+    @DisplayName("Test geting heavies fish.")
+    void testGettingHeaviestFish() {
+        List<Animal> input1 = DataProvider.provideTestWithData();
+        //Given
+        Animal expected = new Animal("Bella", Animal.Type.FISH, Animal.Sex.F, 5, 3, 2, false);
+        List<Animal> input2 = List.of(expected);
+        //When
+        Animal actual = HomeWork4Util.getHeaviestFish(input1, input2);
+        //Then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @Order(22)
+    @DisplayName("Test heaviest fish unexisting.")
+    void testHeaviestFishUnexisting() {
+        List<Animal> input = DataProvider.provideTestWithData().subList(0, 7);
+        assertThatThrownBy(() -> HomeWork4Util.getHeaviestFish(input))
+            .isInstanceOf(NoSuchElementException.class)
+            .hasMessage(HEAVIEST_FISH_UNEXIST);
     }
 
 }
