@@ -1,12 +1,12 @@
 package edu.hw4;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 public final class ValidationError {
 
-    private final static String NAME_FIELD_DESCRIPTION = "\"name\" field is null.\n";
     private final static String TYPE_FIELD_DESCRIPTION = "\"type\" field is null.\n";
     private final static String SEX_FIELD_DESCRIPTION = "\"sex\" field is null.\n";
     private final static String AGE_FIELD_DESCRIPTION = "\"age\" field is less or equal to 0.\n";
@@ -26,9 +26,6 @@ public final class ValidationError {
 
     public static Set<ValidationError> getErrors(@NotNull Animal animal) {
         Set<ValidationError> errors = new HashSet<>();
-        if (animal.name() == null) {
-            errors.add(new ValidationError(NAME_FIELD_DESCRIPTION));
-        }
         if (animal.type() == null) {
             errors.add(new ValidationError(TYPE_FIELD_DESCRIPTION));
         }
@@ -47,4 +44,20 @@ public final class ValidationError {
         return errors;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ValidationError error = (ValidationError) o;
+        return description.equals(error.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description);
+    }
 }
