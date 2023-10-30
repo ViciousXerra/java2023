@@ -38,12 +38,13 @@ public final class Task4 {
     }
 
     private static String numeralBuilding(int number) {
+        int copy = number;
         StringBuilder builder = new StringBuilder();
         int closestNum;
-        while (number > 0) {
-            closestNum = ROMAN_NUMERALS.floorKey(number);
+        while (copy > 0) {
+            closestNum = ROMAN_NUMERALS.floorKey(copy);
             builder.append(ROMAN_NUMERALS.get(closestNum));
-            number -= closestNum;
+            copy -= closestNum;
         }
         return builder.toString();
     }

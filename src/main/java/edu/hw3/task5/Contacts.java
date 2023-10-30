@@ -13,7 +13,7 @@ public class Contacts {
 
     private final List<Person> persons;
 
-    {
+    public Contacts() {
         persons = new ArrayList<>();
     }
 
@@ -28,16 +28,16 @@ public class Contacts {
         return false;
     }
 
-    void sort(@NotNull String order) {
+    void sort(@NotNull SortingOrder order) {
         switch (order) {
-            case "ASC" -> {
+            case ASC -> {
                 if (isAllPersonsHaveLastName()) {
                     persons.sort(COMPARING_BY_LASTNAME);
                 } else {
                     persons.sort(COMPARING_BY_FIRSTNAME);
                 }
             }
-            case "DESC" -> {
+            case DESC -> {
                 if (isAllPersonsHaveLastName()) {
                     persons.sort(COMPARING_BY_LASTNAME.reversed());
                 } else {

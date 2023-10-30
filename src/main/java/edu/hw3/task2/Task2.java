@@ -22,10 +22,7 @@ public final class Task2 {
      *     brackets without pair - returns empty array
      */
     public static String[] clusterize(String input) {
-        if (input == null) {
-            return new String[0];
-        }
-        boolean isValid = input.length() > 1 && Pattern.matches("[()]++", input);
+        boolean isValid = input != null && input.length() > 1 && Pattern.matches("[()]++", input);
         if (!isValid) {
             return new String[0];
         }

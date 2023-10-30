@@ -15,24 +15,20 @@ public class Person {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(firstName);
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Person person = (Person) o;
+        return this.toString().equals(person.toString());
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Person person)) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        boolean isSameHash = this.hashCode() == person.hashCode();
-        if (this.isLastNameExist() && person.isLastNameExist()) {
-            return isSameHash && this.lastName.equals(person.lastName) && this.firstName.equals(person.firstName);
-        } else {
-            return isSameHash && this.firstName.equals(person.firstName);
-        }
+    public int hashCode() {
+        return Objects.hash(firstName);
     }
 
     @Override

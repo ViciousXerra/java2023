@@ -1,6 +1,7 @@
 package edu.hw3;
 
 import edu.hw3.task5.Person;
+import edu.hw3.task5.SortingOrder;
 import edu.hw3.task5.Task5;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,7 +25,7 @@ class Task5Test {
                     new Person("Michael Dawson"),
                     new Person("Sayid Jarrah")
                 )),
-                "ASC"
+                SortingOrder.ASC
             },
             {
                 new String[] {"Juliet Burke", "Kate Austen", "Michael Dawson", "Boone Carlyle", "Sayid Jarrah"},
@@ -35,7 +36,7 @@ class Task5Test {
                     new Person("Juliet Burke"),
                     new Person("Kate Austen")
                 )),
-                "DESC"
+                SortingOrder.DESC
             },
             {
                 new String[] {"John Locke", "Jack", "Benjamin Linus", "Hugo Reyes"},
@@ -45,7 +46,7 @@ class Task5Test {
                     new Person("Jack"),
                     new Person("John Locke")
                 )),
-                "ASC"
+                SortingOrder.ASC
             },
             {
                 new String[] {"John Locke", "Jack", "Benjamin Linus", "Hugo Reyes"},
@@ -55,7 +56,7 @@ class Task5Test {
                     new Person("Hugo Reyes"),
                     new Person("Benjamin Linus")
                 )),
-                "DESC"
+                SortingOrder.DESC
             },
             {
                 new String[] {"Jack", "Elizabeth", "Charlie"},
@@ -64,12 +65,12 @@ class Task5Test {
                     new Person("Elizabeth"),
                     new Person("Jack")
                 )),
-                "ASC"
+                SortingOrder.ASC
             },
             {
                 null,
                 List.of(),
-                "ASC"
+                SortingOrder.ASC
             }
         };
     }
@@ -77,7 +78,7 @@ class Task5Test {
     @ParameterizedTest
     @DisplayName("Test method on valid array of names")
     @MethodSource("provideValidArray")
-    void testOrderingOfContacts(String[] input, List<Person> expected, String order) {
+    void testOrderingOfContacts(String[] input, List<Person> expected, SortingOrder order) {
         //When
         List<Person> actual = Task5.sortContacts(input, order);
         //Then
@@ -88,11 +89,11 @@ class Task5Test {
         return new Object[][] {
             {
                 new String[] {"Charlie Hustle", "Elizabeth Torres", " Jack Nicholson"},
-                "DESC"
+                SortingOrder.DESC
             },
             {
                 new String[] {"Charlie", null, "Jack"},
-                "ASC"
+                SortingOrder.ASC
             }
         };
     }
@@ -100,7 +101,7 @@ class Task5Test {
     @ParameterizedTest
     @DisplayName("Test method on invalid array values")
     @MethodSource("provideInvalidNameValues")
-    void testInvalidArrayValues(String[] input, String order) {
+    void testInvalidArrayValues(String[] input, SortingOrder order) {
         assertThatThrownBy(() -> Task5.sortContacts(input, order))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage(
@@ -111,11 +112,11 @@ class Task5Test {
         return new Object[][] {
             {
                 new String[] {"Charlie Hustle", "Elizabeth Torres", " Jack Nicholson"},
-                "DSC"
+                null
             },
             {
                 new String[] {"Charlie", null, "Jack"},
-                "SSC"
+                null
             }
         };
     }
@@ -123,10 +124,10 @@ class Task5Test {
     @ParameterizedTest
     @DisplayName("Test method on invalid array values")
     @MethodSource("provideInvalidOrderValues")
-    void testInvalidOrderValues(String[] input, String order) {
+    void testInvalidOrderValues(String[] input, SortingOrder order) {
         assertThatThrownBy(() -> Task5.sortContacts(input, order))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Order String value must be \"ASC\" or \"DESC\"");
+            .hasMessage("Sorting order value must be \"ASC\" or \"DESC\"");
     }
 
 }

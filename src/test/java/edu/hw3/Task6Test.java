@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,16 +25,12 @@ class Task6Test {
                 new Stock(5)
             },
             {
-                Arrays.asList(new Stock(Integer.MIN_VALUE), new Stock(1), new Stock(0)),
-                new Stock(1)
-            },
-            {
-                Arrays.asList(new Stock(Integer.MAX_VALUE), new Stock(Integer.MAX_VALUE), new Stock(0)),
+                Arrays.asList(new Stock(Integer.MAX_VALUE), new Stock(Integer.MAX_VALUE), new Stock(1)),
                 new Stock(Integer.MAX_VALUE)
             },
             {
-                Arrays.asList(new Stock(Integer.MIN_VALUE), new Stock(Integer.MIN_VALUE), new Stock(Integer.MIN_VALUE)),
-                new Stock(0)
+                Arrays.asList(new Stock(250), new Stock(100), new Stock(150)),
+                new Stock(250)
             }
         };
     }
@@ -51,6 +48,16 @@ class Task6Test {
         Stock actual = market.mostValuableStock();
         //Then
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @DisplayName("Test Stock constructor with explicit price values.")
+    @ValueSource(ints = {0, -50, -1, Integer.MIN_VALUE})
+    void testExplicitPriceValues(int price) {
+        //Then
+        assertThatThrownBy(() -> new Stock(price))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Price can't be less or equal 0.");
     }
 
     @Test

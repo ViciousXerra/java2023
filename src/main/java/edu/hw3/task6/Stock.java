@@ -4,11 +4,15 @@ import java.util.Objects;
 
 public class Stock {
 
+    private final static String EXPLICIT_PRICE_VALUE_MESSAGE = "Price can't be less or equal 0.";
+
     private int price;
 
     public Stock(int price) {
         if (price > 0) {
             this.price = price;
+        } else {
+            throw new IllegalArgumentException(EXPLICIT_PRICE_VALUE_MESSAGE);
         }
     }
 

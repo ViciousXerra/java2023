@@ -1,13 +1,15 @@
 package edu.hw3;
 
 import edu.hw3.task3.Task3;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Task3Test {
@@ -15,28 +17,24 @@ class Task3Test {
     private static Object[][] getListAndDictionary() {
         return new Object[][] {
             {
-                Arrays.asList("apple", "tangerine", null, "apple", null),
-                new HashMap<>() {
-                    {
-                        put(null, 2);
-                        put("apple", 2);
-                        put("tangerine", 1);
-                    }
-                }
+                Arrays.asList("apple", "tangerine", "null", "apple", "null"),
+                Map.of(
+                    "null", 2,
+                    "apple", 2,
+                    "tangerine", 1
+                )
             },
             {
                 Arrays.asList(120, 42, -13, 120),
-                new HashMap<>() {
-                    {
-                        put(120, 2);
-                        put(-13, 1);
-                        put(42, 1);
-                    }
-                }
+                Map.of(
+                    120, 2,
+                    -13, 1,
+                    42, 1
+                )
             },
             {
                 List.of(),
-                new HashMap<>()
+                Map.of()
             }
         };
     }
