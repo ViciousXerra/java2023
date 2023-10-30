@@ -1,10 +1,11 @@
 package edu.hw3.task4;
 
+import java.util.NavigableMap;
 import java.util.TreeMap;
 
 public final class Task4 {
 
-    private final static TreeMap<Integer, String> ROMAN_NUMERALS = new TreeMap<>() {
+    private final static NavigableMap<Integer, String> ROMAN_NUMERALS = new TreeMap<>() {
         {
             put(RomanNums.M.getValue(), RomanNums.M.name());
             put(RomanNums.CM.getValue(), RomanNums.CM.name());
@@ -33,16 +34,18 @@ public final class Task4 {
         if (!isValid) {
             throw new IllegalArgumentException("The number must be greater than zero and less than 4000.");
         }
-        return recursiveBuilding(number);
+        return numeralBuilding(number);
     }
 
-    private static String recursiveBuilding(int number) {
-        int closestNum = ROMAN_NUMERALS.floorKey(number);
-        if (number == closestNum) {
-            return ROMAN_NUMERALS.get(closestNum);
-        } else {
-            return ROMAN_NUMERALS.get(closestNum) + recursiveBuilding(number - closestNum);
+    private static String numeralBuilding(int number) {
+        StringBuilder builder = new StringBuilder();
+        int closestNum;
+        while (number > 0) {
+            closestNum = ROMAN_NUMERALS.floorKey(number);
+            builder.append(ROMAN_NUMERALS.get(closestNum));
+            number -= closestNum;
         }
+        return builder.toString();
     }
 
 }

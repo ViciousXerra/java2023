@@ -2,7 +2,6 @@ package edu.hw3.task1;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public final class Task1 {
 
@@ -26,7 +25,10 @@ public final class Task1 {
 
     }
 
-    public static String atbashCipher(@NotNull String toEncrypt) {
+    public static String atbashCipher(String toEncrypt) {
+        if (toEncrypt == null || toEncrypt.isEmpty()) {
+            return "";
+        }
         char[] letters = new char[toEncrypt.length()];
         for (int i = 0; i < toEncrypt.length(); i++) {
             letters[i] = KEY_MAPPING.getOrDefault(toEncrypt.charAt(i), toEncrypt.charAt(i));

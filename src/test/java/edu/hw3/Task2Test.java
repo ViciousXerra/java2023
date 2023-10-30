@@ -2,6 +2,7 @@ package edu.hw3;
 
 import edu.hw3.task2.Task2;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -34,6 +35,15 @@ class Task2Test {
     void testWithIllegalArguments(String input) {
         //When
         String[] actual = Task2.clusterize(input);
+        //Then
+        assertThat(actual).isEqualTo(new String[0]);
+    }
+
+    @Test
+    @DisplayName("Test for null.")
+    void testNull() {
+        //When
+        String[] actual = Task2.clusterize(null);
         //Then
         assertThat(actual).isEqualTo(new String[0]);
     }
