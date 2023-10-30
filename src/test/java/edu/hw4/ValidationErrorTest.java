@@ -7,6 +7,7 @@ import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ValidationErrorTest {
 
@@ -65,6 +66,14 @@ class ValidationErrorTest {
         ));
         //Then
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("Passing null value to util method.")
+    void testPassingNull() {
+        assertThatThrownBy(() -> ValidationError.getErrors(null))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Animal value can't be null.\n");
     }
 
 }

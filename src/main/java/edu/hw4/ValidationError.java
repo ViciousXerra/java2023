@@ -3,7 +3,6 @@ package edu.hw4;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import org.jetbrains.annotations.NotNull;
 
 public final class ValidationError {
 
@@ -12,6 +11,7 @@ public final class ValidationError {
     private final static String AGE_FIELD_DESCRIPTION = "\"age\" field is less or equal to 0.\n";
     private final static String HEIGHT_FIELD_DESCRIPTION = "\"height\" field is less or equal to 0.\n";
     private final static String WEIGHT_FIELD_DESCRIPTION = "\"weight\" field is less or equal to 0.\n";
+    private final static String EXPLICIT_ARGUMENT_MESSAGE = "Animal value can't be null.\n";
 
     private final String description;
 
@@ -24,7 +24,10 @@ public final class ValidationError {
         return description;
     }
 
-    public static Set<ValidationError> getErrors(@NotNull Animal animal) {
+    public static Set<ValidationError> getErrors(Animal animal) {
+        if (animal == null) {
+            throw new IllegalArgumentException(EXPLICIT_ARGUMENT_MESSAGE);
+        }
         Set<ValidationError> errors = new HashSet<>();
         if (animal.type() == null) {
             errors.add(new ValidationError(TYPE_FIELD_DESCRIPTION));

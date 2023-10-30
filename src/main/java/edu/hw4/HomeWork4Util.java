@@ -66,11 +66,7 @@ public final class HomeWork4Util {
                 .reduce((
                     (animal1, animal2) -> animal1.name().length() > animal2.name().length() ? animal1 : animal2
                 ));
-        if (animal.isEmpty()) {
-            throw new NoSuchElementException(EMPTY_OR_NULL_FILLED_LIST);
-        } else {
-            return animal.get();
-        }
+        return animal.orElseThrow(() -> new NoSuchElementException(EMPTY_OR_NULL_FILLED_LIST));
     }
 
     //#5
@@ -99,11 +95,7 @@ public final class HomeWork4Util {
                 .reduce((
                     (animal1, animal2) -> animal1.age() > animal2.age() ? animal1 : animal2
                 ));
-        if (animal.isEmpty()) {
-            throw new NoSuchElementException(EMPTY_OR_NULL_FILLED_LIST);
-        } else {
-            return animal.get();
-        }
+        return animal.orElseThrow(() -> new NoSuchElementException(EMPTY_OR_NULL_FILLED_LIST));
     }
 
     //#8
