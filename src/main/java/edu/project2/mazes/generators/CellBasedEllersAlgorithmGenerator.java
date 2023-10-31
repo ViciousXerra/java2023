@@ -1,9 +1,11 @@
 package edu.project2.mazes.generators;
 
 import edu.project2.mazes.cellbasedmaze.Cell;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class CellBasedEllersAlgorithmGenerator implements CellBasedMazeGenerator {
 
@@ -11,10 +13,12 @@ public class CellBasedEllersAlgorithmGenerator implements CellBasedMazeGenerator
     private long id;
 
     private final Cell[][] grid;
+    private final int lastRowIndex;
 
     public CellBasedEllersAlgorithmGenerator(Cell[][] grid) {
         id = 1;
         this.grid = grid;
+        lastRowIndex = grid.length - 2;
     }
 
     @Override
@@ -27,80 +31,98 @@ public class CellBasedEllersAlgorithmGenerator implements CellBasedMazeGenerator
         for (int curHeight = 0; curHeight < grid.length; curHeight++) {
             if (curHeight == 0 || curHeight == grid.length - 1) {
                 for (int curWidth = 0; curWidth < grid[curHeight].length; curWidth++) {
-                    grid[curHeight][curWidth] = new Cell(curHeight, curWidth, Cell.Type.WALL);
+                    placeCell(curHeight, curWidth, Cell.Type.WALL);
                 }
             } else if (curHeight % 2 == 0) {
                 for (int curWidth = 0; curWidth < grid[curHeight].length; curWidth += 2) {
-                    grid[curHeight][curWidth] = new Cell(curHeight, curWidth, Cell.Type.WALL);
+                    placeCell(curHeight, curWidth, Cell.Type.WALL);
                 }
             } else {
-                grid[curHeight][0] = new Cell(curHeight, 0, Cell.Type.WALL);
-                grid[curHeight][grid[curHeight].length - 1] =
-                    new Cell(curHeight, grid[curHeight].length - 1, Cell.Type.WALL);
+                placeCell(curHeight, 0, Cell.Type.WALL);
+                placeCell(curHeight, grid[curHeight].length - 1, Cell.Type.WALL);
             }
         }
     }
 
+    private void placeCell(int wallHeight, int wallWidth, Cell.Type type) {
+        grid[wallHeight][wallWidth] = new Cell(wallHeight, wallWidth, type);
+    }
+
     private void startGeneration() {
-        long[] data = dataInitialization();
+        long[] ids = dataInitialization();
         for (int curHeight = 1; curHeight < grid.length; curHeight += 2) {
-            verticalWallsSetUp(data, curHeight);
-            if (curHeight != grid.length - 2) {
-                horizontalWallsSetUp(data, curHeight + 1);
+            verticalWallsSetUp(ids, curHeight);
+            if (curHeight != lastRowIndex) {
+                horizontalWallsSetUp(ids, curHeight + 1);
             } else {
-                bottomLevelRecombination(data);
+                lastRowRecombination(ids);
             }
         }
     }
 
     private long[] dataInitialization() {
-        int columnsCount = (grid[0].length - 1) >> 1;
-        long[] ids = new long[columnsCount];
-        for (int index = 0; index < ids.length; index++) {
-            ids[index] = id++;
+        int columns = (grid[0].length - 1) >> 1;
+        long[] ids = new long[columns];
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = id++;
         }
         return ids;
     }
 
     private void verticalWallsSetUp(long[] ids, int currentHeight) {
+        int widthIndex;
+
         for (int i = 0; i < ids.length - 1; i++) {
             if (ids[i] == ids[i + 1] || RANDOM.nextBoolean()) {
-                grid[currentHeight][(i + 1) << 1] = new Cell(currentHeight, (i + 1) << 1, Cell.Type.WALL);
+                widthIndex = calcVerticalWallWidthIndex(i);
+                placeCell(currentHeight, widthIndex, Cell.Type.WALL);
             } else {
-                for (int j = i + 1; j < ids.length; j++) {
-                    if (ids[j] == ids[i + 1]) {
-                        ids[j] = ids[i];
-                    }
-                }
+                linkUp(ids, ids[i + 1], ids[i]);
             }
         }
     }
 
+    private void linkUp(long[] ids, long indexOld, long indexReplace) {
+        for (int i = 0; i < ids.length; i++) {
+            if (ids[i] == indexOld) {
+                ids[i] = indexReplace;
+            }
+        }
+    }
+
+    private int calcVerticalWallWidthIndex(int numOfColumn) {
+        return (numOfColumn + 1) << 1;
+    }
+
     private void horizontalWallsSetUp(long[] ids, int currentHeight) {
-        Map<Long, Integer> idsFreq = new HashMap<>();
-        int idsCount;
+        int idCount;
+        int widthIndex;
+        Map<Long, Integer> idFreq = new HashMap<>();
         for (long id : ids) {
-            idsFreq.put(id, idsFreq.getOrDefault(id, 0) + 1);
+            idFreq.put(id, idFreq.getOrDefault(id, 0) + 1);
         }
         for (int i = 0; i < ids.length; i++) {
-            idsCount = idsFreq.get(ids[i]);
-            if (RANDOM.nextBoolean() && idsCount > 1) {
-                idsFreq.put(ids[i], idsCount - 1);
-                grid[currentHeight][(i << 1) + 1] = new Cell(currentHeight, (i << 1) + 1, Cell.Type.WALL);
+            idCount = idFreq.get(ids[i]);
+            if (RANDOM.nextBoolean() && idCount > 1) {
+                widthIndex = calcHorizontalWallWidthIndex(i);
+                placeCell(currentHeight, widthIndex, Cell.Type.WALL);
+                idFreq.put(ids[i], --idCount);
                 ids[i] = id++;
             }
         }
     }
 
-    private void bottomLevelRecombination(long[] ids) {
+    private int calcHorizontalWallWidthIndex(int numOfColumn) {
+        return (numOfColumn << 1) + 1;
+    }
+
+    private void lastRowRecombination(long[] ids) {
+        int widthIndex;
         for (int i = 0; i < ids.length - 1; i++) {
             if (ids[i] != ids[i + 1]) {
-                grid[grid.length - 2][(i + 1) << 1] = new Cell(grid.length - 2, (i + 1) << 1, Cell.Type.PASSAGE);
-                for (int j = i + 1; j < ids.length; j++) {
-                    if (ids[j] == ids[i + 1]) {
-                        ids[j] = ids[i];
-                    }
-                }
+                widthIndex = calcVerticalWallWidthIndex(i);
+                placeCell(lastRowIndex, widthIndex, Cell.Type.PASSAGE);
+                linkUp(ids, ids[i + 1], ids[i]);
             }
         }
     }

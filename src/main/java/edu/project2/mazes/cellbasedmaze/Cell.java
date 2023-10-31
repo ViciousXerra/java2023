@@ -3,9 +3,10 @@ package edu.project2.mazes.cellbasedmaze;
 public record Cell(int height, int width, Cell.Type type) {
 
     public enum Type {
-        WALL("[#]"),
-        PASSAGE("[ ]"),
-        ROUTE("[/]");
+        HORIZONTAL_WALL("___"),
+        WALL("|"),
+        PASSAGE("   "),
+        ROUTE("");
 
         private final String value;
 
