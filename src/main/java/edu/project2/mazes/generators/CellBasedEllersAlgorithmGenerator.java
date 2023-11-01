@@ -1,11 +1,9 @@
 package edu.project2.mazes.generators;
 
 import edu.project2.mazes.cellbasedmaze.Cell;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class CellBasedEllersAlgorithmGenerator implements CellBasedMazeGenerator {
 

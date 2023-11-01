@@ -7,9 +7,12 @@ import edu.project2.mazes.RendererType;
 import edu.project2.mazes.generators.CellBasedDFSGenerator;
 import edu.project2.mazes.generators.CellBasedEllersAlgorithmGenerator;
 import edu.project2.mazes.generators.CellBasedMazeGenerator;
+import edu.project2.mazes.pathfinders.CellBasedBFSPathfinder;
+import edu.project2.mazes.pathfinders.CellBasedDFSPathfinder;
 import edu.project2.mazes.pathfinders.CellBasedMazePathfinder;
 import edu.project2.mazes.renderers.CellBasedConsoleRenderer;
 import edu.project2.mazes.renderers.ConsoleRenderer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +50,7 @@ public class CellBasedMaze implements Maze {
         initGrid();
         route = new ArrayList<>();
         setGenerator(genType);
-        /*setPathfinder(pathfinderType);*/
+        setPathfinder(pathfinderType);
         setRenderer(rendererType);
         generated = false;
     }
@@ -62,6 +65,8 @@ public class CellBasedMaze implements Maze {
 
     public void setPathfinder(PathfinderType type) {
         switch (type) {
+            case DFS_PATHFINDER -> pathfinder = new CellBasedDFSPathfinder(grid, startPoint, exitPoint);
+            case BFS_PATHINDER -> pathfinder = new CellBasedBFSPathfinder(grid, startPoint, exitPoint);
             default -> throw new UnsupportedOperationException();
         }
     }
@@ -74,16 +79,16 @@ public class CellBasedMaze implements Maze {
     }
 
     public void setStartPoint(int height, int width) {
-        if (isThisPointLegal(height, width)) {
-            startPoint = new Coordinate(height, width);
+        if (isThisPointLegal((height << 1) + 1, (width << 1) + 1)) {
+            startPoint = new Coordinate((height << 1) + 1, (width << 1) + 1);
         } else {
             throw new IllegalArgumentException(INVALID_POINT_MESSAGE);
         }
     }
 
     public void setExitPoint(int height, int width) {
-        if (isThisPointLegal(height, width)) {
-            exitPoint = new Coordinate(height, width);
+        if (isThisPointLegal((height << 1) + 1, (width << 1) + 1)) {
+            exitPoint = new Coordinate((height << 1) + 1, (width << 1) + 1);
         } else {
             throw new IllegalArgumentException(INVALID_POINT_MESSAGE);
         }
@@ -97,7 +102,7 @@ public class CellBasedMaze implements Maze {
 
     @Override
     public void findPath() {
-        route = pathfinder.findPath(grid, startPoint, exitPoint);
+        route = pathfinder.findPath();
     }
 
     @Override

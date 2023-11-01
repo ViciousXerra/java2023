@@ -1,5 +1,6 @@
 package edu.project2.mazes;
 
 public enum PathfinderType {
-    PATHFINDER_TYPE
+    DFS_PATHFINDER,
+    BFS_PATHINDER
 }
