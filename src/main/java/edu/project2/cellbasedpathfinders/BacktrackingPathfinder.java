@@ -13,6 +13,9 @@ public class BacktrackingPathfinder extends CellBasedPathfinder {
 
     @Override
     protected List<Coordinate> generateRoute() {
+        if (startPoint.equals(exitPoint)) {
+            return List.of();
+        }
         Set<Coordinate> visited = new HashSet<>();
         visited.add(startPoint);
         Stack<Coordinate> route = new Stack<>();
@@ -24,16 +27,14 @@ public class BacktrackingPathfinder extends CellBasedPathfinder {
                 route.push(current);
                 current = possibleTurns.get(RANDOM.nextInt(possibleTurns.size()));
                 visited.add(current);
+            } else if (route.isEmpty()) {
+                return List.of();
             } else {
                 current = route.pop();
             }
         }
-        if (route.isEmpty()) {
-            return List.of();
-        } else {
-            route.push(current);
-            return route;
-        }
+        route.push(current);
+        return route;
     }
 
 }

@@ -4,9 +4,7 @@ import edu.project2.cellbasedmaze.Cell;
 import edu.project2.cellbasedmaze.Coordinate;
 import edu.project2.cellbasedmaze.Maze;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 abstract class CellBasedPathfinder implements Pathfinder {
@@ -56,9 +54,6 @@ abstract class CellBasedPathfinder implements Pathfinder {
             throw new IllegalArgumentException(String.format(NULL_RESTRICTION, "Maze"));
         }
         this.grid = maze.getGrid();
-        if (grid == null || !isGridFilled(grid)) {
-            throw new IllegalArgumentException(String.format(NULL_RESTRICTION, "Grid or it's elements"));
-        }
         if (startPoint == null || exitPoint == null) {
             throw new IllegalArgumentException(String.format(NULL_RESTRICTION, "Point"));
         }
@@ -68,10 +63,6 @@ abstract class CellBasedPathfinder implements Pathfinder {
         } else {
             throw new IllegalArgumentException(POINT_COORDINATE_RESTRICTION);
         }
-    }
-
-    private boolean isGridFilled(Cell[][] grid) {
-        return Arrays.stream(grid).flatMap(Arrays::stream).allMatch(Objects::nonNull);
     }
 
     private boolean isValidCoordinate(Coordinate coordinate) {

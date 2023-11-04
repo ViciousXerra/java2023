@@ -15,10 +15,10 @@ abstract class CellBasedGenerator implements Generator {
     protected Cell[][] grid;
     protected boolean initFlag;
 
-    private boolean isRandomProvided;
-    private boolean isMazeBlocked;
+    private final boolean isRandomProvided;
+    private final boolean isMazeBlocked;
 
-    public CellBasedGenerator(boolean isRandomProvided, boolean isMazeBlocked) {
+    protected CellBasedGenerator(boolean isRandomProvided, boolean isMazeBlocked) {
         this.isRandomProvided = isRandomProvided;
         this.isMazeBlocked = isMazeBlocked;
     }
@@ -80,7 +80,7 @@ abstract class CellBasedGenerator implements Generator {
                 placeCell(curHeight, 0, Cell.Type.WALL);
                 placeCell(curHeight, grid[curHeight].length - 1, Cell.Type.WALL);
                 if (isMazeBlocked) {
-                    for (int curWidth = INDEX_DELTA; curWidth < grid[curHeight].length - 1; curWidth+= INDEX_DELTA) {
+                    for (int curWidth = INDEX_DELTA; curWidth < grid[curHeight].length - 1; curWidth += INDEX_DELTA) {
                         placeCell(curHeight, curWidth, Cell.Type.WALL);
                     }
                 }

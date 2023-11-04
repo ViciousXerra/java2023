@@ -10,12 +10,12 @@ import edu.project2.cellbasedpathfinders.BreadthFirstSearchPathfinder;
 import edu.project2.cellbasedpathfinders.Pathfinder;
 import edu.project2.renderers.CellBasedConsoleRenderer;
 import edu.project2.renderers.Renderer;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import java.util.Arrays;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -24,12 +24,25 @@ class RendererTest {
     private final static String NULL_RESTRICTION = "%s can't be null.";
 
     @Test
-    @DisplayName("Rendering a before-known invariant maze of 1x1 size.")
-    void testRendererWithInvariantMaze() {
+    @DisplayName("Rendering a before-known invariant maze of 1x1 size with Eller's algorithm generation.")
+    void testRendererWithInvariantMazeSample1() {
         //Given
         String expected = " __ \n|__|\n";
         //When
         Generator generator = new EllersAlgorithmGenerator(true, false);
+        Renderer renderer = new CellBasedConsoleRenderer();
+        String actual = renderer.render(generator.generate(1, 1));
+        //Then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("Rendering a before-known invariant maze of 1x1 size with backtracking algorithm generation.")
+    void testRendererWithInvariantMazeSample2() {
+        //Given
+        String expected = " __ \n|__|\n";
+        //When
+        Generator generator = new BacktrackingGenerator(true, false);
         Renderer renderer = new CellBasedConsoleRenderer();
         String actual = renderer.render(generator.generate(1, 1));
         //Then
@@ -98,7 +111,7 @@ class RendererTest {
     @ParameterizedTest
     @DisplayName("Test renderer with demo maze.")
     @MethodSource("provideDemoMazeWithoutBlock")
-    void test(String expected, boolean withRoute, Maze maze, Pathfinder pathfinder) {
+    void testDemoMaze(String expected, boolean withRoute, Maze maze, Pathfinder pathfinder) {
         //When
         Renderer renderer = new CellBasedConsoleRenderer();
         String actual;
@@ -112,6 +125,7 @@ class RendererTest {
         } else {
             actual = renderer.render(maze);
         }
+        //Then
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -149,6 +163,7 @@ class RendererTest {
     @MethodSource("provideRestrictedArgs")
     void testRendererRestriction(String expected, Maze maze, List<Coordinate> route, boolean withRoute) {
         Renderer renderer = new CellBasedConsoleRenderer();
+        //Then
         if (withRoute) {
             assertThatThrownBy(
                 () -> renderer.render(maze, route)
