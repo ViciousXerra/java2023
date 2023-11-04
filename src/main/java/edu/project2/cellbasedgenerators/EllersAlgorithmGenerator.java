@@ -1,38 +1,37 @@
-package edu.project2.mazes.generators;
+package edu.project2.cellbasedgenerators;
 
-import edu.project2.mazes.cellbasedmaze.Cell;
+import edu.project2.cellbasedmaze.Cell;
+import edu.project2.cellbasedmaze.Maze;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
-public class CellBasedEllersAlgorithmGenerator implements CellBasedMazeGenerator {
+public final class EllersAlgorithmGenerator extends CellBasedGenerator {
 
-    private final static Random RANDOM = new Random();
+    private int lastRowIndex;
     private long id;
 
-    private final Cell[][] grid;
-    private final int lastRowIndex;
-
-    public CellBasedEllersAlgorithmGenerator(Cell[][] grid) {
-        id = 1;
-        this.grid = grid;
-        lastRowIndex = grid.length - 2;
+    public EllersAlgorithmGenerator(boolean isRandomProvided, boolean isMazeBlocked) {
+        super(isRandomProvided, isMazeBlocked);
     }
 
     @Override
-    public void generate() {
-        setUp();
-        startGeneration();
+    protected void initializeMaze(Maze maze) {
+        this.grid = maze.getGrid();
+        id = 1;
+        lastRowIndex = grid.length - INDEX_DELTA;
+        generateGrid();
+        initFlag = true;
     }
 
-    private void setUp() {
+    @Override
+    protected void setUp() {
         for (int curHeight = 0; curHeight < grid.length; curHeight++) {
             if (curHeight == 0 || curHeight == grid.length - 1) {
                 for (int curWidth = 0; curWidth < grid[curHeight].length; curWidth++) {
                     placeCell(curHeight, curWidth, Cell.Type.WALL);
                 }
-            } else if (curHeight % 2 == 0) {
-                for (int curWidth = 0; curWidth < grid[curHeight].length; curWidth += 2) {
+            } else if (curHeight % INDEX_DELTA == 0) {
+                for (int curWidth = 0; curWidth < grid[curHeight].length; curWidth += INDEX_DELTA) {
                     placeCell(curHeight, curWidth, Cell.Type.WALL);
                 }
             } else {
@@ -42,11 +41,8 @@ public class CellBasedEllersAlgorithmGenerator implements CellBasedMazeGenerator
         }
     }
 
-    private void placeCell(int wallHeight, int wallWidth, Cell.Type type) {
-        grid[wallHeight][wallWidth] = new Cell(wallHeight, wallWidth, type);
-    }
-
-    private void startGeneration() {
+    @Override
+    protected void startGeneration() {
         long[] ids = dataInitialization();
         for (int curHeight = 1; curHeight < grid.length; curHeight += 2) {
             verticalWallsSetUp(ids, curHeight);
@@ -96,8 +92,8 @@ public class CellBasedEllersAlgorithmGenerator implements CellBasedMazeGenerator
         int idCount;
         int widthIndex;
         Map<Long, Integer> idFreq = new HashMap<>();
-        for (long id : ids) {
-            idFreq.put(id, idFreq.getOrDefault(id, 0) + 1);
+        for (long identificator : ids) {
+            idFreq.put(identificator, idFreq.getOrDefault(identificator, 0) + 1);
         }
         for (int i = 0; i < ids.length; i++) {
             idCount = idFreq.get(ids[i]);
@@ -124,4 +120,5 @@ public class CellBasedEllersAlgorithmGenerator implements CellBasedMazeGenerator
             }
         }
     }
+
 }
