@@ -36,7 +36,7 @@ abstract class CellBasedGenerator implements Generator {
         if (isRandomProvided) {
             generateGrid();
         } else {
-            generateDemoMaze(maze);
+            generateDemoMaze();
         }
         return maze;
     }
@@ -54,8 +54,7 @@ abstract class CellBasedGenerator implements Generator {
         grid[wallHeight][wallWidth] = new Cell(wallHeight, wallWidth, type);
     }
 
-    private void generateDemoMaze(Maze maze) {
-        this.grid = maze.getGrid();
+    private void generateDemoMaze() {
         for (int curHeight = 0; curHeight < grid.length; curHeight++) {
             if (curHeight == 0 || curHeight == grid.length - 1) {
                 for (int curWidth = 0; curWidth < grid[curHeight].length; curWidth++) {
