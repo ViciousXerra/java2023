@@ -17,6 +17,7 @@ public class CellBasedConsoleRenderer implements Renderer {
     private final static String WITHOUT_HORIZONTAL_WALL = "  ";
     private final static String ROUTE_WITH_WALL = "_*";
     private final static String ROUTE_WITHOUT_WALL = " *";
+    private final static String LINE_SEPARATOR = System.lineSeparator();
     private final static int INDEX_DELTA = 2;
 
     private Cell[][] grid;
@@ -45,7 +46,7 @@ public class CellBasedConsoleRenderer implements Renderer {
                 processHorizontalPart(source, builder, i, j);
                 processVerticalPart(source, builder, i, j);
             }
-            builder.append('\n');
+            builder.append(LINE_SEPARATOR);
         }
         return builder.toString();
     }
@@ -65,7 +66,7 @@ public class CellBasedConsoleRenderer implements Renderer {
             outerWall.append(HORIZONTAL_WALL);
             outerWall.append(NO_VERTICAL_WALL);
         }
-        outerWall.append('\n');
+        outerWall.append(LINE_SEPARATOR);
         return outerWall.toString();
     }
 

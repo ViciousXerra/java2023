@@ -2,7 +2,6 @@ package edu.project2.cellbasedgenerators;
 
 import edu.project2.cellbasedmaze.Cell;
 import edu.project2.cellbasedmaze.Coordinate;
-import edu.project2.cellbasedmaze.Maze;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,15 +13,17 @@ public final class BacktrackingGenerator extends CellBasedGenerator {
     private final static int MAX_NEIGHBOURS_SIZE = 4;
     private final static Coordinate STARTING_POINT = new Coordinate(1, 1);
 
-    public BacktrackingGenerator(boolean isRandomProvided, boolean isMazeBlocked) {
-        super(isRandomProvided, isMazeBlocked);
+    private final Set<Coordinate> visited = new HashSet<>();
+    private final Stack<Coordinate> route = new Stack<>();
+
+    public BacktrackingGenerator(int height, int width, boolean isRandomProvided, boolean isMazeBlocked) {
+        super(height, width, isRandomProvided, isMazeBlocked);
+        setRouteAndVisited();
     }
 
-    @Override
-    protected void initializeMaze(Maze maze) {
-        this.grid = maze.getGrid();
-        generateGrid();
-        initFlag = true;
+    public BacktrackingGenerator(boolean isRandomProvided, boolean isMazeBlocked) {
+        super(isRandomProvided, isMazeBlocked);
+        setRouteAndVisited();
     }
 
     @Override
@@ -42,10 +43,6 @@ public final class BacktrackingGenerator extends CellBasedGenerator {
 
     @Override
     protected void startGeneration() {
-        Set<Coordinate> visited = new HashSet<>();
-        visited.add(STARTING_POINT);
-        Stack<Coordinate> route = new Stack<>();
-        route.push(STARTING_POINT);
         Coordinate current;
         Coordinate toLinkUp;
         List<Coordinate> currentNeighbours;
@@ -61,6 +58,11 @@ public final class BacktrackingGenerator extends CellBasedGenerator {
                 visited.add(toLinkUp);
             }
         }
+    }
+
+    private void setRouteAndVisited() {
+        visited.add(STARTING_POINT);
+        route.push(STARTING_POINT);
     }
 
     private List<Coordinate> getPossibleTurns(Coordinate current, Set<Coordinate> visited) {

@@ -22,16 +22,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class RendererTest {
 
     private final static String NULL_RESTRICTION = "%s can't be null.";
+    private final static String LINE_SEPARATOR = System.lineSeparator();
 
     @Test
     @DisplayName("Rendering a before-known invariant maze of 1x1 size with Eller's algorithm generation.")
     void testRendererWithInvariantMazeSample1() {
         //Given
-        String expected = " __ \n|__|\n";
+        String expected = " __ " + LINE_SEPARATOR + "|__|" + LINE_SEPARATOR;
         //When
-        Generator generator = new EllersAlgorithmGenerator(true, false);
+        Generator generator = new EllersAlgorithmGenerator(1, 1, true, false);
         Renderer renderer = new CellBasedConsoleRenderer();
-        String actual = renderer.render(generator.generate(1, 1));
+        String actual = renderer.render(generator.generate());
         //Then
         assertThat(actual).isEqualTo(expected);
     }
@@ -40,67 +41,64 @@ class RendererTest {
     @DisplayName("Rendering a before-known invariant maze of 1x1 size with backtracking algorithm generation.")
     void testRendererWithInvariantMazeSample2() {
         //Given
-        String expected = " __ \n|__|\n";
+        String expected = " __ " + LINE_SEPARATOR + "|__|" + LINE_SEPARATOR;
         //When
-        Generator generator = new BacktrackingGenerator(true, false);
+        Generator generator = new BacktrackingGenerator(1, 1, true, false);
         Renderer renderer = new CellBasedConsoleRenderer();
-        String actual = renderer.render(generator.generate(1, 1));
+        String actual = renderer.render(generator.generate());
         //Then
         assertThat(actual).isEqualTo(expected);
+    }
+
+    private static String getDemoMazeRepresentation(boolean withRoute) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 11; i++) {
+            switch (i) {
+                case 0:
+                    builder.append(" __ __ __ __ __ ");
+                    break;
+                case 1:
+                    if (withRoute) {
+                        builder.append("|_* _* _* _*  *|");
+                    } else {
+                        builder.append("|__ __ __ __   |");
+                    }
+                    break;
+                case 10:
+                    if (withRoute) {
+                        builder.append("|_* _* _* _* _*|");
+                    } else {
+                        builder.append("|__ __ __ __ __|");
+                    }
+                    break;
+                default:
+                    if (withRoute) {
+                        builder.append("|__ __ __ __  *|");
+                    } else {
+                        builder.append("|__ __ __ __   |");
+                    }
+            }
+            builder.append(LINE_SEPARATOR);
+        }
+        return builder.toString();
     }
 
     private static Object[][] provideDemoMazeWithoutBlock() {
         return new Object[][] {
             {
-                """
-             __ __ __ __ __\040
-            |__ __ __ __   |
-            |__ __ __ __   |
-            |__ __ __ __   |
-            |__ __ __ __   |
-            |__ __ __ __   |
-            |__ __ __ __   |
-            |__ __ __ __   |
-            |__ __ __ __   |
-            |__ __ __ __   |
-            |__ __ __ __ __|
-            """,
+                getDemoMazeRepresentation(false),
                 false,
                 DemoMazeProvider.getGeneratedDemoMazeWithoutBlock(),
                 new BacktrackingPathfinder()
             },
             {
-                """
-             __ __ __ __ __\040
-            |_* _* _* _*  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |_* _* _* _* _*|
-            """,
+                getDemoMazeRepresentation(true),
                 true,
                 DemoMazeProvider.getGeneratedDemoMazeWithoutBlock(),
                 new BacktrackingPathfinder()
             },
             {
-                """
-             __ __ __ __ __\040
-            |_* _* _* _*  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |__ __ __ __  *|
-            |_* _* _* _* _*|
-            """,
+                getDemoMazeRepresentation(true),
                 true,
                 DemoMazeProvider.getGeneratedDemoMazeWithoutBlock(),
                 new BreadthFirstSearchPathfinder()

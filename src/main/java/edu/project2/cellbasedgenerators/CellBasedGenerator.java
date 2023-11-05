@@ -6,53 +6,45 @@ import java.util.Random;
 
 abstract class CellBasedGenerator implements Generator {
 
-    protected final static String RESET_RESTRICTION_MESSAGE = "Maze instance does not exist. Unable to reset.";
     protected final static int INDEX_DELTA = 2;
     protected final static Random RANDOM = new Random();
 
     private final static int DEFAULT_SIZE = 5;
 
     protected Cell[][] grid;
-    protected boolean initFlag;
 
+    private final int height;
+    private final int width;
     private final boolean isRandomProvided;
     private final boolean isMazeBlocked;
 
-    protected CellBasedGenerator(boolean isRandomProvided, boolean isMazeBlocked) {
+    protected CellBasedGenerator(int height, int width, boolean isRandomProvided, boolean isMazeBlocked) {
+        this.height = height;
+        this.width = width;
         this.isRandomProvided = isRandomProvided;
         this.isMazeBlocked = isMazeBlocked;
     }
 
+    protected CellBasedGenerator(boolean isRandomProvided, boolean isMazeBlocked) {
+        this(DEFAULT_SIZE, DEFAULT_SIZE, isRandomProvided, isMazeBlocked);
+    }
+
     @Override
-    public final Maze generate(int height, int width) {
+    public final Maze generate() {
         Maze maze = new Maze(height, width);
+        this.grid = maze.getGrid();
         if (isRandomProvided) {
-            initializeMaze(maze);
+            generateGrid();
         } else {
             generateDemoMaze(maze);
         }
         return maze;
     }
 
-    @Override
-    public final Maze generate() {
-       return this.generate(DEFAULT_SIZE, DEFAULT_SIZE);
-    }
-
-    @Override
-    public final void reset() {
-        if (!initFlag) {
-            throw new IllegalStateException(RESET_RESTRICTION_MESSAGE);
-        }
-        generateGrid();
-    }
-
     protected final void generateGrid() {
         setUp();
         startGeneration();
     }
-
-    protected abstract void initializeMaze(Maze maze);
 
     protected abstract void setUp();
 

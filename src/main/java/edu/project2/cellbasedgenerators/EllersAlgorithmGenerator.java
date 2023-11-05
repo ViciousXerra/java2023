@@ -1,26 +1,18 @@
 package edu.project2.cellbasedgenerators;
 
 import edu.project2.cellbasedmaze.Cell;
-import edu.project2.cellbasedmaze.Maze;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class EllersAlgorithmGenerator extends CellBasedGenerator {
+    private long id = 1;
 
-    private int lastRowIndex;
-    private long id;
+    public EllersAlgorithmGenerator(int height, int width, boolean isRandomProvided, boolean isMazeBlocked) {
+        super(height, width, isRandomProvided, isMazeBlocked);
+    }
 
     public EllersAlgorithmGenerator(boolean isRandomProvided, boolean isMazeBlocked) {
         super(isRandomProvided, isMazeBlocked);
-    }
-
-    @Override
-    protected void initializeMaze(Maze maze) {
-        this.grid = maze.getGrid();
-        id = 1;
-        lastRowIndex = grid.length - INDEX_DELTA;
-        generateGrid();
-        initFlag = true;
     }
 
     @Override
@@ -46,7 +38,7 @@ public final class EllersAlgorithmGenerator extends CellBasedGenerator {
         long[] ids = dataInitialization();
         for (int curHeight = 1; curHeight < grid.length; curHeight += 2) {
             verticalWallsSetUp(ids, curHeight);
-            if (curHeight != lastRowIndex) {
+            if (curHeight != grid.length - INDEX_DELTA) {
                 horizontalWallsSetUp(ids, curHeight + 1);
             } else {
                 lastRowRecombination(ids);
@@ -112,6 +104,7 @@ public final class EllersAlgorithmGenerator extends CellBasedGenerator {
 
     private void lastRowRecombination(long[] ids) {
         int widthIndex;
+        int lastRowIndex = grid.length - INDEX_DELTA;
         for (int i = 0; i < ids.length - 1; i++) {
             if (ids[i] != ids[i + 1]) {
                 widthIndex = calcVerticalWallWidthIndex(i);

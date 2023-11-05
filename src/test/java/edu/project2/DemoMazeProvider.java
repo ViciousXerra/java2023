@@ -8,13 +8,13 @@ import edu.project2.cellbasedmaze.Maze;
 class DemoMazeProvider {
 
     static Maze getGeneratedDemoMazeWithoutBlock() {
-        Generator generator = new BacktrackingGenerator(false, false);
-        return generator.generate(10, 5);
+        Generator generator = new BacktrackingGenerator(10, 5, false, false);
+        return generator.generate();
     }
 
     static Maze getGeneratedDemoMazeWithBlock() {
-        Generator generator = new EllersAlgorithmGenerator(false, true);
-        return generator.generate(5, 10);
+        Generator generator = new EllersAlgorithmGenerator(5, 10, false, true);
+        return generator.generate();
     }
 
 }
