@@ -28,7 +28,6 @@ public final class Task1 {
             .map(SessionDuration::new)
             .map(SessionDuration::getTimeDuration)
             .mapToLong(Duration::toMinutes)
-            .filter(value -> value != 0)
             .average();
         long minutes = (long) avgMinutes.orElseThrow(() -> new NoSuchElementException(CALC_IMPOSSIBLE_MESSAGE));
         return Duration.ofHours(minutes / MINUTES_PER_HOUR).plusMinutes(minutes % MINUTES_PER_HOUR);
@@ -38,6 +37,7 @@ public final class Task1 {
 
         private final static String MISMATCH_MESSAGE = "Invalid format.";
         private final static String INVALID_PLACEMENT_MESSAGE = "Invalid start and end time placement.";
+        private final static String ZERO_DURATION_MESSAGE = "Session duration time can't be zero.";
 
         private final static String DATE_TIME_REGEX =
             "((20\\d{2}|19[89]\\d)-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]), ([01]\\d|2[0-3]):[0-5]\\d)";
@@ -72,8 +72,11 @@ public final class Task1 {
             if (startSessionTime.isAfter(endSessionTime)) {
                 throw new IllegalArgumentException(INVALID_PLACEMENT_MESSAGE);
             }
-
-            return Duration.between(startSessionTime, endSessionTime);
+            Duration result = Duration.between(startSessionTime, endSessionTime);
+            if (result.equals(Duration.ZERO)) {
+                throw new IllegalArgumentException(ZERO_DURATION_MESSAGE);
+            }
+            return result;
         }
 
     }
