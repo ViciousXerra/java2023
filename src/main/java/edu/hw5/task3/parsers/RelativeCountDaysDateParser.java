@@ -11,22 +11,18 @@ public class RelativeCountDaysDateParser extends AbstractDateParser {
     private final static String BEFORE_DAYS = "ago";
     private final static String AFTER_DAYS = "after";
 
-    RelativeCountDaysDateParser(DateParser nextParser, Pattern pattern) {
+    public RelativeCountDaysDateParser(DateParser nextParser, Pattern pattern) {
         super(nextParser, pattern);
     }
 
     @Override
-    LocalDate getLocalDate(String dateToParse) {
+    LocalDate getLocalDate(String dateToParse, Matcher matcher) {
         LocalDate localDate = LocalDate.now();
-        Matcher matcher = pattern.matcher(dateToParse);
-        if (matcher.find()) {
-            long days = Long.parseLong(matcher.group(DAYS_MATCHER_GROUP));
-            if (AFTER_DAYS.equals(matcher.group(RELATIVE_MATCHER_GROUP))) {
-                return localDate.plusDays(days);
-            } else if (BEFORE_DAYS.equals(matcher.group(RELATIVE_MATCHER_GROUP))) {
-                return localDate.minusDays(days);
-            }
+        long days = Long.parseLong(matcher.group(DAYS_MATCHER_GROUP));
+        if (AFTER_DAYS.equals(matcher.group(RELATIVE_MATCHER_GROUP))) {
+            return localDate.plusDays(days);
+        } else {
+            return localDate.minusDays(days);
         }
-        return null;
     }
 }

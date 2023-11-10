@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 public final class Task7 {
 
     private final static String NULL_STRING_MESSAGE = "String arg can't be null.";
+    private final static String EMPTY_BLANK_MESSAGE = "String arg can't have length of 0 or contains only whitespaces";
 
     private Task7() {
 
@@ -29,6 +30,9 @@ public final class Task7 {
     private static void validation(String input) {
         if (input == null) {
             throw new IllegalArgumentException(NULL_STRING_MESSAGE);
+        }
+        if (input.isEmpty() || input.isBlank()) {
+            throw new IllegalArgumentException(EMPTY_BLANK_MESSAGE);
         }
     }
 
