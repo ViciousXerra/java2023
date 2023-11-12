@@ -1,4 +1,4 @@
-package edu.hw6.task3.filters;
+package edu.hw6.task3;
 
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;

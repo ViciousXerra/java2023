@@ -1,4 +1,4 @@
-package edu.hw6.task3.filters;
+package edu.hw6.task3;
 
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
