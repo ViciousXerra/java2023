@@ -1,7 +1,5 @@
 package edu.hw6;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class Task4 {
 
@@ -37,7 +37,7 @@ public final class Task4 {
         ) {
             writer.println("Programming is learned by writing programs. - Brian Kernighan");
         } catch (IOException ignored) {
-            LOGGER.info("Unable to write to file.");
+            LOGGER.error("Unable to write to file.");
         }
     }
 

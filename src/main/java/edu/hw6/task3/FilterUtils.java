@@ -6,9 +6,8 @@ import java.nio.channels.FileChannel;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.PathMatcher;
-import java.util.regex.Pattern;
 
-public final class FiltersUtil {
+public final class FilterUtils {
 
     private final static String NULL_ARG_MESSAGE = "Arguments can't be null.";
 
@@ -16,24 +15,17 @@ public final class FiltersUtil {
     public static AbstractFilter isExisting = Files::exists;
     public static AbstractFilter isRegularFile = Files::isRegularFile;
     public static AbstractFilter isReadable = Files::isReadable;
-    public static AbstractFilter isWritable = Files::isWritable;
+    public static AbstractFilter isDirectory = Files::isDirectory;
 
-    private FiltersUtil() {
+    private FilterUtils() {
 
-    }
-
-    public static AbstractFilter getAllAttributeFilters() {
-        return isExisting
-            .and(isRegularFile)
-            .and(isReadable)
-            .and(isWritable);
     }
 
     public static AbstractFilter getFilterBySize(long sizeInBytes, boolean larger) {
         if (larger) {
-            return path -> Files.size(path) < sizeInBytes;
-        } else {
             return path -> Files.size(path) >= sizeInBytes;
+        } else {
+            return path -> Files.size(path) < sizeInBytes;
         }
     }
 
@@ -78,10 +70,12 @@ public final class FiltersUtil {
         if (regex == null) {
             throw new IllegalArgumentException(NULL_ARG_MESSAGE);
         }
+        if (!regex.startsWith("regex:")) {
+            throw new IllegalArgumentException("Method allows only regex patterns.");
+        }
         return path -> {
-            String fileName = path.getFileName().toString();
-            Pattern pattern = Pattern.compile(regex);
-            return pattern.matcher(fileName).find();
+            PathMatcher matcher = FileSystems.getDefault().getPathMatcher(regex);
+            return matcher.matches(path);
         };
     }
 

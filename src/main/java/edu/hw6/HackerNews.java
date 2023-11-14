@@ -13,11 +13,14 @@ import org.apache.logging.log4j.Logger;
 
 public final class HackerNews {
 
+    private final static String INPUT_OUTPUT_ERROR_MESSAGE =
+        "Caught I/O Exception. Input/Output error occurs.";
     private final static Logger LOGGER = LogManager.getLogger();
 
     private final static String STORY_BY_ID_ENDPOINT_TEMPLATE =
         "https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty";
     private final static String TOP_STORIES_ENDPOINT = "https://hacker-news.firebaseio.com/v0/topstories.json";
+    private final static String INTERRUPTED_THREAD_MESSAGE = "Thread has been interrupted.";
 
     private HackerNews() {
 
@@ -31,10 +34,10 @@ public final class HackerNews {
         ) {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            LOGGER.info("Input/Output error occurs.");
+            LOGGER.error(INPUT_OUTPUT_ERROR_MESSAGE);
             return new long[0];
         } catch (InterruptedException e) {
-            LOGGER.info("Thread has been interrupted.");
+            LOGGER.error(INTERRUPTED_THREAD_MESSAGE);
             return new long[0];
         }
         return Arrays
@@ -52,10 +55,10 @@ public final class HackerNews {
         ) {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            LOGGER.info("Input/Output error occurs.");
+            LOGGER.error(INPUT_OUTPUT_ERROR_MESSAGE);
             return "";
         } catch (InterruptedException e) {
-            LOGGER.info("Thread has been interrupted.");
+            LOGGER.error(INTERRUPTED_THREAD_MESSAGE);
             return "";
         }
         Pattern titlePattern = Pattern.compile("\"title\" : \"(.+)\"");
@@ -67,10 +70,10 @@ public final class HackerNews {
         }
     }
 
-    private static HttpRequest getRequestInstance(String URIString) {
+    private static HttpRequest getRequestInstance(String uriString) {
         return HttpRequest
             .newBuilder()
-            .uri(URI.create(URIString))
+            .uri(URI.create(uriString))
             .version(HttpClient.Version.HTTP_2)
             .GET()
             .build();

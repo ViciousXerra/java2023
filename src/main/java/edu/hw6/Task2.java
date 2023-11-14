@@ -1,9 +1,5 @@
 package edu.hw6;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class Task2 {
 
@@ -29,41 +27,40 @@ public final class Task2 {
         if (source == null) {
             throw new IllegalArgumentException(NULL_PATH_MESSAGE);
         }
-        File sourceFile = source.toFile();
-        if (sourceFile.isDirectory()) {
+        if (Files.isDirectory(source)) {
             throw new IllegalArgumentException(PATH_DIRECTORY_RESTRICTION);
         }
-        if (!sourceFile.exists()) {
+        if (!Files.exists(source)) {
             throw new IllegalArgumentException(FILE_NOT_EXIST_MESSAGE);
         }
         long cloneCount;
         try {
-            cloneCount = getCloneCount(sourceFile);
+            cloneCount = getCloneCount(source);
         } catch (IOException e) {
-            LOGGER.info("Unable to track before cloned files.");
+            LOGGER.error("Caught I/O Exception. Unable to track before cloned files.");
             return;
         }
         String copyName = cloneCount == 0
-            ? String.format("%s - копия.%s", getFileName(sourceFile), getFileExtension(sourceFile))
-            : String.format("%s - копия (%d).%s", getFileName(sourceFile), ++cloneCount, getFileExtension(sourceFile));
-        Path dest = Paths.get((sourceFile.getParent() == null ? "" : sourceFile.getParent()), copyName);
+            ? String.format("%s - копия.%s", getFileName(source), getFileExtension(source))
+            : String.format("%s - копия (%d).%s", getFileName(source), ++cloneCount, getFileExtension(source));
+        Path dest = Paths.get((source.getParent() == null ? "" : source.getParent().toString()), copyName);
         try (
-            FileChannel original = new FileInputStream(sourceFile).getChannel();
+            FileChannel original = new FileInputStream(source.toFile()).getChannel();
             FileChannel copy = new FileOutputStream(dest.toFile()).getChannel()
         ) {
             copy.transferFrom(original, 0, original.size());
         } catch (IOException e) {
-            LOGGER.info("Unable to clone file.");
+            LOGGER.error("Caught I/O Exception. Unable to clone file.");
         }
     }
 
-    private static String getFileName(File source) {
-        String sourceFileName = source.getName();
+    private static String getFileName(Path source) {
+        String sourceFileName = source.getFileName().toString();
         return sourceFileName.substring(0, getDotIndex(sourceFileName));
     }
 
-    private static String getFileExtension(File source) {
-        String sourceFileName = source.getName();
+    private static String getFileExtension(Path source) {
+        String sourceFileName = source.getFileName().toString();
         return sourceFileName.substring(getDotIndex(sourceFileName) + 1);
     }
 
@@ -77,11 +74,12 @@ public final class Task2 {
         return dotIndex;
     }
 
-    private static long getCloneCount(File source) throws IOException {
-        Pattern pattern = Pattern.compile("^" + getFileName(source) + " - копия.*\\." + getFileExtension(source) +"$");
+    private static long getCloneCount(Path source) throws IOException {
+        Pattern pattern =
+            Pattern.compile("^" + getFileName(source) + " - копия.*\\." + getFileExtension(source) + "$");
         return
             Files
-            .list(Paths.get(source.getParent()))
+            .list(source.getParent())
             .filter(path -> {
                 Matcher matcher = pattern.matcher(path.toFile().getName());
                 return matcher.find();

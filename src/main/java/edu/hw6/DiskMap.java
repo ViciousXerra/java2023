@@ -2,11 +2,10 @@ package edu.hw6;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,21 +26,23 @@ public final class DiskMap implements Map<String, String> {
 
     private final static Logger LOGGER = LogManager.getLogger();
     private final static String WRITE_FORMAT = "%s:%s" + System.lineSeparator();
-    private final static String READ_MATCH = "^(.+):(.+)$";
+    private final static String READ_MATCH = "(.+):(.+)";
     private final static Pattern READ_PATTERN = Pattern.compile(READ_MATCH);
     private final static int KEY_GROUP = 1;
     private final static int VALUE_GROUP = 2;
 
     private final static String PATH_DIRECTORY_VIOLATION_MESSAGE = "Path can't be a directory.";
-    private final static String FILE_WRITE_ERROR_MESSAGE = "File can't be created, opened or redacted.";
-    private final static String FILE_READ_ERROR_MESSAGE = "File can't be opened or be read.";
+    private final static String FILE_WRITE_ERROR_MESSAGE =
+        "Caught I/O Exception. File can't be created, opened or redacted.";
+    private final static String FILE_READ_ERROR_MESSAGE =
+        "Caught I/O Exception. File can't be opened or be read.";
     private final static String INVALID_FILE_LINE =
         "File line must match %KEY%:%VALUE% pattern, %KEY% and %VALUE% can't be empty.";
     private final static String NULL_RESTRICTION_MESSAGE = "%s can't be null.";
-    private final static String CLASS_CAST_RESTRICTION_MESSAGE = "%s must be String.";
 
     private final static int INITIAL_CAPACITY = 16;
     private final static float LOAD_FACTOR = 0.75f;
+    private final static int DEFAULT_PRIME = 31;
 
     private int currentCapacity;
     private final float loadFactor;
@@ -60,41 +61,31 @@ public final class DiskMap implements Map<String, String> {
     }
 
     public void saveMap(Path path) {
-        if (path == null) {
-            throw new IllegalArgumentException(String.format(NULL_RESTRICTION_MESSAGE, "Path"));
-        }
-        File file = path.toFile();
-        if (file.isDirectory()) {
-            throw new IllegalArgumentException(PATH_DIRECTORY_VIOLATION_MESSAGE);
-        }
+        validatePath(path);
         try (
-            FileWriter fileOut = new FileWriter(file);
-            BufferedWriter bufferedOut = new BufferedWriter(fileOut)
+            BufferedWriter fileWriter =
+                Files.newBufferedWriter(
+                    path,
+                    StandardOpenOption.WRITE,
+                    StandardOpenOption.TRUNCATE_EXISTING
+                )
         ) {
             for (Entry<String, String> entry : this.entrySet()) {
-                bufferedOut.write(String.format(WRITE_FORMAT, entry.getKey(), entry.getValue()));
+                fileWriter.write(String.format(WRITE_FORMAT, entry.getKey(), entry.getValue()));
             }
         } catch (IOException e) {
-            LOGGER.info(FILE_WRITE_ERROR_MESSAGE);
-            file.deleteOnExit();
+            LOGGER.error(FILE_WRITE_ERROR_MESSAGE);
         }
     }
 
     public void loadMap(Path path) {
-        if (path == null) {
-            throw new IllegalArgumentException(String.format(NULL_RESTRICTION_MESSAGE, "Path"));
-        }
-        File file = path.toFile();
-        if (file.isDirectory()) {
-            throw new IllegalArgumentException(PATH_DIRECTORY_VIOLATION_MESSAGE);
-        }
+        validatePath(path);
         try (
-            FileReader fileIn = new FileReader(file);
-            BufferedReader bufferedIn = new BufferedReader(fileIn)
+            BufferedReader fileReader = Files.newBufferedReader(path)
         ) {
             Matcher matcher;
-            while (bufferedIn.ready()) {
-                matcher = READ_PATTERN.matcher(bufferedIn.readLine());
+            while (fileReader.ready()) {
+                matcher = READ_PATTERN.matcher(fileReader.readLine());
                 if (matcher.find()) {
                     this.put(matcher.group(KEY_GROUP), matcher.group(VALUE_GROUP));
                 } else {
@@ -102,7 +93,7 @@ public final class DiskMap implements Map<String, String> {
                 }
             }
         } catch (IOException e) {
-            LOGGER.info(FILE_READ_ERROR_MESSAGE);
+            LOGGER.error(FILE_READ_ERROR_MESSAGE);
             clear();
         }
     }
@@ -122,7 +113,7 @@ public final class DiskMap implements Map<String, String> {
 
     @Override
     public boolean containsKey(Object key) {
-        validate(MappingElement.KEY, key);
+        validate(MappingComponent.KEY, key);
         int bucketIndex = hash((String) key);
         Node currentNode = table[bucketIndex];
         while (currentNode != null) {
@@ -136,13 +127,13 @@ public final class DiskMap implements Map<String, String> {
 
     @Override
     public boolean containsValue(Object value) {
-        validate(MappingElement.VALUE, value);
+        validate(MappingComponent.VALUE, value);
         return getNodesStream().anyMatch(node -> value.equals(node.getValue()));
     }
 
     @Override
     public String get(Object key) {
-        validate(MappingElement.KEY, key);
+        validate(MappingComponent.KEY, key);
         int bucketIndex = hash((String) key);
         Node currentNode = table[bucketIndex];
         while (currentNode != null) {
@@ -157,8 +148,8 @@ public final class DiskMap implements Map<String, String> {
     @Nullable
     @Override
     public String put(String key, String value) {
-        validate(MappingElement.KEY, key);
-        validate(MappingElement.VALUE, value);
+        validate(MappingComponent.KEY, key);
+        validate(MappingComponent.VALUE, value);
         if (isNeedToEnsureCapacity()) {
             ensureCapacity();
         }
@@ -188,7 +179,7 @@ public final class DiskMap implements Map<String, String> {
 
     @Override
     public String remove(Object key) {
-        validate(MappingElement.KEY, key);
+        validate(MappingComponent.KEY, key);
         int bucketIndex = hash((String) key);
         String toReturn = null;
         Node currentNode = table[bucketIndex];
@@ -218,12 +209,20 @@ public final class DiskMap implements Map<String, String> {
     @Override
     public void putAll(Map<? extends String, ? extends String> m) {
         if (m == null) {
-            throw new IllegalArgumentException(String.format(NULL_RESTRICTION_MESSAGE, "Map"));
+            throw new NullPointerException(String.format(NULL_RESTRICTION_MESSAGE, "Map argument"));
         }
-        if (m.containsKey(null) || m.containsValue(null)) {
-            throw new IllegalArgumentException(String.format(NULL_RESTRICTION_MESSAGE, "Key or value"));
+        boolean nullsExists;
+        try {
+            nullsExists = m.containsKey(null) || m.containsValue(null);
+        } catch (NullPointerException e) {
+            m.forEach(this::put);
+            return;
         }
-        m.forEach(this::put);
+        if (!nullsExists) {
+            m.forEach(this::put);
+        } else {
+            throw new NullPointerException(String.format(NULL_RESTRICTION_MESSAGE, "Keys or values"));
+        }
     }
 
     @Override
@@ -236,7 +235,7 @@ public final class DiskMap implements Map<String, String> {
     @NotNull
     @Override
     public Set<String> keySet() {
-        return getNodesStream().map(Node::getKey).collect(Collectors.toUnmodifiableSet());
+        return getNodesStream().map(Node::getKey).collect(Collectors.toSet());
     }
 
     @NotNull
@@ -248,7 +247,7 @@ public final class DiskMap implements Map<String, String> {
     @NotNull
     @Override
     public Set<Entry<String, String>> entrySet() {
-        return getNodesStream().collect(Collectors.toUnmodifiableSet());
+        return getNodesStream().collect(Collectors.toSet());
     }
 
     private void initTable() {
@@ -257,8 +256,7 @@ public final class DiskMap implements Map<String, String> {
 
     private int hash(String key) {
         int result = 1;
-        int prime = 31;
-        result = result * prime + key.hashCode();
+        result = result * DEFAULT_PRIME + key.hashCode();
         return Math.abs(result % currentCapacity);
     }
 
@@ -280,21 +278,37 @@ public final class DiskMap implements Map<String, String> {
     }
 
     private void rehash() {
-        List<Node> temporaryCopy = getNodesStream().toList();
+        Node[] tableCopy = this.table;
         initTable();
-        temporaryCopy.forEach(node -> put(node.getKey(), node.getValue()));
+        getNodesStream(tableCopy)
+            .forEach(node -> {
+                int bucketIndex = hash(node.getKey());
+                Node current = this.table[bucketIndex];
+                if (current == null) {
+                    this.table[bucketIndex] = node;
+                } else {
+                    Node previous = current;
+                    current = current.getNext();
+                    while (current != null) {
+                        previous = current;
+                        current = current.getNext();
+                    }
+                    previous.setNext(node);
+                }
+            });
     }
 
-    private void validate(MappingElement element, Object o) {
+    private void validate(MappingComponent element, Object o) {
         if (o == null) {
-            throw new IllegalArgumentException(String.format(NULL_RESTRICTION_MESSAGE, element.getName()));
-        }
-        if (!(o instanceof String)) {
-            throw new ClassCastException(String.format(CLASS_CAST_RESTRICTION_MESSAGE, element.getName()));
+            throw new NullPointerException(String.format(NULL_RESTRICTION_MESSAGE, element.getName()));
         }
     }
 
     private Stream<Node> getNodesStream() {
+        return getNodesStream(this.table);
+    }
+
+    private Stream<Node> getNodesStream(Node[] table) {
         return Arrays.stream(table)
             .filter(Objects::nonNull)
             .flatMap(node -> {
@@ -308,6 +322,15 @@ public final class DiskMap implements Map<String, String> {
             });
     }
 
+    private void validatePath(Path path) {
+        if (path == null) {
+            throw new IllegalArgumentException(String.format(NULL_RESTRICTION_MESSAGE, "Path"));
+        }
+        if (Files.isDirectory(path)) {
+            throw new IllegalArgumentException(PATH_DIRECTORY_VIOLATION_MESSAGE);
+        }
+    }
+
     private static class Node implements Map.Entry<String, String> {
 
         private final String key;
@@ -317,6 +340,28 @@ public final class DiskMap implements Map<String, String> {
         private Node(String key, String value) {
             this.key = key;
             this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Node node = (Node) o;
+            if (!key.equals(node.key)) {
+                return false;
+            }
+            return value.equals(node.value);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = key.hashCode();
+            result = 31 * result + value.hashCode();
+            return result;
         }
 
         @Override
@@ -346,13 +391,13 @@ public final class DiskMap implements Map<String, String> {
 
     }
 
-    private enum MappingElement {
+    private enum MappingComponent {
         KEY("Key"),
         VALUE("Value");
 
         private final String name;
 
-        MappingElement(String name) {
+        MappingComponent(String name) {
             this.name = name;
         }
 
