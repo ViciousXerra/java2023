@@ -83,6 +83,27 @@ class Task3Test {
     }
 
     @Test
+    @DisplayName("Test attributes filter chain for directories.")
+    void testAttributeFiltersForDirectories() {
+        //Given
+        List<String> expectedFileNames = List.of(
+            "sample_dir"
+        );
+        //When
+        AbstractFilter filter = FilterUtils.isExisting
+            .and(FilterUtils.isDirectory);
+        List<String> actualFileNames = new ArrayList<>();
+        try {
+            Files.newDirectoryStream(Path.of(FILES_FOLDER), filter)
+                .forEach(path -> actualFileNames.add(path.getFileName().toString()));
+        } catch (IOException e) {
+            LOGGER.error("Caught I/O exception. Unable to get directory stream");
+        }
+        //Then
+        assertThat(actualFileNames).containsExactlyInAnyOrderElementsOf(expectedFileNames);
+    }
+
+    @Test
     @DisplayName("Test filters for pdf magical header numbers.")
     void testPDFMagicalHeaderNumbersSignatureFilter() {
         //Given
