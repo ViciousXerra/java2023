@@ -54,17 +54,13 @@ public final class Task6 {
         builder.append("Protocol  Port   Possible service");
         builder.append(System.lineSeparator());
         for (int i = 0; i < USABLE_PORT_LIMIT; i++) {
-            /*
-            Что писать, если делать с try with resources, на пустой блок try
-            ругается чекстайл
-             */
             try (ServerSocket socket = new ServerSocket(i)) {
-                continue;
+                socket.close();
             } catch (IOException e) {
                 appendOccupiedPortInfo("TCP", i, builder);
             }
             try (DatagramSocket socket = new DatagramSocket(i)) {
-                continue;
+                socket.close();
             } catch (IOException e) {
                 appendOccupiedPortInfo("UDP", i, builder);
             }

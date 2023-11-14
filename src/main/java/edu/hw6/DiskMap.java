@@ -114,7 +114,7 @@ public final class DiskMap implements Map<String, String> {
     @Override
     public boolean containsKey(Object key) {
         validate(MappingComponent.KEY, key);
-        int bucketIndex = hash((String) key);
+        int bucketIndex = hash(key);
         Node currentNode = table[bucketIndex];
         while (currentNode != null) {
             if (key.equals(currentNode.getKey())) {
@@ -134,7 +134,7 @@ public final class DiskMap implements Map<String, String> {
     @Override
     public String get(Object key) {
         validate(MappingComponent.KEY, key);
-        int bucketIndex = hash((String) key);
+        int bucketIndex = hash(key);
         Node currentNode = table[bucketIndex];
         while (currentNode != null) {
             if (key.equals(currentNode.getKey())) {
@@ -180,7 +180,7 @@ public final class DiskMap implements Map<String, String> {
     @Override
     public String remove(Object key) {
         validate(MappingComponent.KEY, key);
-        int bucketIndex = hash((String) key);
+        int bucketIndex = hash(key);
         String toReturn = null;
         Node currentNode = table[bucketIndex];
         if (currentNode == null) {
@@ -254,7 +254,7 @@ public final class DiskMap implements Map<String, String> {
         table = new Node[currentCapacity];
     }
 
-    private int hash(String key) {
+    private int hash(Object key) {
         int result = 1;
         result = result * DEFAULT_PRIME + key.hashCode();
         return Math.abs(result % currentCapacity);

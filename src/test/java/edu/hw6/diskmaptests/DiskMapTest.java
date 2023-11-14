@@ -148,16 +148,6 @@ class DiskMapTest {
     }
 
     @Test
-    @DisplayName("Test class cast exception on remove method.")
-    void testClassCastException() {
-        assertThatThrownBy(() -> {
-            Map<String, String> map = new DiskMap();
-            map.remove(1);
-        })
-            .isInstanceOf(ClassCastException.class);
-    }
-
-    @Test
     @DisplayName("Test passing null arg to putAll method.")
     void testPassingNullToPutAll() {
         assertThatThrownBy(() -> {

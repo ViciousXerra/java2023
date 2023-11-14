@@ -13,14 +13,14 @@ import org.apache.logging.log4j.Logger;
 
 public final class HackerNews {
 
-    private final static String INPUT_OUTPUT_ERROR_MESSAGE =
-        "Caught I/O Exception. Input/Output error occurs.";
     private final static Logger LOGGER = LogManager.getLogger();
+    private final static String CAUGHTED_EXCEPTION_MESSAGE_TEMPLATE = "Caught exception: {%s}";
 
     private final static String STORY_BY_ID_ENDPOINT_TEMPLATE =
         "https://hacker-news.firebaseio.com/v0/item/%d.json?print=pretty";
     private final static String TOP_STORIES_ENDPOINT = "https://hacker-news.firebaseio.com/v0/topstories.json";
-    private final static String INTERRUPTED_THREAD_MESSAGE = "Thread has been interrupted.";
+
+    private final static String EMPTY_STRING = "";
 
     private HackerNews() {
 
@@ -33,11 +33,8 @@ public final class HackerNews {
             HttpClient client = getHttpClientInstance()
         ) {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            LOGGER.error(INPUT_OUTPUT_ERROR_MESSAGE);
-            return new long[0];
-        } catch (InterruptedException e) {
-            LOGGER.error(INTERRUPTED_THREAD_MESSAGE);
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error(String.format(CAUGHTED_EXCEPTION_MESSAGE_TEMPLATE, e.getMessage()));
             return new long[0];
         }
         return Arrays
@@ -54,19 +51,16 @@ public final class HackerNews {
             HttpClient client = getHttpClientInstance()
         ) {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            LOGGER.error(INPUT_OUTPUT_ERROR_MESSAGE);
-            return "";
-        } catch (InterruptedException e) {
-            LOGGER.error(INTERRUPTED_THREAD_MESSAGE);
-            return "";
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error(String.format(CAUGHTED_EXCEPTION_MESSAGE_TEMPLATE, e.getMessage()));
+            return EMPTY_STRING;
         }
         Pattern titlePattern = Pattern.compile("\"title\" : \"(.+)\"");
         Matcher matcher = titlePattern.matcher(response.body());
         if (matcher.find()) {
             return matcher.group(1);
         } else {
-            return "";
+            return EMPTY_STRING;
         }
     }
 
