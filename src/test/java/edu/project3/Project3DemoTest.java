@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class Project3DemoTest {
 
     @Test
-    @DisplayName("Demo run.")
-    void test() {
+    @DisplayName("Demo url run.")
+    void testUrl() {
         //When
         String[] args = new String[] {
             "--path",
@@ -19,6 +19,19 @@ class Project3DemoTest {
             "2015-06-03",
             "--format",
             "adoc"
+        };
+        //Then
+        assertThatCode(() -> Driver.execute(args))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("Demo local file run.")
+    void testLocal() {
+        //When
+        String[] args = new String[] {
+            "--path",
+            "src/test/resources/project3resources/testinputs/*.txt",
         };
         //Then
         assertThatCode(() -> Driver.execute(args))
