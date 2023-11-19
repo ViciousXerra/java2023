@@ -25,10 +25,10 @@ public final class LogUtils {
 
     public final static Pattern NGINX_LOG_PATTERN =
         Pattern.compile(
-            "((\\d{1,3}\\.){3}\\d{1,3}) - (.+) " +
-                "\\[(.+)] \"(GET|POST|PUT|PATCH|DELETE) (.+) HTTP/\\d\\.\\d\" " +
-                "(\\d{3}) (\\d+) " +
-                "\"(.+)\" \"(.+)\""
+            "((\\d{1,3}\\.){3}\\d{1,3}) - (.+) "
+                + "\\[(.+)] \"(GET|POST|PUT|PATCH|DELETE) (.+) HTTP/\\d\\.\\d\" "
+                + "(\\d{3}) (\\d+) "
+                + "\"(.+)\" \"(.+)\""
         );
 
     private LogUtils() {

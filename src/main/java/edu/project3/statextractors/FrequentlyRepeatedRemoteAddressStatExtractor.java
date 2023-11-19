@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class FrequentlyRepeatedRemoteAddressStatExtractor implements StatExtractor<List<Map.Entry<String, Integer>>> {
 
+    private final static int ADDRESS_MAX_SIZE = 3;
     private final Map<String, Integer> frequencyMap = new HashMap<>();
 
     @Override
@@ -15,7 +16,7 @@ public class FrequentlyRepeatedRemoteAddressStatExtractor implements StatExtract
             .entrySet()
             .stream()
             .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-            .limit(3)
+            .limit(ADDRESS_MAX_SIZE)
             .toList();
     }
 

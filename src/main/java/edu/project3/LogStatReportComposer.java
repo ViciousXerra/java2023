@@ -37,8 +37,11 @@ public class LogStatReportComposer implements StatReportComposer {
     private final static String REPEATED_REQUEST_TYPE = "repeated request type";
     private final static String TIMES = "Repeated, times";
     private final static String REPEATING_STRING_TEMPLATE = " repeats %d times.";
+    private final static String MOST_PREFIX = "Most ";
     private final static String ADOC_TABLE_SIGN = "|===";
     private final static String TABLE_ROW_SEPARATOR = "|";
+    private final static int THREE_COLUMNS = 3;
+    private final static int TWO_COLUMNS = 2;
 
     private final OffsetDateTime from;
     private final OffsetDateTime to;
@@ -129,6 +132,8 @@ public class LogStatReportComposer implements StatReportComposer {
             case DEFAULT -> buildTxtString(builder);
             case MARKDOWN -> buildMarkDownString(builder);
             case ADOC -> buildAdocString(builder);
+            default -> {
+            }
         }
         return builder.toString();
     }
@@ -145,11 +150,9 @@ public class LogStatReportComposer implements StatReportComposer {
             .append(LINE_SEPARATOR)
             .append("Sources: ")
             .append(LINE_SEPARATOR);
-        sourceNames.forEach(sourceName -> {
-            builder
-                .append(sourceName)
-                .append(LINE_SEPARATOR);
-        });
+        sourceNames.forEach(sourceName -> builder
+            .append(sourceName)
+            .append(LINE_SEPARATOR));
         builder.append("From: ").append(from.toString()).append(LINE_SEPARATOR);
         builder.append("To: ").append(to.toString()).append(LINE_SEPARATOR);
         builder.append("Total requests number: ").append(totalRequestCounter.getStat()).append(LINE_SEPARATOR);
@@ -161,12 +164,11 @@ public class LogStatReportComposer implements StatReportComposer {
         builder.append("Additional Info:").append(LINE_SEPARATOR);
         builder.append(String.format(FREQUENCY_STAT_TEMPLATE, QUERIED_RESOURCES)).append(LINE_SEPARATOR);
         List<Map.Entry<String, Integer>> resourcesStat = resourceTracker.getStat();
-        resourcesStat.forEach(entry -> {
-            builder
-                .append(entry.getKey())
-                .append(String.format(" queried %d times.", entry.getValue()))
-                .append(LINE_SEPARATOR);
-        });
+        resourcesStat.forEach(entry -> builder
+            .append(entry.getKey())
+            .append(String.format(" queried %d times.", entry.getValue()))
+            .append(LINE_SEPARATOR)
+        );
         builder.append(LINE_SEPARATOR);
         builder.append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_REMOTE_ADDRESSES)).append(LINE_SEPARATOR);
         List<Map.Entry<String, Integer>> remoteAddressStat = remoteAddressTracker.getStat();
@@ -174,19 +176,19 @@ public class LogStatReportComposer implements StatReportComposer {
             builder
                 .append(entry.getKey())
                 .append(String.format(REPEATING_STRING_TEMPLATE, entry.getValue()))
-                .append(LINE_SEPARATOR));
+                .append(LINE_SEPARATOR)
+        );
         builder.append(LINE_SEPARATOR);
         builder.append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_RESPONSE_CODES)).append(LINE_SEPARATOR);
         List<Map.Entry<Map.Entry<String, Integer>, String>> responseCodes = responseCodesTracker.getStat();
-        responseCodes.forEach(entry -> {
-            builder
-                .append(entry.getKey().getKey()).append(" ").append(entry.getValue())
-                .append(String.format(REPEATING_STRING_TEMPLATE, entry.getKey().getValue()))
-                .append(LINE_SEPARATOR);
-        });
+        responseCodes.forEach(entry -> builder
+            .append(entry.getKey().getKey()).append(" ").append(entry.getValue())
+            .append(String.format(REPEATING_STRING_TEMPLATE, entry.getKey().getValue()))
+            .append(LINE_SEPARATOR)
+        );
         builder.append(LINE_SEPARATOR);
         builder
-            .append(String.format("Most " + FREQUENCY_STAT_TEMPLATE, REPEATED_REQUEST_TYPE))
+            .append(String.format(MOST_PREFIX + FREQUENCY_STAT_TEMPLATE, REPEATED_REQUEST_TYPE))
             .append(LINE_SEPARATOR);
         Map.Entry<String, Integer> requestTypeStat = requestTypeTracker.getStat();
         builder
@@ -219,7 +221,7 @@ public class LogStatReportComposer implements StatReportComposer {
     private void generateAdocGeneralInfo(StringBuilder builder) {
         builder.append("== General Info").append(LINE_SEPARATOR);
         builder.append(LINE_SEPARATOR);
-        generateAdocTableHeader(builder, 2, "Metrics", "Values");
+        generateAdocTableHeader(builder, TWO_COLUMNS, "Metrics", "Values");
         StringBuilder names = new StringBuilder();
         sourceNames.forEach(name -> names.append(name).append(" +").append(LINE_SEPARATOR));
         generateAdocTableRow(builder, false, "Sources", names.toString());
@@ -258,7 +260,7 @@ public class LogStatReportComposer implements StatReportComposer {
         builder.append(LINE_SEPARATOR);
         builder.append("* ").append(String.format(FREQUENCY_STAT_TEMPLATE, QUERIED_RESOURCES)).append(LINE_SEPARATOR);
         builder.append("+").append(LINE_SEPARATOR);
-        generateAdocTableHeader(builder, 2, "Resource", "Queried, times");
+        generateAdocTableHeader(builder, TWO_COLUMNS, "Resource", "Queried, times");
         List<Map.Entry<String, Integer>> resourcesStat = resourceTracker.getStat();
         for (int i = 0; i < resourcesStat.size(); i++) {
             String res = resourcesStat.get(i).getKey();
@@ -269,7 +271,7 @@ public class LogStatReportComposer implements StatReportComposer {
         builder.append("* ").append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_RESPONSE_CODES))
             .append(LINE_SEPARATOR);
         builder.append("+").append(LINE_SEPARATOR);
-        generateAdocTableHeader(builder, 3, "Code", "Description", TIMES);
+        generateAdocTableHeader(builder, THREE_COLUMNS, "Code", "Description", TIMES);
         List<Map.Entry<Map.Entry<String, Integer>, String>> responseCodes = responseCodesTracker.getStat();
         for (int i = 0; i < responseCodes.size(); i++) {
             String code = responseCodes.get(i).getKey().getKey();
@@ -281,7 +283,7 @@ public class LogStatReportComposer implements StatReportComposer {
         builder.append("* ").append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_REMOTE_ADDRESSES))
             .append(LINE_SEPARATOR);
         builder.append("+").append(LINE_SEPARATOR);
-        generateAdocTableHeader(builder, 2, "Address", TIMES);
+        generateAdocTableHeader(builder, TWO_COLUMNS, "Address", TIMES);
         List<Map.Entry<String, Integer>> remoteAddressStat = remoteAddressTracker.getStat();
         for (int i = 0; i < remoteAddressStat.size(); i++) {
             String address = remoteAddressStat.get(i).getKey();
@@ -289,7 +291,7 @@ public class LogStatReportComposer implements StatReportComposer {
             generateAdocTableRow(builder, (i == remoteAddressStat.size() - 1), address, times);
         }
         builder.append(LINE_SEPARATOR);
-        builder.append("* ").append("Most ").append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_REQUEST_TYPE))
+        builder.append("* ").append(MOST_PREFIX).append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_REQUEST_TYPE))
             .append(LINE_SEPARATOR);
         builder.append("+").append(LINE_SEPARATOR);
         Map.Entry<String, Integer> requestTypeStat = requestTypeTracker.getStat();

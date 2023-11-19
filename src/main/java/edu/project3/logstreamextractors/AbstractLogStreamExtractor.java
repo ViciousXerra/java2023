@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import static edu.project3.logstreamextractors.LogRecord.RequestType.resolveRequestType;
 import static edu.project3.logstreamextractors.LogUtils.NGINX_HTTP_REFERER_MATCHER_GROUP;
 import static edu.project3.logstreamextractors.LogUtils.NGINX_LOCAL_TIME_MATCHER_GROUP;
 import static edu.project3.logstreamextractors.LogUtils.NGINX_REMOTE_ADDRESS_MATCHER_GROUP;
@@ -17,7 +18,6 @@ import static edu.project3.logstreamextractors.LogUtils.NGINX_STATUS_MATCHER_GRO
 import static edu.project3.logstreamextractors.LogUtils.NGINX_TRANSFERRED_BYTES_MATCHER_GROUP;
 import static edu.project3.logstreamextractors.LogUtils.NGINX_USER_AGENT_MATCHER_GROUP;
 import static edu.project3.logstreamextractors.LogUtils.OFFSET_DATE_TIME_FORMATTER;
-import static edu.project3.logstreamextractors.LogRecord.RequestType.resolveRequestType;
 
 public abstract class AbstractLogStreamExtractor implements LogStreamExtractor {
 

@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class FrequentlyQueriedResourcesStatExtractor implements StatExtractor<List<Map.Entry<String, Integer>>> {
 
+    private final static int RES_MAX_SIZE = 5;
     private final Map<String, Integer> frequencyMap = new HashMap<>();
 
     @Override
@@ -15,7 +16,7 @@ public class FrequentlyQueriedResourcesStatExtractor implements StatExtractor<Li
             .entrySet()
             .stream()
             .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-            .limit(5)
+            .limit(RES_MAX_SIZE)
             .toList();
     }
 

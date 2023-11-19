@@ -1,7 +1,6 @@
 package edu.project3.statextractors;
 
 import edu.project3.logstreamextractors.LogRecord;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
