@@ -10,16 +10,16 @@
 
 
 |Date, from
-|-
+|2015-06-01T00:00Z
 
 |Date, to
-|-
+|2015-06-03T00:00Z
 
 |Total requests
-|51329
+|5694
 
 |Average transferred bytes
-|801477
+|748673
 |===
 
 === Additional Info
@@ -32,13 +32,13 @@
 |Queried, times
 
 |/downloads/product_1
-|30233
+|3845
 
 |/downloads/product_2
-|21024
+|1841
 
 |/downloads/product_3
-|72
+|8
 |===
 
 * Frequently repeated response codes: 
@@ -51,23 +51,19 @@
 
 |404
 |Not Found
-|33876
+|3905
 
 |304
 |Not Modified
-|13330
+|1404
 
 |200
 |Success/OK
-|3936
+|373
 
 |206
 |N/A
-|183
-
-|416
-|N/A
-|4
+|12
 |===
 
 * Frequently repeated remote addresses: 
@@ -77,16 +73,16 @@
 |Address
 |Repeated, times
 
+|74.125.60.158
+|350
+
 |216.46.173.126
-|2350
+|335
 
 |180.179.174.219
-|1720
-
-|204.77.168.241
-|1439
+|264
 |===
 
 * Most Frequently repeated request type: 
 +
-GET repeats 51329 times.
+GET repeats 5694 times.
