@@ -69,11 +69,11 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
 
     @Override
     public String[] getSourceName() {
-        return (String[]) files
+        return files
             .stream()
             .map(Path::getFileName)
             .map(Path::toString)
-            .toArray();
+            .toArray(String[]::new);
     }
 
     private void fillFilesList(String filePath) {
@@ -83,8 +83,7 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
             DirectoryStream.Filter<Path> pathFilter = path -> {
                 PathMatcher pathMatcher = FileSystems
                     .getDefault()
-                    .getPathMatcher("glob:" + inputMatcher.group(
-                        GLOBBING_PATTERN_MATCHER_GROUP));
+                    .getPathMatcher("glob:" + filePath);
                 return pathMatcher.matches(path) && Files.isRegularFile(path);
             };
             try (
