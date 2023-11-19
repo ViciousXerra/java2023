@@ -1,34 +1,33 @@
 ## General Info
 |Metrics|Values|
 |:---|:---|
-|Source|https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs|
-|Date, from|2015-06-01T00:00Z|
-|Date, to|-|
-|Total requests|9408|
-|Average transferred bytes|726249|
+|Source|logs2.txt|
+|Source|logs1.txt|
+|Date, from|-|
+|Date, to|2015-07-01T00:00Z|
+|Total requests|44|
+|Average transferred bytes|800|
 
 ### Additional Info
 * Frequently queried resources: 
     >|Resource|Queried, times|
     >|:---|:---|
-    >|/downloads/product_1|6080|
-    >|/downloads/product_2|3313|
-    >|/downloads/product_3|15|
+    >|/downloads/product_1|29|
+    >|/downloads/product_2|15|
 
 * Frequently repeated response codes: 
     >|Code|Description|Repeated, times|
     >|:---|:---|:---|
-    >|404|Not Found|6363|
-    >|304|Not Modified|2363|
-    >|200|Success/OK|639|
-    >|206|N/A|43|
+    >|304|Not Modified|30|
+    >|404|Not Found|8|
+    >|200|Success/OK|6|
 
 * Frequently repeated remote addresses: 
     >|Address|Repeated, times|
     >|:---|:---|
-    >|216.46.173.126|555|
-    >|180.179.174.219|444|
-    >|74.125.60.158|410|
+    >|80.91.33.133|9|
+    >|93.180.71.3|7|
+    >|217.168.17.5|6|
 
 * Most Frequently repeated request type: 
-    >GET repeats 9408 times.
+    >GET repeats 44 times.

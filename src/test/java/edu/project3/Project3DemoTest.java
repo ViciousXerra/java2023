@@ -26,7 +26,7 @@ class Project3DemoTest {
     }
 
     @Test
-    @DisplayName("Demo url run.")
+    @DisplayName("Demo url run with simple date range.")
     void testUrlWithSingleTimeRange() {
         //When
         String[] args = new String[] {
@@ -49,6 +49,23 @@ class Project3DemoTest {
         String[] args = new String[] {
             "--path",
             "src/test/resources/project3resources/testinputs/*.txt",
+        };
+        //Then
+        assertThatCode(() -> Driver.execute(args))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("Demo local file run with single date range.")
+    void testLocalWIthDateRange() {
+        //When
+        String[] args = new String[] {
+            "--path",
+            "src/test/resources/project3resources/testinputs/*.txt",
+            "--to",
+            "2015-07-01",
+            "--format",
+            "markdown"
         };
         //Then
         assertThatCode(() -> Driver.execute(args))

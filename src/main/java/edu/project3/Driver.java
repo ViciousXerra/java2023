@@ -23,13 +23,12 @@ public final class Driver {
     public static void execute(String[] args) {
         //if caller isn't a main method
         if (args == null || nullArgs(args)) {
-            LOGGER.error("Args array or args can't be null.");
-            return;
+            throw new IllegalArgumentException("Args array or args can't be null.");
         }
         if (args.length <= 1 || args.length % 2 != 0) {
-            LOGGER.error("Invalid args length.");
+            throw new IllegalArgumentException("Invalid args length.");
         } else if (!"--path".equals(args[0])) {
-            LOGGER.error("Args must be start with \"--path\" execution flag.");
+            throw new IllegalArgumentException("Args must be start with \"--path\" execution flag.");
         } else {
             tryLaunch(args);
         }
