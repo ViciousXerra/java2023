@@ -7,8 +7,11 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -27,26 +30,25 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
     private final static Pattern FILE_PATH_INPUT_PATTERN =
         Pattern.compile("(([\\w()]+/)+)([\\w/*?!.-]+)");
 
-    private Iterable<Path> files;
+    private final Set<Path> files = new HashSet<>();
 
     public LocalFileLogStreamExtractor(String filePath) {
         fillFilesList(filePath);
     }
 
-    public LocalFileLogStreamExtractor(String filePath, String trackingStartTime) {
-        super(trackingStartTime);
+    public LocalFileLogStreamExtractor(String filePath, LocalDate trackingTime, boolean trackAfter) {
+        super(trackingTime, trackAfter);
         fillFilesList(filePath);
     }
 
-    public LocalFileLogStreamExtractor(String filePath, String trackingStartTime, String trackingEndTime) {
+    public LocalFileLogStreamExtractor(String filePath, LocalDate trackingStartTime, LocalDate trackingEndTime) {
         super(trackingStartTime, trackingEndTime);
         fillFilesList(filePath);
     }
 
     @Override
     public Stream<LogRecord> extract() {
-        return StreamSupport
-            .stream(files.spliterator(), false)
+        return files.stream()
             .flatMap(path -> {
                 List<LogRecord> logRecords = new ArrayList<>();
                 try (BufferedReader reader = Files.newBufferedReader(path)) {
@@ -67,17 +69,17 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
 
     @Override
     public String[] getSourceName() {
-        return (String[]) StreamSupport
-            .stream(files.spliterator(), false)
+        return (String[]) files
+            .stream()
             .map(Path::getFileName)
-            .map(Object::toString)
+            .map(Path::toString)
             .toArray();
     }
 
     private void fillFilesList(String filePath) {
         Matcher inputMatcher = FILE_PATH_INPUT_PATTERN.matcher(filePath);
         if (inputMatcher.find()) {
-            Path parent = Path.of("/" + inputMatcher.group(KNOWN_PATH_MATCHER_GROUP));
+            Path parent = Path.of(inputMatcher.group(KNOWN_PATH_MATCHER_GROUP));
             DirectoryStream.Filter<Path> pathFilter = path -> {
                 PathMatcher pathMatcher = FileSystems
                     .getDefault()
@@ -88,7 +90,7 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
             try (
                 DirectoryStream<Path> paths = Files.newDirectoryStream(parent, pathFilter)
             ) {
-                files = paths;
+                paths.iterator().forEachRemaining(files::add);
             } catch (IOException e) {
                 LOGGER.error(String.format(CAUGHT_EXCEPTION_MESSAGE_TEMPLATE, e.getMessage()));
             }

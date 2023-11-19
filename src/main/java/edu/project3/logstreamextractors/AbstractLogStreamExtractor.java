@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import static edu.project3.logstreamextractors.LogRecord.RequestType.resolveRequestType;
@@ -27,23 +26,27 @@ public abstract class AbstractLogStreamExtractor implements LogStreamExtractor {
         timeLimitPredicate = logRecord -> true;
     }
 
-    protected AbstractLogStreamExtractor(String trackingStartTime) {
-        OffsetDateTime startFrom = OffsetDateTime.of(
-            LocalDate.parse(trackingStartTime, DateTimeFormatter.ISO_LOCAL_DATE),
+    protected AbstractLogStreamExtractor(LocalDate trackingTime, boolean trackAfter) {
+        OffsetDateTime trackFrom = OffsetDateTime.of(
+            trackingTime,
             LocalTime.MIDNIGHT,
             ZoneOffset.UTC
         );
-        timeLimitPredicate = logRecord -> startFrom.isBefore(logRecord.localLogTime());
+        if (trackAfter) {
+            timeLimitPredicate = logRecord -> trackFrom.isBefore(logRecord.localLogTime());
+        } else {
+            timeLimitPredicate = logRecord -> trackFrom.isAfter(logRecord.localLogTime());
+        }
     }
 
-    protected AbstractLogStreamExtractor(String trackingStartTime, String trackingEndTime) {
+    protected AbstractLogStreamExtractor(LocalDate trackingStartTime, LocalDate trackingEndTime) {
         OffsetDateTime startFrom = OffsetDateTime.of(
-            LocalDate.parse(trackingStartTime, DateTimeFormatter.ISO_LOCAL_DATE),
+            trackingStartTime,
             LocalTime.MIDNIGHT,
             ZoneOffset.UTC
         );
         OffsetDateTime endTo = OffsetDateTime.of(
-            LocalDate.parse(trackingEndTime, DateTimeFormatter.ISO_LOCAL_DATE),
+            trackingEndTime,
             LocalTime.MIDNIGHT,
             ZoneOffset.UTC
         );

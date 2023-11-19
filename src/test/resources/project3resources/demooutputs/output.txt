@@ -1,0 +1,30 @@
+General Info:
+Sources: 
+https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs
+Date, from: -
+Date, to: -
+Total requests: 51329
+Average transferred bytes: 801477
+
+
+Additional Info:
+Frequently queried resources: 
+/downloads/product_1 queried 30233 times.
+/downloads/product_2 queried 21024 times.
+/downloads/product_3 queried 72 times.
+
+Frequently repeated remote addresses: 
+216.46.173.126 repeats 2350 times.
+180.179.174.219 repeats 1720 times.
+204.77.168.241 repeats 1439 times.
+
+Frequently repeated response codes: 
+404 Not Found repeats 33876 times.
+304 Not Modified repeats 13330 times.
+200 Success/OK repeats 3936 times.
+206 N/A repeats 183 times.
+416 N/A repeats 4 times.
+
+Most Frequently repeated request type: 
+GET repeats 51329 times.
+

@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,13 +27,13 @@ public class URLLogStreamExtractor extends AbstractLogStreamExtractor {
         request = getRequestInstance(resource);
     }
 
-    public URLLogStreamExtractor(String resource, String trackingStartTime) {
-        super(trackingStartTime);
+    public URLLogStreamExtractor(String resource, LocalDate trackingTime, boolean trackAfter) {
+        super(trackingTime, trackAfter);
         this.resource = resource;
         request = getRequestInstance(resource);
     }
 
-    public URLLogStreamExtractor(String resource, String trackingStartTime, String trackingEndTime) {
+    public URLLogStreamExtractor(String resource, LocalDate trackingStartTime, LocalDate trackingEndTime) {
         super(trackingStartTime, trackingEndTime);
         this.resource = resource;
         request = getRequestInstance(resource);

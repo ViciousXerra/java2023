@@ -1,4 +1,4 @@
-package edu.project3;
+package edu.project3.reportcomposers;
 
 import edu.project3.logstreamextractors.LogRecord;
 import edu.project3.statextractors.AverageTransferredBytesStatExtractor;
@@ -54,7 +54,7 @@ public class LogStatReportComposer implements StatReportComposer {
 
     //Templates for StringBuilder
     private final static String MARKDOWN_TABULATION = "    ";
-    private final static String LEFT_MARGIN = ":-";
+    private final static String LEFT_MARGIN = ":---";
     private final static String INNER_LIST_ELEMENT = ">";
     private final static String ADOC_TABLE_SIGN = "|===";
     private final static String TABLE_ROW_SEPARATOR = "|";
@@ -63,8 +63,8 @@ public class LogStatReportComposer implements StatReportComposer {
     private final static int THREE_COLUMNS = 3;
     private final static int TWO_COLUMNS = 2;
 
-    private final OffsetDateTime from;
-    private final OffsetDateTime to;
+    private final String from;
+    private final String to;
     private final Stream<LogRecord> logStream;
     private final Stream<String> sourceNames;
     private final ReportType format;
@@ -100,16 +100,16 @@ public class LogStatReportComposer implements StatReportComposer {
         ReportType format,
         String directoryToSave
     ) {
-        this.from = OffsetDateTime.of(
+        this.from = trackingStartTime == null ? "-" : OffsetDateTime.of(
             LocalDate.parse(trackingStartTime, DateTimeFormatter.ISO_LOCAL_DATE),
             LocalTime.MIDNIGHT,
             ZoneOffset.UTC
-        );
-        this.to = OffsetDateTime.of(
+        ).toString();
+        this.to = trackingEndTime == null ? "-" : OffsetDateTime.of(
             LocalDate.parse(trackingEndTime, DateTimeFormatter.ISO_LOCAL_DATE),
             LocalTime.MIDNIGHT,
             ZoneOffset.UTC
-        );
+        ).toString();
         this.logStream = logStream;
         this.sourceNames = sourceNames;
         this.format = format;
@@ -127,12 +127,13 @@ public class LogStatReportComposer implements StatReportComposer {
         )) {
             String formattedOutput = getFormattedString();
             writer.write(formattedOutput);
+            LOGGER.info("See " + Path.of(directoryToSave, getFileName()) + " for results.");
         } catch (IOException e) {
             LOGGER.error(String.format("Unable to save output. Caught exception: {%s}", e.getMessage()));
         }
     }
 
-    public void collectStat() {
+    private void collectStat() {
         logStream.forEach(logRecord ->
             statCollectors.forEach(logRecordConsumer -> logRecordConsumer.accept(logRecord)));
     }
@@ -173,8 +174,8 @@ public class LogStatReportComposer implements StatReportComposer {
         sourceNames.forEach(sourceName -> builder
             .append(sourceName)
             .append(LINE_SEPARATOR));
-        builder.append(DATE_FROM).append(": ").append(from.toString()).append(LINE_SEPARATOR);
-        builder.append(DATE_TO).append(": ").append(to.toString()).append(LINE_SEPARATOR);
+        builder.append(DATE_FROM).append(": ").append(from).append(LINE_SEPARATOR);
+        builder.append(DATE_TO).append(": ").append(to).append(LINE_SEPARATOR);
         builder.append(TOTAL_REQUESTS).append(": ").append(totalRequestCounter.getStat()).append(LINE_SEPARATOR);
         builder.append(AVERAGE_TRANSFERRED_BYTES).append(": ").append(avgTransferredBytes.getStat())
             .append(LINE_SEPARATOR);
@@ -229,8 +230,8 @@ public class LogStatReportComposer implements StatReportComposer {
         builder.append("## General Info").append(LINE_SEPARATOR);
         generateMarkDownTableHeader(builder, false, METRICS, VALUES);
         sourceNames.forEach(name -> generateMarkDownTableRow(builder, false, "Source", name));
-        generateMarkDownTableRow(builder, false, DATE_FROM, from.toString());
-        generateMarkDownTableRow(builder, false, DATE_TO, to.toString());
+        generateMarkDownTableRow(builder, false, DATE_FROM, from);
+        generateMarkDownTableRow(builder, false, DATE_TO, to);
         generateMarkDownTableRow(builder, false,
             TOTAL_REQUESTS, String.valueOf(totalRequestCounter.getStat())
 
@@ -275,6 +276,7 @@ public class LogStatReportComposer implements StatReportComposer {
             .append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_REQUEST_TYPE))
             .append(LINE_SEPARATOR);
         Map.Entry<String, Integer> requestTypeStat = requestTypeTracker.getStat();
+        builder.append(MARKDOWN_TABULATION).append(INNER_LIST_ELEMENT);
         builder.append(requestTypeStat.getKey())
             .append(String.format(REPEATING_STRING_TEMPLATE, requestTypeStat.getValue())).append(LINE_SEPARATOR);
     }
@@ -322,8 +324,8 @@ public class LogStatReportComposer implements StatReportComposer {
         StringBuilder names = new StringBuilder();
         sourceNames.forEach(name -> names.append(name).append(" +").append(LINE_SEPARATOR));
         generateAdocTableRow(builder, false, "Sources", names.toString());
-        generateAdocTableRow(builder, false, DATE_FROM, from.toString());
-        generateAdocTableRow(builder, false, DATE_TO, to.toString());
+        generateAdocTableRow(builder, false, DATE_FROM, from);
+        generateAdocTableRow(builder, false, DATE_TO, to);
         generateAdocTableRow(
             builder, false,
             TOTAL_REQUESTS, String.valueOf(totalRequestCounter.getStat())

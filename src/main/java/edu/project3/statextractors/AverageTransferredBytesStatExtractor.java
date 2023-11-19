@@ -9,6 +9,9 @@ public class AverageTransferredBytesStatExtractor implements StatExtractor<Long>
 
     @Override
     public Long getStat() {
+        if (totalCount == 0) {
+            return 0L;
+        }
         return totalBytes / totalCount;
     }
 
