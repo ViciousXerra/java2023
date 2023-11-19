@@ -31,7 +31,14 @@ public class LogStatReportComposer implements StatReportComposer {
     private final static Logger LOGGER = LogManager.getLogger();
     private final static String LINE_SEPARATOR = System.lineSeparator();
     private final static String FREQUENCY_STAT_TEMPLATE = "Frequently %s: ";
+    private final static String QUERIED_RESOURCES = "queried resources";
+    private final static String REPEATED_RESPONSE_CODES = "repeated response codes";
+    private final static String REPEATED_REMOTE_ADDRESSES = "repeated remote addresses";
+    private final static String REPEATED_REQUEST_TYPE = "repeated request type";
+    private final static String TIMES = "Repeated, times";
     private final static String REPEATING_STRING_TEMPLATE = " repeats %d times.";
+    private final static String ADOC_TABLE_SIGN = "|===";
+    private final static String TABLE_ROW_SEPARATOR = "|";
 
     private final OffsetDateTime from;
     private final OffsetDateTime to;
@@ -116,18 +123,25 @@ public class LogStatReportComposer implements StatReportComposer {
         };
     }
 
-    private String getFormattedString() {
+    public String getFormattedString() {
         StringBuilder builder = new StringBuilder();
         switch (format) {
-            case DEFAULT -> getTxtString(builder);
-            case MARKDOWN -> getMarkdownString(builder);
-            case ADOC -> getAdocString(builder);
-        };
+            case DEFAULT -> buildTxtString(builder);
+            case MARKDOWN -> buildMarkDownString(builder);
+            case ADOC -> buildAdocString(builder);
+        }
+        return builder.toString();
     }
 
-    public String getTxtString(StringBuilder builder) {
+    private void buildTxtString(StringBuilder builder) {
+        generateTxtGeneralInfo(builder);
+        builder.append(LINE_SEPARATOR);
+        generateTxtAdditionalInfo(builder);
+    }
+
+    private void generateTxtGeneralInfo(StringBuilder builder) {
         builder
-            .append("REPORT")
+            .append("General Info:")
             .append(LINE_SEPARATOR)
             .append("Sources: ")
             .append(LINE_SEPARATOR);
@@ -141,7 +155,11 @@ public class LogStatReportComposer implements StatReportComposer {
         builder.append("Total requests number: ").append(totalRequestCounter.getStat()).append(LINE_SEPARATOR);
         builder.append("Average transferred bytes: ").append(avgTransferredBytes.getStat()).append(LINE_SEPARATOR);
         builder.append(LINE_SEPARATOR);
-        builder.append(String.format(FREQUENCY_STAT_TEMPLATE, "queried resources")).append(LINE_SEPARATOR);
+    }
+
+    private void generateTxtAdditionalInfo(StringBuilder builder) {
+        builder.append("Additional Info:").append(LINE_SEPARATOR);
+        builder.append(String.format(FREQUENCY_STAT_TEMPLATE, QUERIED_RESOURCES)).append(LINE_SEPARATOR);
         List<Map.Entry<String, Integer>> resourcesStat = resourceTracker.getStat();
         resourcesStat.forEach(entry -> {
             builder
@@ -150,7 +168,7 @@ public class LogStatReportComposer implements StatReportComposer {
                 .append(LINE_SEPARATOR);
         });
         builder.append(LINE_SEPARATOR);
-        builder.append(String.format(FREQUENCY_STAT_TEMPLATE, "repeated remote addresses")).append(LINE_SEPARATOR);
+        builder.append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_REMOTE_ADDRESSES)).append(LINE_SEPARATOR);
         List<Map.Entry<String, Integer>> remoteAddressStat = remoteAddressTracker.getStat();
         remoteAddressStat.forEach(entry ->
             builder
@@ -158,7 +176,7 @@ public class LogStatReportComposer implements StatReportComposer {
                 .append(String.format(REPEATING_STRING_TEMPLATE, entry.getValue()))
                 .append(LINE_SEPARATOR));
         builder.append(LINE_SEPARATOR);
-        builder.append(String.format(FREQUENCY_STAT_TEMPLATE, "repeated response codes")).append(LINE_SEPARATOR);
+        builder.append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_RESPONSE_CODES)).append(LINE_SEPARATOR);
         List<Map.Entry<Map.Entry<String, Integer>, String>> responseCodes = responseCodesTracker.getStat();
         responseCodes.forEach(entry -> {
             builder
@@ -168,7 +186,7 @@ public class LogStatReportComposer implements StatReportComposer {
         });
         builder.append(LINE_SEPARATOR);
         builder
-            .append(String.format("Most " + FREQUENCY_STAT_TEMPLATE, "repeated request type"))
+            .append(String.format("Most " + FREQUENCY_STAT_TEMPLATE, REPEATED_REQUEST_TYPE))
             .append(LINE_SEPARATOR);
         Map.Entry<String, Integer> requestTypeStat = requestTypeTracker.getStat();
         builder
@@ -176,44 +194,107 @@ public class LogStatReportComposer implements StatReportComposer {
             .append(String.format(REPEATING_STRING_TEMPLATE, requestTypeStat.getValue()))
             .append(LINE_SEPARATOR);
         builder.append(LINE_SEPARATOR);
-        return builder.toString();
     }
 
-    private String getMarkdownString() {
+    private void buildMarkDownString(StringBuilder builder) {
+        generateMarkDownGeneralInfo(builder);
+        builder.append(LINE_SEPARATOR);
+        generateMarkDownAdditionalInfo(builder);
+    }
+
+    private void generateMarkDownGeneralInfo(StringBuilder builder) {
 
     }
 
-    private String getAdocString() {
-        StringBuilder builder = new StringBuilder();
+    private void generateMarkDownAdditionalInfo(StringBuilder builder) {
+
+    }
+
+    private void buildAdocString(StringBuilder builder) {
+        generateAdocGeneralInfo(builder);
+        builder.append(LINE_SEPARATOR);
+        generateAdocAdditionalInfo(builder);
+    }
+
+    private void generateAdocGeneralInfo(StringBuilder builder) {
         builder.append("== General Info").append(LINE_SEPARATOR);
         builder.append(LINE_SEPARATOR);
-        builder.append("[%header,cols=2*]").append(LINE_SEPARATOR);
-        builder.append("|===").append(LINE_SEPARATOR);
-        builder.append("|Metrics").append(LINE_SEPARATOR);
-        builder.append("|Values").append(LINE_SEPARATOR);
-        builder.append(LINE_SEPARATOR);
-        builder.append("|Sources").append(LINE_SEPARATOR);
-        builder.append("|");
-        sourceNames.forEach(sourceName -> {
-            builder
-                .append(sourceName)
-                .append(" +")
-                .append(LINE_SEPARATOR);
-        });
-        builder.append(LINE_SEPARATOR);
-        builder.append("|Date, from").append(LINE_SEPARATOR);
-        builder.append("|").append(from.toString()).append(LINE_SEPARATOR);
-        builder.append(LINE_SEPARATOR);
-        builder.append("|Date, to").append(LINE_SEPARATOR);
-        builder.append("|").append(to.toString()).append(LINE_SEPARATOR);
-        builder.append(LINE_SEPARATOR);
-        builder.append("|Total requests").append(LINE_SEPARATOR);
-        builder.append("|").append(totalRequestCounter.getStat()).append(LINE_SEPARATOR);
-        builder.append(LINE_SEPARATOR);
-        builder.append("|Average transferred bytes").append(LINE_SEPARATOR);
-        builder.append("|").append(avgTransferredBytes.getStat()).append(LINE_SEPARATOR);
-        builder.append("|===");
+        generateAdocTableHeader(builder, 2, "Metrics", "Values");
+        StringBuilder names = new StringBuilder();
+        sourceNames.forEach(name -> names.append(name).append(" +").append(LINE_SEPARATOR));
+        generateAdocTableRow(builder, false, "Sources", names.toString());
+        generateAdocTableRow(builder, false, "Date, from", from.toString());
+        generateAdocTableRow(builder, false, "Date, to", to.toString());
+        generateAdocTableRow(
+            builder, false,
+            "Total requests", String.valueOf(totalRequestCounter.getStat())
+        );
+        generateAdocTableRow(
+            builder, true,
+            "Average transferred bytes", String.valueOf(avgTransferredBytes.getStat())
+        );
+    }
 
+    private void generateAdocTableHeader(StringBuilder builder, int columns, String... headers) {
+        builder.append("[%header,cols=").append(columns).append("*]").append(LINE_SEPARATOR);
+        builder.append(ADOC_TABLE_SIGN).append(LINE_SEPARATOR);
+        for (String header : headers) {
+            builder.append(TABLE_ROW_SEPARATOR).append(header).append(LINE_SEPARATOR);
+        }
+    }
+
+    private void generateAdocTableRow(StringBuilder builder, boolean isEndingRow, String... values) {
+        builder.append(LINE_SEPARATOR);
+        for (String value : values) {
+            builder.append(TABLE_ROW_SEPARATOR).append(value).append(LINE_SEPARATOR);
+        }
+        if (isEndingRow) {
+            builder.append(ADOC_TABLE_SIGN).append(LINE_SEPARATOR);
+        }
+    }
+
+    private void generateAdocAdditionalInfo(StringBuilder builder) {
+        builder.append("=== Additional Info").append(LINE_SEPARATOR);
+        builder.append(LINE_SEPARATOR);
+        builder.append("* ").append(String.format(FREQUENCY_STAT_TEMPLATE, QUERIED_RESOURCES)).append(LINE_SEPARATOR);
+        builder.append("+").append(LINE_SEPARATOR);
+        generateAdocTableHeader(builder, 2, "Resource", "Queried, times");
+        List<Map.Entry<String, Integer>> resourcesStat = resourceTracker.getStat();
+        for (int i = 0; i < resourcesStat.size(); i++) {
+            String res = resourcesStat.get(i).getKey();
+            String times = String.valueOf(resourcesStat.get(i).getValue());
+            generateAdocTableRow(builder, (i == resourcesStat.size() - 1), res, times);
+        }
+        builder.append(LINE_SEPARATOR);
+        builder.append("* ").append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_RESPONSE_CODES))
+            .append(LINE_SEPARATOR);
+        builder.append("+").append(LINE_SEPARATOR);
+        generateAdocTableHeader(builder, 3, "Code", "Description", TIMES);
+        List<Map.Entry<Map.Entry<String, Integer>, String>> responseCodes = responseCodesTracker.getStat();
+        for (int i = 0; i < responseCodes.size(); i++) {
+            String code = responseCodes.get(i).getKey().getKey();
+            String desc = responseCodes.get(i).getValue();
+            String times = String.valueOf(responseCodes.get(i).getKey().getValue());
+            generateAdocTableRow(builder, (i == responseCodes.size() - 1), code, desc, times);
+        }
+        builder.append(LINE_SEPARATOR);
+        builder.append("* ").append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_REMOTE_ADDRESSES))
+            .append(LINE_SEPARATOR);
+        builder.append("+").append(LINE_SEPARATOR);
+        generateAdocTableHeader(builder, 2, "Address", TIMES);
+        List<Map.Entry<String, Integer>> remoteAddressStat = remoteAddressTracker.getStat();
+        for (int i = 0; i < remoteAddressStat.size(); i++) {
+            String address = remoteAddressStat.get(i).getKey();
+            String times = String.valueOf(remoteAddressStat.get(i).getValue());
+            generateAdocTableRow(builder, (i == remoteAddressStat.size() - 1), address, times);
+        }
+        builder.append(LINE_SEPARATOR);
+        builder.append("* ").append("Most ").append(String.format(FREQUENCY_STAT_TEMPLATE, REPEATED_REQUEST_TYPE))
+            .append(LINE_SEPARATOR);
+        builder.append("+").append(LINE_SEPARATOR);
+        Map.Entry<String, Integer> requestTypeStat = requestTypeTracker.getStat();
+        builder.append(requestTypeStat.getKey())
+            .append(String.format(REPEATING_STRING_TEMPLATE, requestTypeStat.getValue())).append(LINE_SEPARATOR);
     }
 
     public enum ReportType {
