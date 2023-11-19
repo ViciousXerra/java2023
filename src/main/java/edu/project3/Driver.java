@@ -109,8 +109,8 @@ public final class Driver {
     }
 
     private static LogStreamExtractor getExtractor(String source, boolean isLocal, LocalDate start, LocalDate end) {
-        return isLocal ? new LocalFileLogStreamExtractor(source, start, end) :
-            new URLLogStreamExtractor(source, start, end);
+        return isLocal ? new LocalFileLogStreamExtractor(source, start, end)
+            : new URLLogStreamExtractor(source, start, end);
     }
 
     private static LogStreamExtractor getExtractor(
@@ -119,8 +119,8 @@ public final class Driver {
         LocalDate trackFrom,
         boolean isTrackAfter
     ) {
-        return isLocal ? new LocalFileLogStreamExtractor(source, trackFrom, isTrackAfter) :
-            new URLLogStreamExtractor(source, trackFrom, isTrackAfter);
+        return isLocal ? new LocalFileLogStreamExtractor(source, trackFrom, isTrackAfter)
+            : new URLLogStreamExtractor(source, trackFrom, isTrackAfter);
     }
 
     private static LocalDate parseIsoDate(String date) {
