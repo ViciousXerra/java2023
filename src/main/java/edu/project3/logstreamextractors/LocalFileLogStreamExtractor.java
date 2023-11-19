@@ -92,7 +92,8 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
             } catch (IOException e) {
                 LOGGER.error(String.format(CAUGHT_EXCEPTION_MESSAGE_TEMPLATE, e.getMessage()));
             }
-        } else {
+        }
+        if (files.size() == 0){
             throw new IllegalArgumentException("Unable to resolve path. Please, specify your path arguments.");
         }
     }

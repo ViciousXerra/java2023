@@ -26,6 +26,23 @@ class Project3DemoTest {
     }
 
     @Test
+    @DisplayName("Demo url run.")
+    void testUrlWithSingleTimeRange() {
+        //When
+        String[] args = new String[] {
+            "--path",
+            "https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs",
+            "--from",
+            "2015-06-01",
+            "--format",
+            "markdown"
+        };
+        //Then
+        assertThatCode(() -> Driver.execute(args))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
     @DisplayName("Demo local file run.")
     void testLocal() {
         //When
