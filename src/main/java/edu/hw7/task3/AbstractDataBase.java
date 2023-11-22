@@ -77,13 +77,9 @@ abstract class AbstractDataBase implements PersonDataBase {
     }
 
     protected static void validate(String key) {
-        if (isInvalidKey(key)) {
+        if (key == null) {
             throw new IllegalArgumentException(NULL_KEY_MESSAGE);
         }
-    }
-
-    protected static boolean isInvalidKey(String key) {
-        return key == null;
     }
 
     protected static boolean isValid(Person p) {
