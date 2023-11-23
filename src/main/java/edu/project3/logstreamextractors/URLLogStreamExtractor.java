@@ -1,7 +1,6 @@
 package edu.project3.logstreamextractors;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -20,23 +19,19 @@ public class URLLogStreamExtractor extends AbstractLogStreamExtractor {
     private final static String CAUGHT_EXCEPTION_MESSAGE_TEMPLATE = "Caught exception: {%s}";
 
     private final HttpRequest request;
-    private final String resource;
 
-    public URLLogStreamExtractor(String resource) {
-        this.resource = resource;
-        request = getRequestInstance(resource);
+    public URLLogStreamExtractor(HttpRequest request) {
+        this.request = request;
     }
 
-    public URLLogStreamExtractor(String resource, LocalDate trackingTime, boolean trackAfter) {
+    public URLLogStreamExtractor(HttpRequest request, LocalDate trackingTime, boolean trackAfter) {
         super(trackingTime, trackAfter);
-        this.resource = resource;
-        request = getRequestInstance(resource);
+        this.request = request;
     }
 
-    public URLLogStreamExtractor(String resource, LocalDate trackingStartTime, LocalDate trackingEndTime) {
+    public URLLogStreamExtractor(HttpRequest request, LocalDate trackingStartTime, LocalDate trackingEndTime) {
         super(trackingStartTime, trackingEndTime);
-        this.resource = resource;
-        request = getRequestInstance(resource);
+        this.request = request;
     }
 
     @Override
@@ -63,16 +58,7 @@ public class URLLogStreamExtractor extends AbstractLogStreamExtractor {
 
     @Override
     public String[] getSourceName() {
-        return new String[] {resource};
-    }
-
-    private static HttpRequest getRequestInstance(String uriString) {
-        return HttpRequest
-            .newBuilder()
-            .uri(URI.create(uriString))
-            .version(HttpClient.Version.HTTP_2)
-            .GET()
-            .build();
+        return new String[] {request.uri().toString()};
     }
 
     private static HttpClient getHttpClientInstance() {

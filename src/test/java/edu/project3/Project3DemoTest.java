@@ -57,7 +57,7 @@ class Project3DemoTest {
 
     @Test
     @DisplayName("Demo local file run with single date range.")
-    void testLocalWIthDateRange() {
+    void testLocalWithDateRange() {
         //When
         String[] args = new String[] {
             "--path",

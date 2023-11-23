@@ -1,6 +1,8 @@
 package edu.project3.logstreamextractors;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public record LogRecord(
     String remoteAddress, String remoteUser,
@@ -32,14 +34,20 @@ public record LogRecord(
         DELETE,
         UNKNOWN;
 
-        public static RequestType resolveRequestType(String request) {
-            return request.equals(GET.name()) ? GET
-                : request.equals(POST.name()) ? POST
-                : request.equals(PUT.name()) ? PUT
-                : request.equals(PATCH.name()) ? PATCH
-                : request.equals(DELETE.name()) ? DELETE
-                : UNKNOWN;
+        private final static Map<String, RequestType> TYPE_MAPPING = new HashMap<>() {
+            {
+                put("GET", RequestType.GET);
+                put("POST", RequestType.POST);
+                put("PUT", RequestType.PUT);
+                put("PATCH", RequestType.PATCH);
+                put("DELETE", RequestType.DELETE);
+            }
+        };
 
+        public static RequestType resolveRequestType(String request) {
+            return TYPE_MAPPING.getOrDefault(request, RequestType.UNKNOWN);
         }
+
     }
+
 }

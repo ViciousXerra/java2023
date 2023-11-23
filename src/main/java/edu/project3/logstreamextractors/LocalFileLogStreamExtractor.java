@@ -25,7 +25,6 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
     private final static String CAUGHT_EXCEPTION_MESSAGE_TEMPLATE = "Caught exception: {%s}";
 
     private final static int KNOWN_PATH_MATCHER_GROUP = 1;
-    private final static int GLOBBING_PATTERN_MATCHER_GROUP = 3;
     private final static Pattern FILE_PATH_INPUT_PATTERN =
         Pattern.compile("(([\\w()]+/)+)([\\w/*?!.-]+)");
 
@@ -51,9 +50,10 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
             .flatMap(path -> {
                 List<LogRecord> logRecords = new ArrayList<>();
                 try (BufferedReader reader = Files.newBufferedReader(path)) {
+                    String line;
                     Matcher matcher;
-                    while (reader.ready()) {
-                        matcher = NGINX_LOG_PATTERN.matcher(reader.readLine());
+                    while ((line = reader.readLine()) != null) {
+                        matcher = NGINX_LOG_PATTERN.matcher(line);
                         if (matcher.find()) {
                             logRecords.add(parseLog(matcher));
                         }
@@ -61,9 +61,10 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
                 } catch (IOException e) {
                     LOGGER.error(String.format(CAUGHT_EXCEPTION_MESSAGE_TEMPLATE, e.getMessage()));
                 }
-                return logRecords.stream();
-            })
-            .filter(timeLimitPredicate);
+                return logRecords
+                    .stream()
+                    .filter(timeLimitPredicate);
+            });
     }
 
     @Override
