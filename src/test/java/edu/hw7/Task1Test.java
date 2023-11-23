@@ -33,14 +33,13 @@ class Task1Test {
         //When
         Task1.MultiThreadCounter counter = new Task1.MultiThreadCounter(initialValue);
         CountDownLatch latch = new CountDownLatch(countDown);
-        ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        for (int i = 0; i < countDown; i++) {
-            service.execute(() -> {
-                counter.increment();
-                latch.countDown();
-            });
-        }
-        try {
+        try (ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
+            for (int i = 0; i < countDown; i++) {
+                service.execute(() -> {
+                    counter.increment();
+                    latch.countDown();
+                });
+            }
             latch.await();
         } catch (InterruptedException e) {
             LOGGER.error("Thread has been interrupted.");

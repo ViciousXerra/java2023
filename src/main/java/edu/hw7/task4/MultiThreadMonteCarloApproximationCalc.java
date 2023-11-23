@@ -2,6 +2,7 @@ package edu.hw7.task4;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,17 +29,17 @@ public final class MultiThreadMonteCarloApproximationCalc extends AbstractMonteC
         int numOfThreads = Runtime.getRuntime().availableProcessors();
         int iterationsPerThread = iterations / numOfThreads;
         int threadsWithAdditionalIteration = iterations % numOfThreads;
-        ExecutorService service = Executors.newFixedThreadPool(numOfThreads);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < numOfThreads; i++) {
-            if (i < threadsWithAdditionalIteration) {
-                service.execute(getIterationTask(iterationsPerThread + 1));
-            } else {
-                service.execute(getIterationTask(iterationsPerThread));
+        try (ExecutorService service = Executors.newFixedThreadPool(numOfThreads)) {
+            for (int i = 0; i < numOfThreads; i++) {
+                if (i < threadsWithAdditionalIteration) {
+                    service.execute(getIterationTask(iterationsPerThread + 1));
+                } else {
+                    service.execute(getIterationTask(iterationsPerThread));
+                }
             }
-        }
-        service.shutdown();
-        while (!service.isTerminated()) {
+        } catch (RejectedExecutionException ignored) {
+
         }
         double res = FORMULA_MULTIPLIER * (double) circleCount / totalCount;
         long end = System.currentTimeMillis();

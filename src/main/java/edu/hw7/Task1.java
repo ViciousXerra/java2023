@@ -2,6 +2,7 @@ package edu.hw7;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class Task1 {
@@ -15,13 +16,13 @@ public final class Task1 {
             throw new IllegalArgumentException("Number of threads can't be less than 1.");
         }
         MultiThreadCounter counter = new MultiThreadCounter(initialValue);
-        ExecutorService executor = Executors.newFixedThreadPool(numOfThreads);
         Runnable task = counter::increment;
-        for (int j = 0; j < numOfThreads; j++) {
-            executor.execute(task);
-        }
-        executor.shutdown();
-        while (!executor.isTerminated()) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(numOfThreads)) {
+            for (int j = 0; j < numOfThreads; j++) {
+                executor.execute(task);
+            }
+        } catch (RejectedExecutionException ignored) {
+
         }
         return counter.getResult();
     }
