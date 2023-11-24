@@ -7,18 +7,12 @@ public final class SingleThreadMonteCarloApproximationCalc extends AbstractMonte
 
     private final static Logger LOGGER = LogManager.getLogger();
     private final static String EXECUTION_TIME_MESSAGE_TEMPLATE = "Single thread: %d ms";
-    private final static String ERROR_MESSAGE_TEMPLATE = "Error: %f";
 
     private int totalCount;
     private int circleCount;
-    private int iterations;
 
     public SingleThreadMonteCarloApproximationCalc(int iterations) {
-        this.iterations = iterations;
-    }
-
-    public void setIterations(int iterations) {
-        this.iterations = iterations;
+        super(iterations);
     }
 
     @Override
