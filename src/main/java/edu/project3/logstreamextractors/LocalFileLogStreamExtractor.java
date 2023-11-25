@@ -31,17 +31,17 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
     private final Set<Path> files = new HashSet<>();
 
     public LocalFileLogStreamExtractor(String filePath) {
-        fillFilesList(filePath);
+        fillFilesSet(filePath);
     }
 
     public LocalFileLogStreamExtractor(String filePath, LocalDate trackingTime, boolean trackAfter) {
         super(trackingTime, trackAfter);
-        fillFilesList(filePath);
+        fillFilesSet(filePath);
     }
 
     public LocalFileLogStreamExtractor(String filePath, LocalDate trackingStartTime, LocalDate trackingEndTime) {
         super(trackingStartTime, trackingEndTime);
-        fillFilesList(filePath);
+        fillFilesSet(filePath);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
             .toArray(String[]::new);
     }
 
-    private void fillFilesList(String filePath) {
+    private void fillFilesSet(String filePath) {
         Matcher inputMatcher = FILE_PATH_INPUT_PATTERN.matcher(filePath);
         if (inputMatcher.find()) {
             Path parent = Path.of(inputMatcher.group(KNOWN_PATH_MATCHER_GROUP));
@@ -94,7 +94,7 @@ public class LocalFileLogStreamExtractor extends AbstractLogStreamExtractor {
                 LOGGER.error(String.format(CAUGHT_EXCEPTION_MESSAGE_TEMPLATE, e.getMessage()));
             }
         }
-        if (files.size() == 0) {
+        if (files.isEmpty()) {
             throw new IllegalArgumentException("Unable to resolve path. Please, specify your path arguments.");
         }
     }

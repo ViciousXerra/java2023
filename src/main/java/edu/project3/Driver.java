@@ -2,12 +2,10 @@ package edu.project3;
 
 import edu.project3.logstreamextractors.LocalFileLogStreamExtractor;
 import edu.project3.logstreamextractors.LogStreamExtractor;
-import edu.project3.logstreamextractors.URLLogStreamExtractor;
+import edu.project3.logstreamextractors.URILogStreamExtractor;
 import edu.project3.reportcomposers.LogStatReportComposer;
 import edu.project3.reportcomposers.StatReportComposer;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -108,12 +106,12 @@ public final class Driver {
 
     private static LogStreamExtractor getExtractor(String source, boolean isLocal) {
         return isLocal ? new LocalFileLogStreamExtractor(source)
-            : new URLLogStreamExtractor(getRequestInstance(source));
+            : new URILogStreamExtractor(URI.create(source));
     }
 
     private static LogStreamExtractor getExtractor(String source, boolean isLocal, LocalDate start, LocalDate end) {
         return isLocal ? new LocalFileLogStreamExtractor(source, start, end)
-            : new URLLogStreamExtractor(getRequestInstance(source), start, end);
+            : new URILogStreamExtractor(URI.create(source), start, end);
     }
 
     private static LogStreamExtractor getExtractor(
@@ -123,20 +121,11 @@ public final class Driver {
         boolean isTrackAfter
     ) {
         return isLocal ? new LocalFileLogStreamExtractor(source, trackFrom, isTrackAfter)
-            : new URLLogStreamExtractor(getRequestInstance(source), trackFrom, isTrackAfter);
+            : new URILogStreamExtractor(URI.create(source), trackFrom, isTrackAfter);
     }
 
     private static LocalDate parseIsoDate(String date) {
         return LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
-    }
-
-    private static HttpRequest getRequestInstance(String uriString) {
-        return HttpRequest
-            .newBuilder()
-            .uri(URI.create(uriString))
-            .version(HttpClient.Version.HTTP_2)
-            .GET()
-            .build();
     }
 
     private static boolean nullArgs(String[] args) {

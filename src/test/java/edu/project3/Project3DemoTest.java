@@ -48,7 +48,7 @@ class Project3DemoTest {
         //When
         String[] args = new String[] {
             "--path",
-            "src/test/resources/project3resources/testinputs/*.txt",
+            "src/test/resources/project3resources/demoinputs/*.txt",
         };
         //Then
         assertThatCode(() -> Driver.execute(args))
@@ -61,7 +61,7 @@ class Project3DemoTest {
         //When
         String[] args = new String[] {
             "--path",
-            "src/test/resources/project3resources/testinputs/*.txt",
+            "src/test/resources/project3resources/demoinputs/*.txt",
             "--to",
             "2015-07-01",
             "--format",

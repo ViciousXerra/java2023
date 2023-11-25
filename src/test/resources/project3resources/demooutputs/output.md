@@ -1,8 +1,8 @@
 ## General Info
 |Metrics|Values|
 |:---|:---|
-|Source|logs2.txt|
 |Source|logs1.txt|
+|Source|logs2.txt|
 |Date, from|-|
 |Date, to|2015-07-01T00:00Z|
 |Total requests|44|

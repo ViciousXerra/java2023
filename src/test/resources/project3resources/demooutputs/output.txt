@@ -1,7 +1,7 @@
 General Info:
 Sources: 
-logs2.txt
 logs1.txt
+logs2.txt
 Date, from: -
 Date, to: -
 Total requests: 44

@@ -1,6 +1,8 @@
 package edu.project3.logstreamextractors;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -13,25 +15,35 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import static edu.project3.logstreamextractors.LogUtils.NGINX_LOG_PATTERN;
 
-public class URLLogStreamExtractor extends AbstractLogStreamExtractor {
+public class URILogStreamExtractor extends AbstractLogStreamExtractor {
 
     private final static Logger LOGGER = LogManager.getLogger();
     private final static String CAUGHT_EXCEPTION_MESSAGE_TEMPLATE = "Caught exception: {%s}";
 
+    private final URI resource;
+    private final HttpClient client;
     private final HttpRequest request;
 
-    public URLLogStreamExtractor(HttpRequest request) {
-        this.request = request;
+    private String body;
+
+    public URILogStreamExtractor(URI resource) {
+        this.resource = resource;
+        client = getHttpClientInstance();
+        request = getRequestInstance(resource);
     }
 
-    public URLLogStreamExtractor(HttpRequest request, LocalDate trackingTime, boolean trackAfter) {
+    public URILogStreamExtractor(URI resource, LocalDate trackingTime, boolean trackAfter) {
         super(trackingTime, trackAfter);
-        this.request = request;
+        this.resource = resource;
+        client = getHttpClientInstance();
+        request = getRequestInstance(resource);
     }
 
-    public URLLogStreamExtractor(HttpRequest request, LocalDate trackingStartTime, LocalDate trackingEndTime) {
+    public URILogStreamExtractor(URI resource, LocalDate trackingStartTime, LocalDate trackingEndTime) {
         super(trackingStartTime, trackingEndTime);
-        this.request = request;
+        this.resource = resource;
+        client = getHttpClientInstance();
+        request = getRequestInstance(resource);
     }
 
     @Override
@@ -39,10 +51,10 @@ public class URLLogStreamExtractor extends AbstractLogStreamExtractor {
         HttpResponse<String> response;
         List<LogRecord> logRecords = new ArrayList<>();
         try (
-            HttpClient client = getHttpClientInstance()
+            client
         ) {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            String body = response.body();
+            body = response.body();
             Matcher matcher = NGINX_LOG_PATTERN.matcher(body);
             while (matcher.find()) {
                 logRecords.add(parseLog(matcher));
@@ -58,13 +70,22 @@ public class URLLogStreamExtractor extends AbstractLogStreamExtractor {
 
     @Override
     public String[] getSourceName() {
-        return new String[] {request.uri().toString()};
+        return new String[] {resource.toString()};
     }
 
-    private static HttpClient getHttpClientInstance() {
+    private HttpClient getHttpClientInstance() {
         return HttpClient
             .newBuilder()
             .version(HttpClient.Version.HTTP_2)
+            .build();
+    }
+
+    private HttpRequest getRequestInstance(URI resource) {
+        return HttpRequest
+            .newBuilder()
+            .uri(resource)
+            .version(HttpClient.Version.HTTP_2)
+            .GET()
             .build();
     }
 
