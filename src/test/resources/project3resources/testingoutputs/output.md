@@ -1,33 +1,30 @@
 ## General Info
 |Metrics|Values|
 |:---|:---|
-|Source|logs1.txt|
-|Source|logs2.txt|
-|Date, from|-|
-|Date, to|2015-07-01T00:00Z|
-|Total requests|44|
-|Average transferred bytes|800|
+|Source|logs.txt|
+|Date, from|2011-12-03T00:00Z|
+|Date, to|2011-12-03T00:00Z|
+|Total requests|3|
+|Average transferred bytes|490|
 
 ### Additional Info
 * Frequently queried resources: 
     >|Resource|Queried, times|
     >|:---|:---|
-    >|/downloads/product_1|29|
-    >|/downloads/product_2|15|
+    >|/downloads/product_1|2|
+    >|/downloads/product_2|1|
 
 * Frequently repeated response codes: 
     >|Code|Description|Repeated, times|
     >|:---|:---|:---|
-    >|304|Not Modified|30|
-    >|404|Not Found|8|
-    >|200|Success/OK|6|
+    >|200|Success/OK|2|
+    >|304|Not Modified|1|
 
 * Frequently repeated remote addresses: 
     >|Address|Repeated, times|
     >|:---|:---|
-    >|80.91.33.133|9|
-    >|93.180.71.3|7|
-    >|217.168.17.5|6|
+    >|217.168.17.5|2|
+    >|93.180.71.3|1|
 
 * Most Frequently repeated request type: 
-    >GET repeats 44 times.
+    >GET repeats 3 times.
