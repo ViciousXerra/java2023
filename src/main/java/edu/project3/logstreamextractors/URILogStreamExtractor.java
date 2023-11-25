@@ -1,71 +1,73 @@
 package edu.project3.logstreamextractors;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URLConnection;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javax.net.ssl.HttpsURLConnection;
 import static edu.project3.logstreamextractors.LogUtils.NGINX_LOG_PATTERN;
 
 public class URILogStreamExtractor extends AbstractLogStreamExtractor {
 
-    private final static Logger LOGGER = LogManager.getLogger();
-    private final static String CAUGHT_EXCEPTION_MESSAGE_TEMPLATE = "Caught exception: {%s}";
-
     private final URI resource;
-    private final HttpClient client;
-    private final HttpRequest request;
-
-    private String body;
+    private final String body;
 
     public URILogStreamExtractor(URI resource) {
         this.resource = resource;
-        client = getHttpClientInstance();
-        request = getRequestInstance(resource);
+        try {
+            if (resource.toString().startsWith("http")) {
+                body = getHttpResponseBody(resource);
+            } else {
+                body = getFileResponseBody(resource);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public URILogStreamExtractor(URI resource, LocalDate trackingTime, boolean trackAfter) {
         super(trackingTime, trackAfter);
         this.resource = resource;
-        client = getHttpClientInstance();
-        request = getRequestInstance(resource);
+        try {
+            if (resource.toString().startsWith("http")) {
+                body = getHttpResponseBody(resource);
+            } else {
+                body = getFileResponseBody(resource);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public URILogStreamExtractor(URI resource, LocalDate trackingStartTime, LocalDate trackingEndTime) {
         super(trackingStartTime, trackingEndTime);
         this.resource = resource;
-        client = getHttpClientInstance();
-        request = getRequestInstance(resource);
+        try {
+            if (resource.toString().startsWith("http")) {
+                body = getHttpResponseBody(resource);
+            } else {
+                body = getFileResponseBody(resource);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Stream<LogRecord> extract() {
-        HttpResponse<String> response;
         List<LogRecord> logRecords = new ArrayList<>();
-        try (
-            client
-        ) {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            body = response.body();
-            Matcher matcher = NGINX_LOG_PATTERN.matcher(body);
-            while (matcher.find()) {
-                logRecords.add(parseLog(matcher));
-            }
-            return logRecords
-                .stream()
-                .filter(timeLimitPredicate);
-        } catch (IOException | InterruptedException e) {
-            LOGGER.error(String.format(CAUGHT_EXCEPTION_MESSAGE_TEMPLATE, e.getMessage()));
+        Matcher matcher = NGINX_LOG_PATTERN.matcher(body);
+        while (matcher.find()) {
+            logRecords.add(parseLog(matcher));
         }
-        return Stream.of();
+        return logRecords
+            .stream()
+            .filter(timeLimitPredicate);
     }
 
     @Override
@@ -73,20 +75,34 @@ public class URILogStreamExtractor extends AbstractLogStreamExtractor {
         return new String[] {resource.toString()};
     }
 
-    private HttpClient getHttpClientInstance() {
-        return HttpClient
-            .newBuilder()
-            .version(HttpClient.Version.HTTP_2)
-            .build();
+    private static String getHttpResponseBody(URI resource) throws IOException {
+        HttpsURLConnection httpClient = (HttpsURLConnection) resource.toURL().openConnection();
+        httpClient.setRequestMethod("GET");
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(httpClient.getInputStream()))) {
+
+            String line;
+            StringBuilder response = new StringBuilder();
+
+            while ((line = in.readLine()) != null) {
+                response.append(line);
+                response.append(System.lineSeparator());
+            }
+            return response.toString();
+        }
     }
 
-    private HttpRequest getRequestInstance(URI resource) {
-        return HttpRequest
-            .newBuilder()
-            .uri(resource)
-            .version(HttpClient.Version.HTTP_2)
-            .GET()
-            .build();
+    private static String getFileResponseBody(URI resource) throws IOException {
+        try (BufferedReader in = new BufferedReader(
+            new InputStreamReader(resource.toURL().openConnection().getInputStream()))) {
+            String line;
+            StringBuilder response = new StringBuilder();
+            while ((line = in.readLine()) != null) {
+                response.append(line);
+                response.append(System.lineSeparator());
+            }
+            return response.toString();
+        }
     }
 
 }
