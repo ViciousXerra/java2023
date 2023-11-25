@@ -14,13 +14,14 @@ import static edu.project3.logstreamextractors.LogUtils.NGINX_LOG_PATTERN;
 
 public class URILogStreamExtractor extends AbstractLogStreamExtractor {
 
+    private final static String HTTP_SCHEME = "http";
     private final URI resource;
     private final String body;
 
     public URILogStreamExtractor(URI resource) {
         this.resource = resource;
         try {
-            if (resource.toString().startsWith("http")) {
+            if (resource.toString().startsWith(HTTP_SCHEME)) {
                 body = getHttpResponseBody(resource);
             } else {
                 body = getFileResponseBody(resource);
@@ -34,7 +35,7 @@ public class URILogStreamExtractor extends AbstractLogStreamExtractor {
         super(trackingTime, trackAfter);
         this.resource = resource;
         try {
-            if (resource.toString().startsWith("http")) {
+            if (resource.toString().startsWith(HTTP_SCHEME)) {
                 body = getHttpResponseBody(resource);
             } else {
                 body = getFileResponseBody(resource);
@@ -48,7 +49,7 @@ public class URILogStreamExtractor extends AbstractLogStreamExtractor {
         super(trackingStartTime, trackingEndTime);
         this.resource = resource;
         try {
-            if (resource.toString().startsWith("http")) {
+            if (resource.toString().startsWith(HTTP_SCHEME)) {
                 body = getHttpResponseBody(resource);
             } else {
                 body = getFileResponseBody(resource);
@@ -78,9 +79,8 @@ public class URILogStreamExtractor extends AbstractLogStreamExtractor {
     private static String getHttpResponseBody(URI resource) throws IOException {
         HttpsURLConnection httpClient = (HttpsURLConnection) resource.toURL().openConnection();
         httpClient.setRequestMethod("GET");
-        try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(httpClient.getInputStream()))) {
-
+        try (BufferedReader in =
+                 new BufferedReader(new InputStreamReader(httpClient.getInputStream()))) {
             String line;
             StringBuilder response = new StringBuilder();
 
@@ -93,8 +93,8 @@ public class URILogStreamExtractor extends AbstractLogStreamExtractor {
     }
 
     private static String getFileResponseBody(URI resource) throws IOException {
-        try (BufferedReader in = new BufferedReader(
-            new InputStreamReader(resource.toURL().openConnection().getInputStream()))) {
+        try (BufferedReader in =
+                 new BufferedReader(new InputStreamReader(resource.toURL().openConnection().getInputStream()))) {
             String line;
             StringBuilder response = new StringBuilder();
             while ((line = in.readLine()) != null) {
