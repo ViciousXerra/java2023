@@ -1,155 +1,109 @@
 package edu.hw8.task1;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Server {
-
     private final static Logger LOGGER = LogManager.getLogger();
+    private final static String CAUGHT_EXCEPTION_MESSAGE_TEMPLATE = "Caught exception: %s";
     private final static int NUM_OF_THREADS = Runtime.getRuntime().availableProcessors() - 1;
-    private final static int AWAIT_MILLIS = 3000;
-
-    private final static Pattern PATTERN = Pattern.compile("^([А-яЁё]+):([А-яЁё \",!.-]+)$");
-    private final static int KEYWORD_GROUP = 1;
-    private final static int QUOTE_GROUP = 2;
-    private final static Map<String, Set<String>> KEYWORD_MAPPING = new HashMap<>() {
-        {
-            try (
-                BufferedReader reader =
-                    Files.newBufferedReader(Path.of("src/main/resources/hw8resources/quotes.txt"))
-            ) {
-                String line;
-                Matcher matcher;
-                while ((line = reader.readLine()) != null) {
-                    matcher = PATTERN.matcher(line);
-                    if (matcher.find()) {
-                        Set<String> set = getOrDefault(matcher.group(KEYWORD_GROUP), new HashSet<>());
-                        if (set.isEmpty()) {
-                            put(matcher.group(KEYWORD_GROUP), set);
-                        }
-                        set.add(matcher.group(QUOTE_GROUP));
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to fill keyword mapping object.", e);
-            }
-        }
-    };
-
+    private final static int PORT_MAX_VALUE = 65535;
     private final int port;
-    private boolean isRunning;
+    private final long timeout;
+    private final Map<SocketChannel, Future<String>> responseMapping = new HashMap<>();
+    private boolean isListening;
 
-    public Server(int port) {
+    public Server(int port, long timeoutInMillis) {
+        if (port <= 0 || port > PORT_MAX_VALUE) {
+            throw new IllegalArgumentException("Port number must be between 0 and 65535.");
+        }
+        if (timeoutInMillis <= 0) {
+            throw new IllegalArgumentException("Timeout duration in milliseconds must be positive.");
+        }
+        LOGGER.info("Server initialization.");
         this.port = port;
-        isRunning = true;
-        LOGGER.info("Starting server.");
+        this.timeout = timeoutInMillis;
+        isListening = true;
     }
 
     public void listen() {
+        LOGGER.info("Server listening...");
         try (
             Selector selector = Selector.open();
-            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+            ServerSocketChannel serverChannel = ServerSocketChannel.open();
             ExecutorService service = Executors.newFixedThreadPool(NUM_OF_THREADS)
         ) {
-            tuneServerSocketChannel(selector, serverSocketChannel, port);
-            while (isRunning) {
-                selector.select();
-                Set<SelectionKey> selectedKeys = selector.selectedKeys();
-                Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
-                while (keyIterator.hasNext()) {
-                    SelectionKey key = keyIterator.next();
-                    if (key.isAcceptable()) {
-                        registerConnection(selector, serverSocketChannel);
-                    } else if (key.isReadable()) {
-                        process(key, service);
-                    }
-                    keyIterator.remove();
-                }
-                Thread.sleep(AWAIT_MILLIS);
-                isRunning = !selector.selectedKeys().isEmpty();
-                if (!isRunning) {
-                    LOGGER.info("Server shutdown. Awaiting of previous tasks completion.");
+            serverChannel.configureBlocking(false);
+            serverChannel.socket().bind(new InetSocketAddress(port));
+            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+            while (isListening) {
+                int keysAmount = selector.select(timeout);
+                if (keysAmount == 0) {
+                    isListening = false;
+                    LOGGER.info("Server shutdown.");
                     service.shutdown();
                     while (!service.isTerminated()) {
 
                     }
+                    continue;
+                }
+                Iterator<SelectionKey> keysIterator = selector.selectedKeys().iterator();
+                while (keysIterator.hasNext()) {
+                    SelectionKey key = keysIterator.next();
+                    keysIterator.remove();
+                    if (!key.isValid()) {
+                        continue;
+                    }
+                    if (key.isAcceptable()) {
+                        acceptConnection(key, selector);
+                    }
+                    if (key.isReadable()) {
+                        readFromClientChannel(key, selector, service);
+                    }
+                    if (key.isWritable()) {
+                        writeToClientChannel(key, service);
+                    }
                 }
             }
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Server error occurred.", e);
+        } catch (IOException e) {
+            LOGGER.error(String.format(CAUGHT_EXCEPTION_MESSAGE_TEMPLATE, e.getMessage()));
         }
     }
 
-    private static void tuneServerSocketChannel(Selector selector, ServerSocketChannel channel, int port)
-        throws IOException {
-        channel.configureBlocking(false);
-        channel.bind(new InetSocketAddress(port));
-        channel.register(selector, SelectionKey.OP_ACCEPT);
-    }
-
-    private static void registerConnection(Selector selector, ServerSocketChannel serverSocketChannel)
-        throws IOException {
+    private void acceptConnection(SelectionKey key, Selector selector) throws IOException {
+        ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
         SocketChannel clientChannel = serverSocketChannel.accept();
         clientChannel.configureBlocking(false);
         clientChannel.register(selector, SelectionKey.OP_READ);
     }
 
-    private static void process(SelectionKey key, ExecutorService service) {
-        service.execute(new Worker(key));
+    private void readFromClientChannel(SelectionKey key, Selector selector, ExecutorService service)
+        throws IOException {
+        SocketChannel clientChannel = (SocketChannel) key.channel();
+        Future<String> stringFuture = service.submit(new ReadWorker(clientChannel));
+        //associate this client channel with future response
+        responseMapping.put(clientChannel, stringFuture);
+        //Setting channel to write-ready mode
+        clientChannel.register(selector, SelectionKey.OP_WRITE);
     }
 
-    private static class Worker implements Runnable {
-
-        private final static int BUFFER_SIZE = 32;
-        private final SelectionKey key;
-
-        private Worker(SelectionKey key) {
-            this.key = key;
-        }
-
-        @Override
-        public void run() {
-            try (SocketChannel channel = (SocketChannel) key.channel()) {
-                ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-                channel.read(buffer);
-                String keyword = new String(buffer.array()).trim();
-                String responseString = getSuitableQuotes(keyword);
-                channel.write(ByteBuffer.wrap(responseString.getBytes(StandardCharsets.UTF_8)));
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to process.", e);
-            }
-        }
-
-        private static String getSuitableQuotes(String keyword) {
-            StringBuilder builder = new StringBuilder();
-            KEYWORD_MAPPING.getOrDefault(keyword, Set.of("There is no existing suitable quotes."))
-                .forEach(quote -> {
-                    builder.append(quote);
-                    builder.append(System.lineSeparator());
-                });
-            return builder.toString();
-        }
-
+    private void writeToClientChannel(SelectionKey key, ExecutorService service) {
+        SocketChannel clientChannel = (SocketChannel) key.channel();
+        //Retrieving non-null future string
+        Future<String> stringFuture = responseMapping.remove(clientChannel);
+        service.execute(new WriteWorker(clientChannel, stringFuture));
     }
 
 }
