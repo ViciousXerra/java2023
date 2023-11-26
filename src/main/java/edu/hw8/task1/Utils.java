@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-class Utils {
+final class Utils {
     private final static Logger LOGGER = LogManager.getLogger();
     private final static Path SOURCE_FILE_PATH = Path.of("src/main/resources/hw8resources/quotes.txt");
     private final static Pattern PATTERN = Pattern.compile("^([А-яЕё]+):([А-яЕё -.]+)$");
@@ -32,7 +32,7 @@ class Utils {
                     if (matcher.find()) {
                         Set<String> set = getOrDefault(matcher.group(KEYWORD_GROUP), new HashSet<>());
                         if (set.isEmpty()) {
-                            put(matcher.group(KEYWORD_GROUP), set);
+                            put(new String(matcher.group(KEYWORD_GROUP).getBytes(StandardCharsets.UTF_8)), set);
                         }
                         set.add(matcher.group(QUOTE_GROUP));
                     }
@@ -49,11 +49,14 @@ class Utils {
 
     public static String getSuitableQuotes(String keyword) {
         StringBuilder builder = new StringBuilder();
-        KEYWORD_MAPPING.getOrDefault(keyword, Set.of("There is no existing suitable quotes."))
-            .forEach(quote -> {
-                builder.append(quote);
-                builder.append(System.lineSeparator());
-            });
+        Set<String> set = KEYWORD_MAPPING.get(keyword);
+        if (set == null) {
+            return new String("There is no existing suitable quotes.".getBytes(), StandardCharsets.UTF_8);
+        }
+        set.forEach(quote -> {
+            builder.append(quote);
+            builder.append(System.lineSeparator());
+        });
         return new String(builder.toString().getBytes(), StandardCharsets.UTF_8);
     }
 

@@ -9,7 +9,6 @@ import java.util.concurrent.Future;
 
 class WriteWorker implements Runnable {
 
-    private final static long AWAIT_MILLIS = 5000;
     private final SocketChannel clientChannel;
     private final Future<String> response;
 
@@ -20,8 +19,9 @@ class WriteWorker implements Runnable {
 
     @Override
     public void run() {
-        try (clientChannel) {
-            clientChannel.write(ByteBuffer.wrap(response.get().getBytes(StandardCharsets.UTF_8)));
+        try {
+            String response1 = response.get();
+            clientChannel.write(ByteBuffer.wrap(response1.getBytes(StandardCharsets.UTF_8)));
         } catch (IOException | InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }

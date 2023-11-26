@@ -74,6 +74,7 @@ public class Server {
                     }
                     if (key.isWritable()) {
                         writeToClientChannel(key, service);
+                        key.cancel();
                     }
                 }
             }

@@ -18,7 +18,7 @@ class ReadWorker implements Callable<String> {
     public String call() throws Exception {
         ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
         clientChannel.read(buffer);
-        return Utils.getSuitableQuotes(new String(buffer.array(), StandardCharsets.UTF_8));
+        return Utils.getSuitableQuotes(new String(buffer.array(), StandardCharsets.UTF_8).trim());
     }
 
 }
