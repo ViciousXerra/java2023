@@ -38,7 +38,7 @@ public class Client {
         LOGGER.info("Server requesting...");
         try (
             Selector selector = Selector.open();
-            SocketChannel clientChannel = SocketChannel.open();
+            SocketChannel clientChannel = SocketChannel.open()
         ) {
             clientChannel.configureBlocking(false);
             clientChannel.register(selector, SelectionKey.OP_CONNECT);
