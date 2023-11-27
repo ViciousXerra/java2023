@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-final class Utils {
+public final class Utils {
     private final static Logger LOGGER = LogManager.getLogger();
     private final static Path SOURCE_FILE_PATH = Path.of("src/main/resources/hw8resources/quotes.txt");
     private final static Pattern PATTERN = Pattern.compile("^([А-яЕё]+):([А-яЕё -.]+)$");
