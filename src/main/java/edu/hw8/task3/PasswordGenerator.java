@@ -14,7 +14,7 @@ public class PasswordGenerator {
 
     private final int length;
     private final StringBuilder builder;
-    private final int PASSWORDS_QUANTITY = 1000;
+    private final static int PASSWORDS_QUANTITY = 1000;
 
     public PasswordGenerator(int passwordLength) {
         if (passwordLength <= 0) {
@@ -38,7 +38,7 @@ public class PasswordGenerator {
 
     public synchronized List<String> grabFewPasswords() {
         List<String> res = new ArrayList<>();
-        for (int i = 0 ; i < PASSWORDS_QUANTITY; i++) {
+        for (int i = 0; i < PASSWORDS_QUANTITY; i++) {
             if (hasNextPassword()) {
                 res.add(this.nextPassword());
             } else {
