@@ -1,7 +1,7 @@
 package edu.hw8.task3;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PasswordGenerator {
 
@@ -14,7 +14,8 @@ public class PasswordGenerator {
 
     private final int length;
     private final StringBuilder builder;
-    private final Lock retrieveLock = new ReentrantLock();
+    private final int PASSWORDS_QUANTITY = 1000;
+
     public PasswordGenerator(int passwordLength) {
         if (passwordLength <= 0) {
             throw new IllegalArgumentException("Password length must be positive num.");
@@ -25,18 +26,26 @@ public class PasswordGenerator {
     }
 
     public boolean hasNextPassword() {
-        retrieveLock.lock();
         return builder.length() <= length;
     }
 
     public String nextPassword() {
         String res = builder.toString();
         setChars();
-        try {
-            return res;
-        } finally {
-            retrieveLock.unlock();
+        return res;
+
+    }
+
+    public synchronized List<String> grabFewPasswords() {
+        List<String> res = new ArrayList<>();
+        for (int i = 0 ; i < PASSWORDS_QUANTITY; i++) {
+            if (hasNextPassword()) {
+                res.add(this.nextPassword());
+            } else {
+                break;
+            }
         }
+        return res;
     }
 
     private void setChars() {

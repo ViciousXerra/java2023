@@ -45,18 +45,23 @@ public class MultiThreadMdHashPasswordBruteForce extends AbstractPasswordBruteFo
                 MessageDigest md = MessageDigest.getInstance("MD5");
                 String key;
                 byte[] hash;
-                String password;
+                List<String> passwords;
                 String employee;
-                while (!employeeAndHashedPassword.isEmpty() && generator.hasNextPassword()) {
-                    password = generator.nextPassword();
-                    hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
-                    key = toHex(hash);
-                    employee = employeeAndHashedPassword.remove(key);
-                    if (employee == null) {
-                        continue;
+                while (!employeeAndHashedPassword.isEmpty()) {
+                    passwords = generator.grabFewPasswords();
+                    if (passwords.isEmpty()) {
+                        break;
                     }
-                    result.put(employee, password);
-                    LOGGER.info(String.format("%s password cracked.", employee));
+                    for (String password : passwords) {
+                        hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
+                        key = toHex(hash);
+                        employee = employeeAndHashedPassword.remove(key);
+                        if (employee == null) {
+                            continue;
+                        }
+                        result.put(employee, password);
+                        LOGGER.info(String.format("%s password cracked.", employee));
+                    }
                 }
             } catch (NoSuchAlgorithmException e) {
                 LOGGER.error(String.format("Caught exception: %s", e.getMessage()));
