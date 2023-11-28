@@ -1,0 +1,88 @@
+== General Info
+
+[%header,cols=2*]
+|===
+|Metrics
+|Values
+
+|Sources
+|https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs +
+
+
+|Date, from
+|2015-06-01T00:00Z
+
+|Date, to
+|2015-06-03T00:00Z
+
+|Total requests
+|5694
+
+|Average transferred bytes
+|748673
+|===
+
+=== Additional Info
+
+* Frequently queried resources: 
++
+[%header,cols=2*]
+|===
+|Resource
+|Queried, times
+
+|/downloads/product_1
+|3845
+
+|/downloads/product_2
+|1841
+
+|/downloads/product_3
+|8
+|===
+
+* Frequently repeated response codes: 
++
+[%header,cols=3*]
+|===
+|Code
+|Description
+|Repeated, times
+
+|404
+|Not Found
+|3905
+
+|304
+|Not Modified
+|1404
+
+|200
+|Success/OK
+|373
+
+|206
+|N/A
+|12
+|===
+
+* Frequently repeated remote addresses: 
++
+[%header,cols=2*]
+|===
+|Address
+|Repeated, times
+
+|74.125.60.158
+|350
+
+|216.46.173.126
+|335
+
+|180.179.174.219
+|264
+|===
+
+* Most Frequently repeated request type: 
++
+GET repeats 5694 times.
