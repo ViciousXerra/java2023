@@ -9,7 +9,7 @@ public class Task1Test {
     @Test
     void test() throws IOException {
         int port = edu.hw8.task1.Utils.getFreePort();
-        Server server = new Server(port, 10000);
+        Server server = new Server(port, 10000, 1);
     }
 
 }

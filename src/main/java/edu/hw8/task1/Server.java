@@ -23,9 +23,14 @@ public class Server {
     private final int port;
     private final long timeout;
     private final Map<SocketChannel, Future<String>> responseMapping = new HashMap<>();
+    private final int maxClients;
     private boolean isListening;
+    private int currentClients;
 
-    public Server(int port, long timeoutInMillis) {
+    public Server(int port, long timeoutInMillis, int maxClients) {
+        if (maxClients <= 0) {
+            throw new IllegalArgumentException("Number of clients must be a positive num.");
+        }
         if (port <= 0 || port > PORT_MAX_VALUE) {
             throw new IllegalArgumentException("Port number must be between 0 and 65535.");
         }
@@ -35,6 +40,7 @@ public class Server {
         LOGGER.info("Server initialization.");
         this.port = port;
         this.timeout = timeoutInMillis;
+        this.maxClients = maxClients;
         isListening = true;
     }
 
@@ -62,12 +68,12 @@ public class Server {
                 Iterator<SelectionKey> keysIterator = selector.selectedKeys().iterator();
                 while (keysIterator.hasNext()) {
                     SelectionKey key = keysIterator.next();
-                    keysIterator.remove();
                     if (!key.isValid()) {
                         continue;
                     }
-                    if (key.isAcceptable()) {
+                    if (key.isAcceptable() && currentClients < maxClients) {
                         acceptConnection(key, selector);
+                        currentClients++;
                     }
                     if (key.isReadable()) {
                         readFromClientChannel(key, selector, service);
@@ -75,7 +81,9 @@ public class Server {
                     if (key.isWritable()) {
                         writeToClientChannel(key, service);
                         key.cancel();
+                        currentClients--;
                     }
+                    keysIterator.remove();
                 }
             }
         } catch (IOException e) {
