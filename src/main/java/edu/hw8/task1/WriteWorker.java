@@ -23,7 +23,7 @@ class WriteWorker implements Runnable {
             String response1 = response.get();
             clientChannel.write(ByteBuffer.wrap(response1.getBytes(StandardCharsets.UTF_8)));
         } catch (IOException | InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to write in client socket channel", e);
         }
     }
 

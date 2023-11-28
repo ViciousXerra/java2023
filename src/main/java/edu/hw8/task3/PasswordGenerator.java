@@ -33,7 +33,6 @@ public class PasswordGenerator {
         String res = builder.toString();
         setChars();
         return res;
-
     }
 
     public synchronized List<String> grabFewPasswords() {

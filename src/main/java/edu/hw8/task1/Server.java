@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 public class Server {
     private final static Logger LOGGER = LogManager.getLogger();
     private final static String CAUGHT_EXCEPTION_MESSAGE_TEMPLATE = "Caught exception: %s";
+    private final static String NON_POSITIVE_RESTRICTION_MESSAGE = "%s must be a positive num.";
     private final static int NUM_OF_THREADS = Runtime.getRuntime().availableProcessors() - 1;
     private final static int PORT_MAX_VALUE = 65535;
     private final int port;
@@ -29,13 +30,16 @@ public class Server {
 
     public Server(int port, long timeoutInMillis, int maxClients) {
         if (maxClients <= 0) {
-            throw new IllegalArgumentException("Number of clients must be a positive num.");
+            throw new IllegalArgumentException(String.format(NON_POSITIVE_RESTRICTION_MESSAGE, "Number of clients"));
         }
         if (port <= 0 || port > PORT_MAX_VALUE) {
             throw new IllegalArgumentException("Port number must be between 0 and 65535.");
         }
         if (timeoutInMillis <= 0) {
-            throw new IllegalArgumentException("Timeout duration in milliseconds must be positive.");
+            throw new IllegalArgumentException(String.format(
+                NON_POSITIVE_RESTRICTION_MESSAGE,
+                "Timeout duration in milliseconds"
+            ));
         }
         LOGGER.info("Server initialization.");
         this.port = port;

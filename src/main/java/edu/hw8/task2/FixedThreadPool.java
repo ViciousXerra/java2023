@@ -6,14 +6,14 @@ import java.util.concurrent.TimeUnit;
 
 public class FixedThreadPool implements ThreadPool {
 
-    private final static long TIMEOUT = 5L;
+    private final static long TIMEOUT = 1L;
     private final BlockingQueue<Runnable> runnables;
     private final Thread[] pool;
     private volatile boolean isShuttedDown;
 
     public static FixedThreadPool create(int nThreads) {
         if (nThreads <= 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Number of threads must be a positive num.");
         }
         return new FixedThreadPool(nThreads);
     }
