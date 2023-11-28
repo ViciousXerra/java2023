@@ -17,9 +17,9 @@ abstract class AbstractPasswordBruteForce implements PasswordBruteForce {
     protected final static Pattern PATTERN = Pattern.compile("([A-Za-z]\\.[A-Za-z]\\.[A-Za-z]+) +(\\w+)");
     protected final static int EMPLOYEE_NAME_GROUP = 1;
     protected final static int HASH_MD5_PASSWORD_GROUP = 2;
-    private final static int MASK = 0xFF;
     protected final Map<String, String> employeeAndHashedPassword;
     protected final PasswordGenerator generator;
+    private final static int MASK = 0xFF;
 
     protected AbstractPasswordBruteForce(Path path, int maxPasswordLength) {
         employeeAndHashedPassword = new HashMap<>();
