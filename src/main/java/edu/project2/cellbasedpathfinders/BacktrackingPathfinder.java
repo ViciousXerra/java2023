@@ -23,7 +23,7 @@ public class BacktrackingPathfinder extends CellBasedPathfinder {
         List<Coordinate> possibleTurns;
         while (!current.equals(exitPoint)) {
             possibleTurns = checkTurns(current, visited);
-            if (possibleTurns.size() != 0) {
+            if (!possibleTurns.isEmpty()) {
                 route.push(current);
                 current = possibleTurns.get(RANDOM.nextInt(possibleTurns.size()));
                 visited.add(current);
