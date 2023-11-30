@@ -1,7 +1,6 @@
 package edu.hw9.task1;
 
 import edu.hw9.task1.StatGenerators.DoubleDataStatGenerator;
-import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;

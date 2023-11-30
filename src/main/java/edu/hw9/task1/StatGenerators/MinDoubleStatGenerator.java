@@ -13,8 +13,7 @@ public class MinDoubleStatGenerator implements DoubleDataStatGenerator {
                 localMin = Math.min(localMin, values[i]);
                 min = localMin;
             }
-        }
-        else {
+        } else {
             for (double d : values) {
                 min = Math.min(min, d);
             }

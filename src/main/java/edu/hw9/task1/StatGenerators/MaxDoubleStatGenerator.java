@@ -13,8 +13,7 @@ public class MaxDoubleStatGenerator implements DoubleDataStatGenerator {
                 localMax = Math.max(localMax, values[i]);
                 max = localMax;
             }
-        }
-        else {
+        } else {
             for (double d : values) {
                 max = Math.min(max, d);
             }

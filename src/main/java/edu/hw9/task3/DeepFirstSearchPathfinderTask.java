@@ -3,7 +3,9 @@ package edu.hw9.task3;
 import edu.project2.cellbasedmaze.Cell;
 import edu.project2.cellbasedmaze.Coordinate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 
@@ -15,43 +17,62 @@ public class DeepFirstSearchPathfinderTask extends RecursiveTask<List<Coordinate
     private final Cell[][] grid;
     private final Coordinate startPoint;
     private final Coordinate exitPoint;
+    private Set<Coordinate> visited;
 
     DeepFirstSearchPathfinderTask(Cell[][] grid, Coordinate startPoint, Coordinate exitPoint) {
         this.grid = grid;
         this.startPoint = startPoint;
         this.exitPoint = exitPoint;
+        this.visited = new HashSet<>();
+    }
+
+    private DeepFirstSearchPathfinderTask(
+        Set<Coordinate> visited,
+        Cell[][] grid,
+        Coordinate startPoint,
+        Coordinate exitPoint
+    ) {
+        this(grid, startPoint, exitPoint);
+        this.visited = visited;
     }
 
     @Override
     protected List<Coordinate> compute() {
         List<Coordinate> route = new ArrayList<>();
-        List<DeepFirstSearchPathfinderTask> subTasks = new ArrayList<>();
         Coordinate current = startPoint;
         route.add(current);
-        if (exitPoint.equals(startPoint)) {
-            return route;
-        }
-        List<Coordinate> turns = checkTurns(current);
+        visited.add(current);
+        List<Coordinate> turns = checkTurns(current).stream().filter(turn -> !visited.contains(turn)).toList();
         while (turns.size() == 1) {
-            current = turns.get(0);
+            current = turns.getFirst();
             route.add(current);
-            if (route.getLast().equals(exitPoint)) {
+            visited.add(current);
+            if (exitPoint.equals(current)) {
                 return route;
             }
-            turns = checkTurns(current);
+            turns = checkTurns(current).stream().filter(turn -> !visited.contains(turn)).toList();
         }
         if (turns.isEmpty()) {
             return List.of();
         } else {
-            turns.forEach(turn -> subTasks.add(new DeepFirstSearchPathfinderTask(grid, turn, exitPoint)));
-            subTasks.forEach(ForkJoinTask::fork);
-            List<Coordinate> res = subTasks
+            DeepFirstSearchPathfinderTask subTask;
+            List<DeepFirstSearchPathfinderTask> subTasks = new ArrayList<>();
+            for (Coordinate turn : turns) {
+                subTask = new DeepFirstSearchPathfinderTask(visited, grid, turn, exitPoint);
+                subTask.fork();
+                subTasks.add(subTask);
+            }
+            List<Coordinate> subRoute = subTasks
                 .stream()
                 .map(ForkJoinTask::join)
-                .reduce((list1, list2) -> list1.isEmpty() ? list2 : list1)
+                .reduce((list1, list2) -> !list1.isEmpty() ? list1 : list2)
                 .orElse(List.of());
-            route.addAll(res);
-            return route.getLast().equals(exitPoint) ? route : List.of();
+            if (subRoute.isEmpty()) {
+                return List.of();
+            } else {
+                route.addAll(subRoute);
+                return route;
+            }
         }
     }
 
