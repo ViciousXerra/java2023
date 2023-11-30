@@ -41,7 +41,7 @@ class RecursiveFileSearchTest {
     @DisplayName("Testing recursive file search by given byte size predicate.")
     void testRecursiveFileSearchByByteSize() {
         //Given
-        List<Path> expected1 = List.of(
+        List<Path> expected = List.of(
             Path.of("src/test/resources/hw9testresources/testfolder1/quotation.txt"),
             Path.of("src/test/resources/hw9testresources/testfolder2/jaguar.png"),
             Path.of("src/test/resources/hw9testresources/testfolder3/some_random_text.rtf")
@@ -51,7 +51,7 @@ class RecursiveFileSearchTest {
             FilterUtils.getFilterBySize(60L, true);
         List<Path> actual = Task2.getFilesByPredicate(Path.of(TARGET_DIRECTORY), filter);
         //Then
-        assertThat(actual).isEqualTo(expected1);
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
 }
