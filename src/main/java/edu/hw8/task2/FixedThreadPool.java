@@ -31,8 +31,8 @@ public class FixedThreadPool implements ThreadPool {
                             continue;
                         }
                         r.run();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException("Thread has been interrupted while waiting Runnable assignment.", e);
+                    } catch (InterruptedException ignored) {
+
                     }
                 }
             });
@@ -71,6 +71,7 @@ public class FixedThreadPool implements ThreadPool {
     private void awaitAllThreadsTermination() {
         for (Thread t : pool) {
             try {
+                t.interrupt();
                 t.join();
             } catch (InterruptedException e) {
                 throw new RuntimeException(
