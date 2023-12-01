@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-abstract class CellBasedPathfinder implements Pathfinder {
+public abstract class CellBasedPathfinder implements Pathfinder {
 
     private final static String NULL_RESTRICTION = "%s can't be null.";
     private final static String POINT_COORDINATE_RESTRICTION = "Point can't have these coordinates.";
