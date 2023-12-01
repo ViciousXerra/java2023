@@ -31,8 +31,8 @@ public class FixedThreadPool implements ThreadPool {
                             continue;
                         }
                         r.run();
-                    } catch (InterruptedException ignored) {
-
+                    } catch (InterruptedException e) {
+                        break;
                     }
                 }
             });

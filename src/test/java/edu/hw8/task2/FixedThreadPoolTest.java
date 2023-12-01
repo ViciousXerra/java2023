@@ -126,7 +126,6 @@ class FixedThreadPoolTest {
             }
         });
         poolThread.start();
-        poolThread.interrupt();
         poolThread.join();
         assertThat(poolThread.isAlive()).isFalse();
     }
