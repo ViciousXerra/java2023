@@ -26,10 +26,7 @@ public class FixedThreadPool implements ThreadPool {
                 while (!isShuttedDown) {
                     //blocking until new runnable would be inserted by execute method.
                     try {
-                        Runnable r = runnables.poll(TIMEOUT, TimeUnit.SECONDS);
-                        if (r == null) {
-                            continue;
-                        }
+                        Runnable r = runnables.take();
                         r.run();
                     } catch (InterruptedException e) {
                         break;
@@ -52,14 +49,15 @@ public class FixedThreadPool implements ThreadPool {
         if (r == null) {
             throw new IllegalArgumentException("Runnable can't be null.");
         }
-        Thread insertionThread = new Thread(() -> {
-            try {
-                runnables.put(r);
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Thread has been interrupted while waiting Runnable insertion.", e);
-            }
-        });
-        insertionThread.start();
+        try {
+            runnables.put(r);
+        } catch (InterruptedException ignored) {
+//            throw new RuntimeException("Thread has been interrupted while waiting Runnable insertion.", e);
+        }
+//        Thread insertionThread = new Thread(() -> {
+//
+//        });
+//        insertionThread.start();
     }
 
     @Override

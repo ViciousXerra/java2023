@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -77,7 +79,7 @@ class FixedThreadPoolTest {
             .hasMessage("Runnable can't be null.");
     }
 
-    @Test
+    @Test()
     @DisplayName("Testing thread pool in action.")
     void testFibo() throws Exception {
         //Given
@@ -117,9 +119,10 @@ class FixedThreadPoolTest {
     @Test
     @DisplayName("Testing thread pool auto - closing.")
     void testAutoClosing() throws InterruptedException {
-        List<Runnable> allTasks = getRunnables();
+        List<Thread> allTasks = getRunnables();
         Thread poolThread = new Thread(() -> {
             try (ThreadPool pool = FixedThreadPool.create(Runtime.getRuntime().availableProcessors())) {
+                pool.start();
                 allTasks.forEach(pool::execute);
             } catch (Exception e) {
                 throw new RuntimeException("Error occurs.", e);
@@ -127,11 +130,12 @@ class FixedThreadPoolTest {
         });
         poolThread.start();
         poolThread.join();
+        //Then
         assertThat(poolThread.isAlive()).isFalse();
     }
 
     @NotNull
-    private static List<Runnable> getRunnables() {
+    private static List<Thread> getRunnables() {
         Runnable countingTask = () -> {
             int result = 0;
             for (int i = 0; i < 100; i++) {
@@ -140,12 +144,12 @@ class FixedThreadPoolTest {
             LOGGER.info(String.format("Result: %d", result));
         };
         Runnable loggingTask = () -> LOGGER.info("This is a test log.");
-        List<Runnable> allTasks = new ArrayList<>();
+        List<Thread> allTasks = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            allTasks.add(countingTask);
+            allTasks.add(new Thread(countingTask));
         }
         for (int i = 0; i < 2; i++) {
-            allTasks.add(loggingTask);
+            allTasks.add(new Thread(loggingTask));
         }
         return allTasks;
     }
