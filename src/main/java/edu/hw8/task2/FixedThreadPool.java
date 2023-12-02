@@ -5,7 +5,6 @@ import java.util.concurrent.BlockingQueue;
 
 public class FixedThreadPool implements ThreadPool {
 
-    private final static long TIMEOUT = 1L;
     private final BlockingQueue<Runnable> runnables;
     private final Thread[] pool;
     private volatile boolean isShuttedDown;
