@@ -2,7 +2,6 @@ package edu.hw8.task2;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 public class FixedThreadPool implements ThreadPool {
 
