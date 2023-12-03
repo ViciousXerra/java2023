@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import static java.lang.Math.PI;
-import static java.lang.Math.atan;
+import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
 import static java.lang.Math.exp;
 import static java.lang.Math.pow;
@@ -189,7 +189,7 @@ final class NonLinearTransformationUtils {
     }
 
     private static double getTheta(double x, double y) {
-        return atan(x / y);
+        return atan2(x, y);
     }
 
     private static double getExp(double x) {

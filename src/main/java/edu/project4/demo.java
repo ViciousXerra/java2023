@@ -8,14 +8,15 @@ public class demo {
     public static void main(String[] args) throws IOException {
         Renderer renderer = new SingleThreadRenderer("src/test/resources/project4testresources/test.bmp");
         renderer.render(
-            1920,
-            1080,
-            20,
+            4096,
+            2160,
+            50,
             1000000,
             ThreadLocalRandom.current().nextLong(),
             20,
             List.of(
-                "hyperbolic"
+                "sinusoidal",
+                "exponential"
             )
         );
         renderer.save();
