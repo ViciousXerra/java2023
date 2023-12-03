@@ -31,4 +31,16 @@ public final class NonLinearTransformation implements Function<Point, Point> {
         return biFunction.apply(translation.apply(point), translation.getCoefficients());
     }
 
+    public short getRedChannel() {
+        return translation.getRedChannel();
+    }
+
+    public short getGreenChannel() {
+        return translation.getGreenChannel();
+    }
+
+    public short getBlueChannel() {
+        return translation.getBlueChannel();
+    }
+
 }
