@@ -47,7 +47,7 @@ public final class AffineTransformationCoefficientsGenerator {
     }
 
     private static double getCoeff(double bound) {
-        return ThreadLocalRandom.current().nextDouble(-bound + 0.1f, bound);
+        return ThreadLocalRandom.current().nextDouble(-bound, bound);
     }
 
 }

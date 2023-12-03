@@ -1,4 +1,4 @@
-package edu.project4;
+package edu.project4.renderers.plotters;
 
 public record Dimension(double width, double height, double x, double y) {
 

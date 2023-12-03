@@ -1,8 +1,8 @@
 package edu.project4.nonlineartransformations;
 
-import edu.project4.Point;
 import edu.project4.nonlineartransformations.affinetransformations.AffineTransformationCoefficients;
 import edu.project4.nonlineartransformations.affinetransformations.AffineTranslation;
+import edu.project4.renderers.plotters.Point;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 

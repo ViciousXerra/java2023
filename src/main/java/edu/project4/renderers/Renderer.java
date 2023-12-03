@@ -1,4 +1,4 @@
-package edu.project4;
+package edu.project4.renderers;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,7 +11,8 @@ public interface Renderer {
         int iterations,
         long seed,
         int affineTransformationCount,
-        List<String> nonLinearKeys
+        List<String> nonLinearKeys,
+        boolean withSymmetry
     );
 
     void save() throws IOException;

@@ -1,7 +1,12 @@
-package edu.project4;
+package edu.project4.renderers;
 
 import edu.project4.nonlineartransformations.NonLinearTransformation;
+import edu.project4.nonlineartransformations.affinetransformations.AffineRotation;
 import edu.project4.nonlineartransformations.affinetransformations.AffineTranslation;
+import edu.project4.renderers.plotters.Dimension;
+import edu.project4.renderers.plotters.Pixel;
+import edu.project4.renderers.plotters.PixelsImage;
+import edu.project4.renderers.plotters.Point;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -11,17 +16,19 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 
-public class SingleThreadRenderer implements Renderer {
+public class SingleThreadRenderer /*implements Renderer*/ {
 
     private final String pathToSave;
     private PixelsImage image;
+    private int variationsNum;
 
     public SingleThreadRenderer(String pathToSave) {
         this.pathToSave = pathToSave;
     }
 
-    @Override
+    /*@Override
     public void render(
         int width,
         int height,
@@ -29,7 +36,8 @@ public class SingleThreadRenderer implements Renderer {
         int iterations,
         long seed,
         int affineTransformationCount,
-        List<String> nonLinearKeys
+        List<String> nonLinearKeys,
+        boolean withSymmetry
     ) {
         validate(width, height, affineTransformationCount, nonLinearKeys);
         image = PixelsImage.create(width, height);
@@ -40,30 +48,53 @@ public class SingleThreadRenderer implements Renderer {
         Dimension dim = new Dimension(2 * xMax, 2, xMin, yMin);
         //Generation
         List<NonLinearTransformation> transformations = getTransformationList(affineTransformationCount, nonLinearKeys);
+        Function<Point, Point> symmetry = AffineRotation.getRotation(Math.PI);
+        variationsNum = withSymmetry ? transformations.size() * 2 : transformations.size();
         Random random = new Random(seed);
+        int rand;
         for (int n = 0; n < samples; n++) {
             Point point = new Point(random.nextDouble(xMin, xMax), random.nextDouble(yMin, yMax));
             NonLinearTransformation transformation;
             int curWidth;
             int curHeight;
             for (int step = -20; step < iterations; step++) {
-                transformation = transformations.get(random.nextInt(transformations.size()));
-                point = transformation.apply(point);
-                if (step >= 0 && dim.contains(point)) {
+                rand = random.nextInt(variationsNum);
+                if (rand >= transformations.size()) {
                     curWidth = width - (int) (((xMax - point.x()) / (xMax - xMin)) * width);
                     curHeight = height - (int) (((yMax - point.y()) / (yMax - yMin)) * height);
                     if (image.contains(curWidth, curHeight)) {
-                        int red = transformation.getRedChannel();
-                        int green = transformation.getGreenChannel();
-                        int blue = transformation.getBlueChannel();
+                        int red = image.pixel(curWidth, curHeight).r();
+                        int green = image.pixel(curWidth, curHeight).g();
+                        int blue = image.pixel(curWidth, curHeight).b();
                         long hitCount = image.pixel(curWidth, curHeight).hitCount();
-                        if (image.pixel(curWidth, curHeight).hitCount() != 0) {
-                            red = ((image.pixel(curWidth, curHeight).r() + red) / 2);
-                            green = ((image.pixel(curWidth, curHeight).g() + green) / 2);
-                            blue = ((image.pixel(curWidth, curHeight).b() + blue) / 2);
+                        point = symmetry.apply(point);
+                        if (step >= 0 && dim.contains(point)) {
+                            curWidth = width - (int) (((xMax - point.x()) / (xMax - xMin)) * width);
+                            curHeight = height - (int) (((yMax - point.y()) / (yMax - yMin)) * height);
+                            if (image.contains(curWidth, curHeight)) {
+                                image.data()[curHeight][curWidth] = new Pixel(red, green, blue, ++hitCount);
+                            }
                         }
-                        hitCount++;
-                        image.data()[curHeight][curWidth] = new Pixel(red, green, blue, hitCount);
+                    }
+                } else {
+                    transformation = transformations.get(rand);
+                    point = transformation.apply(point);
+                    if (step >= 0 && dim.contains(point)) {
+                        curWidth = width - (int) (((xMax - point.x()) / (xMax - xMin)) * width);
+                        curHeight = height - (int) (((yMax - point.y()) / (yMax - yMin)) * height);
+                        if (image.contains(curWidth, curHeight)) {
+                            int red = transformation.getRedChannel();
+                            int green = transformation.getGreenChannel();
+                            int blue = transformation.getBlueChannel();
+                            long hitCount = image.pixel(curWidth, curHeight).hitCount();
+                            if (image.pixel(curWidth, curHeight).hitCount() != 0) {
+                                red = ((image.pixel(curWidth, curHeight).r() + red) / 2);
+                                green = ((image.pixel(curWidth, curHeight).g() + green) / 2);
+                                blue = ((image.pixel(curWidth, curHeight).b() + blue) / 2);
+                            }
+                            hitCount++;
+                            image.data()[curHeight][curWidth] = new Pixel(red, green, blue, hitCount);
+                        }
                     }
                 }
             }
@@ -109,9 +140,9 @@ public class SingleThreadRenderer implements Renderer {
                 );
             }
         }
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void save() throws IOException {
         File file = Files.createFile(Path.of(pathToSave)).toFile();
         BufferedImage pic = new BufferedImage(image.width(), image.height(), BufferedImage.TYPE_3BYTE_BGR);
@@ -125,36 +156,8 @@ public class SingleThreadRenderer implements Renderer {
             }
         }
         ImageIO.write(pic, "bmp", file);
-    }
+    }*/
 
-    private static void validate(int width, int height, int affineTransformationCount, List<String> nonLinearKeys) {
-        if (width <= 0 || height <= 0) {
-            throw new IllegalArgumentException("Image resolution values must be a positive nums.");
-        }
-        if (affineTransformationCount <= 0) {
-            throw new IllegalArgumentException("Affine transformation count argument must be at least 2.");
-        }
-        if (nonLinearKeys == null || nonLinearKeys.isEmpty()) {
-            throw new IllegalArgumentException("Non-linear transformation keys must exist.");
-        }
-    }
 
-    private static List<NonLinearTransformation> getTransformationList(int affineTranslationCount, List<String> keys) {
-        List<AffineTranslation> translations = new ArrayList<>(affineTranslationCount);
-        for (int i = 0; i < affineTranslationCount; i++) {
-            translations.add(AffineTranslation.getInstance());
-        }
-        return keys
-            .stream()
-            .flatMap(key -> {
-                List<NonLinearTransformation> list = new ArrayList<>();
-                translations.forEach(affineTranslation -> list.add(NonLinearTransformation.getInstance(
-                    affineTranslation,
-                    key
-                )));
-                return list.stream();
-            })
-            .toList();
-    }
 
 }
