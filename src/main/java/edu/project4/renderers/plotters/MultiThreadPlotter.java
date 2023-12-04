@@ -82,8 +82,8 @@ public class MultiThreadPlotter extends AbstractPlotter {
             Random random = ThreadLocalRandom.current();
             Point point;
             int rand;
-            point = new Point(random.nextDouble(xMin, xMax), random.nextDouble(yMin, yMax));
             for (int n = 0; n < samples; n++) {
+                point = new Point(random.nextDouble(xMin, xMax), random.nextDouble(yMin, yMax));
                 for (int step = -20; step < iterations; step++) {
                     rand = random.nextInt(variationsNum);
                     if (rand >= transformations.size()) {
@@ -114,11 +114,8 @@ public class MultiThreadPlotter extends AbstractPlotter {
                 curWidth = width - (int) (((xMax - rotatedPoint.x()) / (xMax - xMin)) * width);
                 curHeight = height - (int) (((yMax - rotatedPoint.y()) / (yMax - yMin)) * height);
                 if (image.contains(curWidth, curHeight)) {
-                    lock.lock();
-                    try {
+                    synchronized (image.data()[curHeight][curWidth]) {
                         image.data()[curHeight][curWidth] = new Pixel(red, green, blue, ++hitCount);
-                    } finally {
-                        lock.unlock();
                     }
                 }
             }
@@ -151,11 +148,8 @@ public class MultiThreadPlotter extends AbstractPlotter {
                     green = ((image.pixel(curWidth, curHeight).g() + green) / 2);
                     blue = ((image.pixel(curWidth, curHeight).b() + blue) / 2);
                 }
-                lock.lock();
-                try {
+                synchronized (image.data()[curHeight][curWidth]) {
                     image.data()[curHeight][curWidth] = new Pixel(red, green, blue, ++hitCount);
-                } finally {
-                    lock.unlock();
                 }
             }
         }
