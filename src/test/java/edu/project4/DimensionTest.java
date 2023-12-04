@@ -1,15 +1,15 @@
 package edu.project4;
 
-import edu.project4.renderers.plotters.Dimension;
-import edu.project4.renderers.plotters.Point;
-import org.junit.jupiter.api.RepeatedTest;
+import edu.project4.plotters.Dimension;
+import edu.project4.plotters.Point;
 import java.util.Random;
+import org.junit.jupiter.api.RepeatedTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DimensionTest {
 
     @RepeatedTest(50)
-    void test() {
+    void testDimensionContains() {
         double xMin = -(double) 1920 / 1080;
         double xMax = -xMin;
         double yMin = -1;

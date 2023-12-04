@@ -1,7 +1,7 @@
 package edu.project4.nonlineartransformations;
 
 import edu.project4.nonlineartransformations.affinetransformations.AffineTransformationCoefficients;
-import edu.project4.renderers.plotters.Point;
+import edu.project4.plotters.Point;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -15,6 +15,8 @@ import static java.lang.Math.sqrt;
 import static java.lang.Math.tan;
 
 final class NonLinearTransformationUtils {
+
+    private final static int FUNCTION_MULTIPLIER_3 = 3;
 
     private final static BiFunction<Point, AffineTransformationCoefficients, Point> LINEAR =
         (point, coefficients) -> new Point(point.x(), point.y());
@@ -103,8 +105,8 @@ final class NonLinearTransformationUtils {
             double p0 = sin(theta + r);
             double p1 = cos(theta - r);
             return new Point(
-                (pow(p0, 3) + pow(p1, 3)) * r,
-                (pow(p0, 3) - pow(p1, 3)) * r
+                (pow(p0, FUNCTION_MULTIPLIER_3) + pow(p1, FUNCTION_MULTIPLIER_3)) * r,
+                (pow(p0, FUNCTION_MULTIPLIER_3) - pow(p1, FUNCTION_MULTIPLIER_3)) * r
             );
         };
     private final static BiFunction<Point, AffineTransformationCoefficients, Point> BENT =
@@ -127,8 +129,8 @@ final class NonLinearTransformationUtils {
         };
     private final static BiFunction<Point, AffineTransformationCoefficients, Point> POPCORN =
         (point, coefficients) -> {
-            double x1 = point.x() + coefficients.c() * sin(tan(3 * point.y()));
-            double y1 = point.y() + coefficients.f() * sin(tan(3 * point.x()));
+            double x1 = point.x() + coefficients.c() * sin(tan(FUNCTION_MULTIPLIER_3 * point.y()));
+            double y1 = point.y() + coefficients.f() * sin(tan(FUNCTION_MULTIPLIER_3 * point.x()));
             return new Point(x1, y1);
         };
     private final static BiFunction<Point, AffineTransformationCoefficients, Point> EXPONENTIAL =

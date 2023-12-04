@@ -1,4 +1,4 @@
-package edu.project4.renderers.plotters;
+package edu.project4.plotters;
 
 public record PixelsImage(Pixel[][] data, int width, int height) {
     public static PixelsImage create(int width, int height) {
@@ -10,11 +10,13 @@ public record PixelsImage(Pixel[][] data, int width, int height) {
         }
         return new PixelsImage(data, width, height);
     }
+
     public boolean contains(int x, int y) {
         boolean inRangeAxisX = x >= 0 && x < width;
         boolean inRangeAxisY = y >= 0 && y < height;
         return inRangeAxisX && inRangeAxisY;
     }
+
     public Pixel pixel(int x, int y) {
         return data[y][x];
     }

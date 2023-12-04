@@ -29,15 +29,15 @@ public final class AffineTransformationCoefficientsGenerator {
         double conditionValue1;
         do {
             a = getCoeff();
-            d = getCoeff(sqrt(1- pow(a, 2)));
+            d = getCoeff(sqrt(1 - pow(a, 2)));
             b = getCoeff();
-            e = getCoeff(sqrt(1- pow(b, 2)));
+            e = getCoeff(sqrt(1 - pow(b, 2)));
             conditionValue1 =
-                pow(a, 2) +
-                pow(b, 2) +
-                pow(d, 2) +
-                pow(e, 2) -
-                pow((a * e - b * d), 2);
+                pow(a, 2)
+                + pow(b, 2)
+                + pow(d, 2)
+                + pow(e, 2)
+                - pow((a * e - b * d), 2);
         } while (conditionValue1 >= 1.0);
         return new AffineTransformationCoefficients(a, b, c, d, e, f);
     }

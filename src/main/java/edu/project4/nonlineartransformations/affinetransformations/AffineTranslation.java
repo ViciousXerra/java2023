@@ -1,6 +1,6 @@
 package edu.project4.nonlineartransformations.affinetransformations;
 
-import edu.project4.renderers.plotters.Point;
+import edu.project4.plotters.Point;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class AffineTranslation extends AffineTransformation {

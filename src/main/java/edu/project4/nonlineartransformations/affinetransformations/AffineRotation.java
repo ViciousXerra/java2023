@@ -1,6 +1,6 @@
 package edu.project4.nonlineartransformations.affinetransformations;
 
-import edu.project4.renderers.plotters.Point;
+import edu.project4.plotters.Point;
 import java.util.function.Function;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;

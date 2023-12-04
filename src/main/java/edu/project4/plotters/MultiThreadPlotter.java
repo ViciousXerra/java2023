@@ -1,4 +1,4 @@
-package edu.project4.renderers.plotters;
+package edu.project4.plotters;
 
 import edu.project4.nonlineartransformations.NonLinearTransformation;
 import java.util.ArrayList;
@@ -64,33 +64,6 @@ public class MultiThreadPlotter extends AbstractPlotter {
         return tasks;
     }
 
-    private class PlottingTask implements Runnable {
-
-        private final int samples;
-
-        private PlottingTask(int samples) {
-            this.samples = samples;
-        }
-
-        @Override
-        public void run() {
-            Random random = ThreadLocalRandom.current();
-            Point point;
-            int rand;
-            for (int n = 0; n < samples; n++) {
-                point = new Point(random.nextDouble(xMin, xMax), random.nextDouble(yMin, yMax));
-                for (int step = -20; step < iterations; step++) {
-                    rand = random.nextInt(variationsNum);
-                    if (rand >= transformations.size()) {
-                        point = plotSymmetrical(point, step);
-                    } else {
-                        point = plotNonLinear(point, step, rand);
-                    }
-                }
-            }
-        }
-    }
-
     private Point plotSymmetrical(Point point, int iterationStep) {
         int curWidth = width - (int) (((xMax - point.x()) / (xMax - xMin)) * width);
         int curHeight = height - (int) (((yMax - point.y()) / (yMax - yMin)) * height);
@@ -149,6 +122,33 @@ public class MultiThreadPlotter extends AbstractPlotter {
             }
         }
         return translatedPoint;
+    }
+
+    private class PlottingTask implements Runnable {
+
+        private final int samples;
+
+        private PlottingTask(int samples) {
+            this.samples = samples;
+        }
+
+        @Override
+        public void run() {
+            Random random = ThreadLocalRandom.current();
+            Point point;
+            int rand;
+            for (int n = 0; n < samples; n++) {
+                point = new Point(random.nextDouble(xMin, xMax), random.nextDouble(yMin, yMax));
+                for (int step = -ADJUST_STEP; step < iterations; step++) {
+                    rand = random.nextInt(variationsNum);
+                    if (rand >= transformations.size()) {
+                        point = plotSymmetrical(point, step);
+                    } else {
+                        point = plotNonLinear(point, step, rand);
+                    }
+                }
+            }
+        }
     }
 
 }

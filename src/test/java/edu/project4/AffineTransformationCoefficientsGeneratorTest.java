@@ -5,7 +5,6 @@ import edu.project4.nonlineartransformations.affinetransformations.AffineTransfo
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
-
 import static java.lang.Math.pow;
 import static org.assertj.core.api.Assertions.assertThat;
 

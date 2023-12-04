@@ -1,4 +1,4 @@
-package edu.project4.renderers.plotters;
+package edu.project4.plotters;
 
 import edu.project4.nonlineartransformations.NonLinearTransformation;
 import edu.project4.nonlineartransformations.affinetransformations.AffineRotation;
@@ -11,8 +11,8 @@ import org.apache.logging.log4j.Logger;
 
 abstract class AbstractPlotter implements Plotter {
 
-    private final static Logger LOGGER = LogManager.getLogger();
     protected final static Function<Point, Point> SYMMETRY = AffineRotation.getRotation(Math.PI);
+    protected final static int ADJUST_STEP = 20;
     protected final int width;
     protected final int height;
     protected final PixelsImage image;
@@ -25,6 +25,8 @@ abstract class AbstractPlotter implements Plotter {
     protected final int iterations;
     protected final List<NonLinearTransformation> transformations;
     protected final int variationsNum;
+    private final static Logger LOGGER = LogManager.getLogger();
+    private final static double GAMMA_FACTOR = 2.2;
 
     protected AbstractPlotter(
         int width,
@@ -72,7 +74,8 @@ abstract class AbstractPlotter implements Plotter {
         Pixel p;
         for (int curWidth = 0; curWidth < width; curWidth++) {
             for (int curHeight = 0; curHeight < height; curHeight++) {
-                if ((p = image.pixel(curWidth, curHeight)).hitCount() != 0) {
+                p = image.pixel(curWidth, curHeight);
+                if (p.hitCount() != 0) {
                     normal = Math.log10(p.hitCount());
                     image.data()[curHeight][curWidth] = new Pixel(p.r(), p.g(), p.b(), p.hitCount(), normal);
                     if (normal > max) {
@@ -85,7 +88,6 @@ abstract class AbstractPlotter implements Plotter {
     }
 
     private void gammaCorrection(double max) {
-        double gamma = 2.2;
         int red;
         int green;
         int blue;
@@ -93,9 +95,9 @@ abstract class AbstractPlotter implements Plotter {
         for (int curWidth = 0; curWidth < width; curWidth++) {
             for (int curHeight = 0; curHeight < height; curHeight++) {
                 normal = image.pixel(curWidth, curHeight).normal() / max;
-                red = (int) (image.pixel(curWidth, curHeight).r() * Math.pow(normal, 1 / gamma));
-                green = (int) (image.pixel(curWidth, curHeight).g() * Math.pow(normal, 1 / gamma));
-                blue = (int) (image.pixel(curWidth, curHeight).b() * Math.pow(normal, 1 / gamma));
+                red = (int) (image.pixel(curWidth, curHeight).r() * Math.pow(normal, 1 / GAMMA_FACTOR));
+                green = (int) (image.pixel(curWidth, curHeight).g() * Math.pow(normal, 1 / GAMMA_FACTOR));
+                blue = (int) (image.pixel(curWidth, curHeight).b() * Math.pow(normal, 1 / GAMMA_FACTOR));
                 image.data()[curHeight][curWidth] = new Pixel(
                     red,
                     green,

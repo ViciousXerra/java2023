@@ -1,10 +1,7 @@
 package edu.project4;
 
-import edu.project4.renderers.plotters.Pixel;
-import edu.project4.renderers.plotters.PixelsImage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import javax.imageio.ImageIO;
+import edu.project4.plotters.Pixel;
+import edu.project4.plotters.PixelsImage;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -12,20 +9,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class ImageSaverUtils {
 
     private final static Logger LOGGER = LogManager.getLogger();
     private final static Pattern EXTENSION_PATTERN = Pattern.compile("\\.(\\w+)");
     private final static int EXTENSION_GROUP = 1;
-    private static final int GREEN_BYTE_SHIFT = 8;
-    private static final int RED_BYTE_SHIFT = 16;
+    private final static int GREEN_BYTE_SHIFT = 8;
+    private final static int RED_BYTE_SHIFT = 16;
+    private final static String JPEG = "jpeg";
+    private final static String PNG = "png";
+    private final static String BMP = "bmp";
 
     private ImageSaverUtils() {
 
     }
 
-    static void saveImage(PixelsImage image, Path filepath) {
+    public static void saveImage(PixelsImage image, Path filepath) {
         try {
             File imageFile = Files.createFile(filepath).toFile();
             String extension = getExtension(filepath);
@@ -49,12 +52,12 @@ public final class ImageSaverUtils {
         Matcher m = EXTENSION_PATTERN.matcher(filePath.toString());
         if (m.find()) {
             String extension = m.group(EXTENSION_GROUP);
-            if ("jpeg".equals(extension)) {
-                return "jpeg";
-            } else if ("png".equals(extension)) {
-                return "png";
-            } else if ("bmp".equals(extension)){
-                return "bmp";
+            if (JPEG.equals(extension)) {
+                return JPEG;
+            } else if (PNG.equals(extension)) {
+                return PNG;
+            } else if (BMP.equals(extension)) {
+                return BMP;
             } else {
                 throw new IllegalArgumentException("This file extension is not supported.");
             }

@@ -1,4 +1,4 @@
-package edu.project4.renderers.plotters;
+package edu.project4.plotters;
 
 public interface Plotter {
 

@@ -1,4 +1,4 @@
-package edu.project4.renderers.plotters;
+package edu.project4.plotters;
 
 import edu.project4.nonlineartransformations.NonLinearTransformation;
 import java.util.List;
@@ -33,7 +33,7 @@ public class SingleThreadPlotter extends AbstractPlotter {
         int rand;
         for (int n = 0; n < samples; n++) {
             point = new Point(random.nextDouble(xMin, xMax), random.nextDouble(yMin, yMax));
-            for (int step = -20; step < iterations; step++) {
+            for (int step = -ADJUST_STEP; step < iterations; step++) {
                 rand = random.nextInt(variationsNum);
                 if (rand >= transformations.size()) {
                     point = plotSymmetrical(point, step);
