@@ -11,7 +11,6 @@ public class SingleThreadPlotter extends AbstractPlotter {
         int height,
         int samples,
         int iterations,
-        long seed,
         int affineTransformationCounts,
         List<String> nonLinearTransformationKeys,
         boolean withSymmetry
@@ -21,7 +20,6 @@ public class SingleThreadPlotter extends AbstractPlotter {
             height,
             samples,
             iterations,
-            seed,
             affineTransformationCounts,
             nonLinearTransformationKeys,
             withSymmetry
@@ -30,7 +28,7 @@ public class SingleThreadPlotter extends AbstractPlotter {
 
     @Override
     protected void generate() {
-        Random random = new Random(seed);
+        Random random = new Random();
         Point point;
         int rand;
         for (int n = 0; n < samples; n++) {

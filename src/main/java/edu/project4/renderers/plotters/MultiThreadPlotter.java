@@ -7,20 +7,16 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class MultiThreadPlotter extends AbstractPlotter {
 
     private final static int THREAD_COUNT = Runtime.getRuntime().availableProcessors();
-    private final Lock lock = new ReentrantLock();
 
     public MultiThreadPlotter(
         int width,
         int height,
         int samples,
         int iterations,
-        long seed,
         int affineTransformationCounts,
         List<String> nonLinearTransformationKeys,
         boolean withSymmetry
@@ -30,7 +26,6 @@ public class MultiThreadPlotter extends AbstractPlotter {
             height,
             samples,
             iterations,
-            seed,
             affineTransformationCounts,
             nonLinearTransformationKeys,
             withSymmetry

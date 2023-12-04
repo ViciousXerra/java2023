@@ -23,7 +23,6 @@ abstract class AbstractPlotter implements Plotter {
     protected final Dimension dim;
     protected final int samples;
     protected final int iterations;
-    protected final long seed;
     protected final List<NonLinearTransformation> transformations;
     protected final int variationsNum;
 
@@ -32,17 +31,15 @@ abstract class AbstractPlotter implements Plotter {
         int height,
         int samples,
         int iterations,
-        long seed,
         int affineTransformationCounts,
         List<String> nonLinearTransformationKeys,
         boolean withSymmetry
     ) {
-        validate(width, height, affineTransformationCounts, nonLinearTransformationKeys);
+        validate(width, height, affineTransformationCounts, nonLinearTransformationKeys, samples, iterations);
         this.width = width;
         this.height = height;
         this.samples = samples;
         this.iterations = iterations;
-        this.seed = seed;
         image = PixelsImage.create(width, height);
         xMin = -(double) width / height;
         xMax = -xMin;
@@ -110,7 +107,14 @@ abstract class AbstractPlotter implements Plotter {
         }
     }
 
-    private static void validate(int width, int height, int affineTransformationCount, List<String> nonLinearKeys) {
+    private static void validate(
+        int width,
+        int height,
+        int affineTransformationCount,
+        List<String> nonLinearKeys,
+        int samples,
+        int iterations
+    ) {
         if (width <= 0 || height <= 0) {
             throw new IllegalArgumentException("Image resolution values must be a positive nums.");
         }
@@ -119,6 +123,9 @@ abstract class AbstractPlotter implements Plotter {
         }
         if (nonLinearKeys == null || nonLinearKeys.isEmpty()) {
             throw new IllegalArgumentException("Non-linear transformation keys must exist.");
+        }
+        if (samples <= 0 || iterations <= 0) {
+            throw new IllegalArgumentException("Num of samples and iterations must be at least 1.");
         }
     }
 
