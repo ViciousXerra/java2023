@@ -26,9 +26,7 @@ class RandomValueUtilsTest {
     @ValueSource(ints = {Integer.MIN_VALUE, 0})
     @DisplayName("Test non positive random string length.")
     void testNonPositiveRandomStringTargetInput(int targetInput) {
-        assertThatThrownBy(() -> {
-            RandomValueUtils.generateRandomString(targetInput);
-        })
+        assertThatThrownBy(() -> RandomValueUtils.generateRandomString(targetInput))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("String length must be a positive num.");
     }
