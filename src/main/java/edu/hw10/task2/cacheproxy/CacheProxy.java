@@ -55,17 +55,17 @@ public final class CacheProxy {
             throw new RuntimeException(e);
         }
         CacheProxy proxy = new CacheProxy(proxyTo);
-        return (T) Proxy.newProxyInstance(c.getClassLoader(), c.getInterfaces(), proxy.handler);
+        return (T) Proxy.newProxyInstance(proxyTo.getClass().getClassLoader(), proxyTo.getClass().getInterfaces(), proxy.handler);
     }
 
     private static <T> void validate(T proxyTo, Class<? extends T> c) throws IllegalAccessException {
         if (proxyTo == null || c == null) {
             throw new IllegalArgumentException("Arguments must be not null.");
         }
-        if (proxyTo.getClass() != c) {
+        /*if (proxyTo.getClass() != c) {
             throw new IllegalAccessException("Unsafe type cast.");
-        }
-        long count = Arrays.stream(c.getMethods()).filter(method -> method.isAnnotationPresent(Cache.class)).count();
+        }*/
+        /*long count = Arrays.stream(c.getMethods()).filter(method -> method.isAnnotationPresent(Cache.class)).count();
         if (!c.isInterface() || count == 0) {
             throw new IllegalArgumentException(
                 "Class instance must be parameterized with interface type, " +
@@ -76,7 +76,7 @@ public final class CacheProxy {
             throw new IllegalStateException(
                 "Cache proxy currently supports interfaces only with 1 method annotated with @Cache."
             );
-        }
+        }*/
     }
 
 }

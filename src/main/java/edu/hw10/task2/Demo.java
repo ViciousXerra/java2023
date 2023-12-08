@@ -10,6 +10,11 @@ public class Demo {
         Calculator fibo = new FibonacciCalculator();
         Calculator calcProxy = CacheProxy.getCacheProxyInstance(fibo, Calculator.class);
         System.out.println(calcProxy.calc(0));
+        System.out.println(calcProxy.calc(1));
+        System.out.println(calcProxy.calc(2));
+        System.out.println(calcProxy.calc(3));
+        System.out.println(calcProxy.calc(4));
+        System.out.println(calcProxy.calc(5));
     }
 
 }
