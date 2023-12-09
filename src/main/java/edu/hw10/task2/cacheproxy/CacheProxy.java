@@ -44,6 +44,7 @@ public final class CacheProxy {
     public static <T> T getCacheProxyInstance(T proxyTo, Class<? extends T> c) {
         validate(proxyTo, c);
         CacheProxy proxy = new CacheProxy(proxyTo);
+        //noinspection unchecked
         return (T) Proxy.newProxyInstance(
             proxyTo.getClass().getClassLoader(),
             proxyTo.getClass().getInterfaces(),
