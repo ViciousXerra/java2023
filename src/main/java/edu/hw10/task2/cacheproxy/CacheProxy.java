@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class CacheProxy {
+public final class CacheProxy<T> {
 
     private final Map<List<Object>, Object> previousRequests = new HashMap<>();
     private Object target;
@@ -37,19 +37,29 @@ public final class CacheProxy {
             return res;
         };
 
+    private final T targetProxy;
+
     private CacheProxy(Object target) {
         this.target = target;
+        //noinspection unchecked
+        targetProxy = (T) Proxy.newProxyInstance(
+            target.getClass().getClassLoader(),
+            target.getClass().getInterfaces(),
+            handler
+        );
     }
 
-    public static <T> T getCacheProxyInstance(T proxyTo, Class<? extends T> c) {
-        validate(proxyTo, c);
-        CacheProxy proxy = new CacheProxy(proxyTo);
-        //noinspection unchecked
-        return (T) Proxy.newProxyInstance(
-            proxyTo.getClass().getClassLoader(),
-            proxyTo.getClass().getInterfaces(),
-            proxy.handler
-        );
+    public T getTargetProxy() {
+        return targetProxy;
+    }
+
+    public Map<List<Object>, Object> getRuntimeCache() {
+        return Map.copyOf(previousRequests);
+    }
+
+    public static <T> CacheProxy<T> getCacheProxyInstance(T target) {
+        validate(target);
+        return new CacheProxy<>(target);
     }
 
     private void appendCacheFile(Method method, Object[] args, Object res) throws IOException {
@@ -65,8 +75,8 @@ public final class CacheProxy {
         }
     }
 
-    private static <T> void validate(T proxyTo, Class<? extends T> c) {
-        if (proxyTo == null || c == null) {
+    private static <T> void validate(T target) {
+        if (target == null) {
             throw new IllegalArgumentException("Arguments must be not null.");
         }
     }

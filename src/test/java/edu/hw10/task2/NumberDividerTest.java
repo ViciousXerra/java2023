@@ -45,7 +45,7 @@ class NumberDividerTest {
     private static Object[][] provideDivisionTest() {
         return new Object[][] {
             {10L, 2.5f, 4.0},
-            {30.0, 10.0f, 3.0},
+            {30.0, 10, 3.0},
             {10.1, 2, 5.05}
         };
     }
