@@ -4,13 +4,12 @@ import edu.hw10.task2.cacheproxy.CacheProxy;
 import edu.hw10.task2.testsamples.BasicNumberDivider;
 import edu.hw10.task2.testsamples.Calculator;
 import edu.hw10.task2.testsamples.FibonacciCalculator;
+import edu.hw10.task2.testsamples.NumberDivider;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import edu.hw10.task2.testsamples.NumberDivider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
@@ -27,16 +26,14 @@ class CacheProxyTest {
     @Test
     @DisplayName("Test null args.")
     void testNull() {
-        assertThatThrownBy(() -> {
-            CacheProxy.getCacheProxyInstance(null);
-        })
+        assertThatThrownBy(() -> CacheProxy.getCacheProxyInstance(null))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Arguments must be not null.");
     }
 
     @Test
     @DisplayName("Test fibonacci cache.")
-    void testFibonacciCache() throws IOException {
+    void testFibonacciCache() throws Throwable {
         //Given
         Path filePath = Path.of("src/test/resources/hw10testresources/fibonaccicache.txt");
         Map<List<Object>, Object> expectedRuntimeCache = Map.of(
@@ -91,7 +88,7 @@ class CacheProxyTest {
 
     @Test
     @DisplayName("Test number divider cache.")
-    void testNumberDividerCache() throws IOException {
+    void testNumberDividerCache() throws Throwable {
         //Given
         Path filePath = Path.of("src/test/resources/hw10testresources/dividercache.txt");
         Map<List<Object>, Object> expectedRuntimeCache = Map.of(
