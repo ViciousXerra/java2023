@@ -28,7 +28,7 @@ class CacheProxyTest {
     @DisplayName("Test null args.")
     void testNull() {
         assertThatThrownBy(() -> {
-            CacheProxy<Calculator> cacheProxy = CacheProxy.getCacheProxyInstance(null);
+            CacheProxy.getCacheProxyInstance(null);
         })
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Arguments must be not null.");
