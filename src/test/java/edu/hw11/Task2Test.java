@@ -1,11 +1,9 @@
 package edu.hw11;
 
-import edu.hw11.task2.ArithmeticUtils;
-import edu.hw11.task2.DynamicArithmeticUtilsRedefinition;
-import edu.hw11.task2.interceptors.DivideInterceptor;
-import edu.hw11.task2.interceptors.MultiplyInterceptor;
-import edu.hw11.task2.interceptors.SubtractInterceptor;
-import edu.hw11.task2.interceptors.SumInterceptor;
+import edu.hw11.interceptors.DivideInterceptor;
+import edu.hw11.interceptors.MultiplyInterceptor;
+import edu.hw11.interceptors.SubtractInterceptor;
+import edu.hw11.interceptors.SumInterceptor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -1,4 +1,4 @@
-package edu.hw11.task2;
+package edu.hw11;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;

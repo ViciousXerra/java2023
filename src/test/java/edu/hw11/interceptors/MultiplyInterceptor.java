@@ -1,4 +1,4 @@
-package edu.hw11.task2.interceptors;
+package edu.hw11.interceptors;
 
 public final class MultiplyInterceptor {
 
