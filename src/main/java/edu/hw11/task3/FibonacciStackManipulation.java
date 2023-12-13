@@ -4,28 +4,34 @@ import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.bytecode.StackManipulation;
 import net.bytebuddy.jar.asm.Label;
 import net.bytebuddy.jar.asm.MethodVisitor;
-import net.bytebuddy.jar.asm.Opcodes;
-import static net.bytebuddy.jar.asm.Opcodes.ATHROW;
-import static net.bytebuddy.jar.asm.Opcodes.DUP;
+import static net.bytebuddy.jar.asm.Opcodes.F_APPEND;
+import static net.bytebuddy.jar.asm.Opcodes.F_SAME;
 import static net.bytebuddy.jar.asm.Opcodes.GOTO;
+import static net.bytebuddy.jar.asm.Opcodes.I2L;
 import static net.bytebuddy.jar.asm.Opcodes.ICONST_2;
-import static net.bytebuddy.jar.asm.Opcodes.IFGE;
-import static net.bytebuddy.jar.asm.Opcodes.IF_ICMPLE;
-import static net.bytebuddy.jar.asm.Opcodes.IINC;
-import static net.bytebuddy.jar.asm.Opcodes.ILOAD;
-import static net.bytebuddy.jar.asm.Opcodes.INVOKESPECIAL;
-import static net.bytebuddy.jar.asm.Opcodes.ISTORE;
+import static net.bytebuddy.jar.asm.Opcodes.IFGT;
+import static net.bytebuddy.jar.asm.Opcodes.IFNE;
 import static net.bytebuddy.jar.asm.Opcodes.LADD;
+import static net.bytebuddy.jar.asm.Opcodes.LCMP;
 import static net.bytebuddy.jar.asm.Opcodes.LCONST_0;
 import static net.bytebuddy.jar.asm.Opcodes.LCONST_1;
 import static net.bytebuddy.jar.asm.Opcodes.LLOAD;
+import static net.bytebuddy.jar.asm.Opcodes.LONG;
 import static net.bytebuddy.jar.asm.Opcodes.LRETURN;
 import static net.bytebuddy.jar.asm.Opcodes.LSTORE;
-import static net.bytebuddy.jar.asm.Opcodes.NEW;
 
-public enum FibonacciStackManipulation implements StackManipulation {
+enum FibonacciStackManipulation implements StackManipulation {
 
     INSTANCE;
+
+    private static final int ARG_INDEX = 1;
+    private static final int LOCAL_VALUE1 = 3;
+    private static final int LOCAL_VALUE0 = 5;
+    private static final int RESULT_INDEX = 7;
+    private static final int COUNTER_INDEX = 9;
+    private static final int SIZE_IMPACT = 2;
+    private static final int MAX_SIZE = 4;
+
 
     @Override
     public boolean isValid() {
@@ -34,55 +40,86 @@ public enum FibonacciStackManipulation implements StackManipulation {
 
     @Override
     public Size apply(MethodVisitor methodVisitor, Implementation.Context context) {
-        methodVisitor.visitVarInsn(ILOAD, 1);
-        Label label1 = new Label();
-        methodVisitor.visitJumpInsn(IFGE, label1);
-        //"stay" IFGE case //switch to IFLT in reverse maybe?
-        Label label2 = new Label();
-        methodVisitor.visitLabel(label2);
-        //var1 local
+        //labels
+        Label startLabel = new Label();
+        Label lessThanOrEqualZeroLabel = new Label();
+        Label equalOneLabel = new Label();
+        Label moreThanOneLabel = new Label();
+        Label endingLabel = new Label();
+        //method visitor code
+        methodVisitor.visitCode();
+
+        methodVisitor
+            .visitLocalVariable("arg", "J", null, startLabel, endingLabel, ARG_INDEX);
+        methodVisitor
+            .visitLocalVariable("value1", "J", null, startLabel, endingLabel, LOCAL_VALUE1);
+        methodVisitor
+            .visitLocalVariable("value0", "J", null, startLabel, endingLabel, LOCAL_VALUE0);
+        methodVisitor
+            .visitLocalVariable("res", "J", null, startLabel, endingLabel, RESULT_INDEX);
+        methodVisitor
+            .visitLocalVariable("counter", "J", null, startLabel, endingLabel, COUNTER_INDEX);
+
+        methodVisitor.visitLabel(startLabel);
+        methodVisitor.visitVarInsn(LLOAD, ARG_INDEX);
         methodVisitor.visitInsn(LCONST_0);
-        methodVisitor.visitVarInsn(LSTORE, 2);
-        //var2 local
-        methodVisitor.visitInsn(LCONST_1);
-        methodVisitor.visitVarInsn(LSTORE, 3);
-        //counter local
-        methodVisitor.visitInsn(ICONST_2);
-        methodVisitor.visitVarInsn(ISTORE, 4);
-        Label label3 = new Label();
-        methodVisitor.visitLabel(label3);
-        methodVisitor.visitVarInsn(ILOAD, 4);
-        methodVisitor.visitVarInsn(ILOAD, 1);
-        //Return label
-        Label label4 = new Label();
-        methodVisitor.visitJumpInsn(IF_ICMPLE, label4);
-        //Sum
-        methodVisitor.visitVarInsn(LLOAD, 2);
-        methodVisitor.visitVarInsn(LLOAD, 3);
-        methodVisitor.visitInsn(LADD);
-        //Reassign local vars
-        methodVisitor.visitVarInsn(LLOAD, 3);
-        methodVisitor.visitVarInsn(LSTORE, 2);
-        methodVisitor.visitVarInsn(LSTORE, 3);
-        //Increment
-        methodVisitor.visitVarInsn(ILOAD, 4);
-        methodVisitor.visitInsn(IINC);
-        methodVisitor.visitVarInsn(ISTORE, 4);
-        //loop
-        methodVisitor.visitJumpInsn(GOTO, label3);
-        //return
-        methodVisitor.visitLabel(label4);
-        methodVisitor.visitVarInsn(LLOAD, 3);
+        methodVisitor.visitInsn(LCMP);
+        methodVisitor.visitJumpInsn(IFGT, lessThanOrEqualZeroLabel);
+        methodVisitor.visitInsn(LCONST_0);
         methodVisitor.visitInsn(LRETURN);
-        //"jump" IFGE case
-        methodVisitor.visitLabel(label1);
-        methodVisitor.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-        methodVisitor.visitTypeInsn(NEW, "java/lang/IllegalArgumentException");
-        methodVisitor.visitInsn(DUP);
-        methodVisitor.visitMethodInsn(
-            INVOKESPECIAL,
-            "java/lang/IllegalArgumentException", "<init>", "()V", false);
-        methodVisitor.visitInsn(ATHROW);
-        return new Size(-1, 10);
+
+        methodVisitor.visitLabel(lessThanOrEqualZeroLabel);
+        methodVisitor.visitFrame(F_SAME, 0, null, 0, null);
+        methodVisitor.visitVarInsn(LLOAD, ARG_INDEX);
+        methodVisitor.visitInsn(LCONST_1);
+        methodVisitor.visitInsn(LCMP);
+        methodVisitor.visitJumpInsn(IFNE, equalOneLabel);
+        methodVisitor.visitInsn(LCONST_1);
+        methodVisitor.visitInsn(LRETURN);
+
+        methodVisitor.visitLabel(equalOneLabel);
+        methodVisitor.visitFrame(F_SAME, 0, null, 0, null);
+        methodVisitor.visitInsn(LCONST_0);
+        methodVisitor.visitVarInsn(LSTORE, LOCAL_VALUE1);
+        methodVisitor.visitInsn(LCONST_1);
+        methodVisitor.visitVarInsn(LSTORE, LOCAL_VALUE0);
+        methodVisitor.visitInsn(LCONST_0);
+        methodVisitor.visitVarInsn(LSTORE, RESULT_INDEX);
+        methodVisitor.visitFrame(
+            F_APPEND, LOCAL_VALUE1,
+            new Object[] {LONG, LONG, LONG},
+            0,
+            null
+        );
+        methodVisitor.visitInsn(ICONST_2);
+        methodVisitor.visitInsn(I2L);
+        methodVisitor.visitVarInsn(LSTORE, COUNTER_INDEX);
+        methodVisitor.visitFrame(F_APPEND, ARG_INDEX, new Object[] {LONG}, 0, null);
+
+        methodVisitor.visitLabel(moreThanOneLabel);
+        methodVisitor.visitFrame(F_SAME, 0, null, 0, null);
+        methodVisitor.visitVarInsn(LLOAD, COUNTER_INDEX);
+        methodVisitor.visitVarInsn(LLOAD, ARG_INDEX);
+        methodVisitor.visitInsn(LCMP);
+        methodVisitor.visitJumpInsn(IFGT, endingLabel);
+        methodVisitor.visitVarInsn(LLOAD, LOCAL_VALUE1);
+        methodVisitor.visitVarInsn(LLOAD, LOCAL_VALUE0);
+        methodVisitor.visitInsn(LADD);
+        methodVisitor.visitVarInsn(LSTORE, RESULT_INDEX);
+        methodVisitor.visitVarInsn(LLOAD, LOCAL_VALUE0);
+        methodVisitor.visitVarInsn(LSTORE, LOCAL_VALUE1);
+        methodVisitor.visitVarInsn(LLOAD, RESULT_INDEX);
+        methodVisitor.visitVarInsn(LSTORE, LOCAL_VALUE0);
+        methodVisitor.visitVarInsn(LLOAD, COUNTER_INDEX);
+        methodVisitor.visitInsn(LCONST_1);
+        methodVisitor.visitInsn(LADD);
+        methodVisitor.visitVarInsn(LSTORE, COUNTER_INDEX);
+        methodVisitor.visitJumpInsn(GOTO, moreThanOneLabel);
+
+        methodVisitor.visitLabel(endingLabel);
+        methodVisitor.visitFrame(F_SAME, 0, null, 0, null);
+        methodVisitor.visitVarInsn(LLOAD, RESULT_INDEX);
+        methodVisitor.visitInsn(LRETURN);
+        return new Size(SIZE_IMPACT, MAX_SIZE);
     }
 }
