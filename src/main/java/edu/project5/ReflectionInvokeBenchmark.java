@@ -112,7 +112,7 @@ public class ReflectionInvokeBenchmark {
             lookup.findVirtual(Person.class, METHOD_NAME, MethodType.methodType(String.class)),
             MethodType.methodType(String.class, Person.class)
         );
-        return (Function<Person, String>) site.getTarget().invokeExact();
+        return (Function) site.getTarget().invokeExact();
     }
 
 }
