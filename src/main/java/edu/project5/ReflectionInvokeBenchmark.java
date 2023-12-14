@@ -26,7 +26,9 @@ import org.openjdk.jmh.runner.options.TimeValue;
 public class ReflectionInvokeBenchmark {
 
     private static final String METHOD_NAME = "firstName";
-
+    private static final int AGE = 26;
+    private static final long WARMUP_SEC = 5L;
+    private static final long MEASUREMENT_SEC = 10L;
     private Person person;
     private Method getterMethod;
     private MethodHandle getterMethodHandle;
@@ -42,9 +44,9 @@ public class ReflectionInvokeBenchmark {
             .forks(1)
             .warmupForks(1)
             .warmupIterations(1)
-            .warmupTime(TimeValue.seconds(5))
+            .warmupTime(TimeValue.seconds(WARMUP_SEC))
             .measurementIterations(1)
-            .measurementTime(TimeValue.seconds(5))
+            .measurementTime(TimeValue.seconds(MEASUREMENT_SEC))
             .build();
 
         new Runner(ops).run();
@@ -52,12 +54,12 @@ public class ReflectionInvokeBenchmark {
 
     @Setup
     public void setup() {
-        person = new Person("Elijah", 26);
+        person = new Person("Elijah", AGE);
         try {
-            getterMethod = getGetterMethod(METHOD_NAME);
-            getterMethodHandle = getGetterMethodHandle(METHOD_NAME);
+            getterMethod = getGetterMethod();
+            getterMethodHandle = getGetterMethodHandle();
             getterLambda =
-                getGetterLambdaFromLambdaMetaFactory(MethodHandles.lookup(), getGetterMethodHandle(METHOD_NAME));
+                getGetterLambdaFromLambdaMetaFactory();
         } catch (Throwable e) {
             throw new RuntimeException("Unable to create a crucial benchmark instances.", e);
         }
@@ -87,33 +89,30 @@ public class ReflectionInvokeBenchmark {
         blackhole.consume(firstName);
     }
 
-    private static Method getGetterMethod(String methodName) throws NoSuchMethodException {
+    private static Method getGetterMethod() throws NoSuchMethodException {
         //pure Reflection API usage
-        return Person.class.getMethod(methodName);
+        return Person.class.getMethod(METHOD_NAME);
     }
 
-    private static MethodHandle getGetterMethodHandle(String methodName)
+    private static MethodHandle getGetterMethodHandle()
         throws NoSuchMethodException, IllegalAccessException {
         //Method Handles usage
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodType getterMethodType = MethodType.methodType(String.class);
-        return lookup.findVirtual(Person.class, methodName, getterMethodType);
+        return lookup.findVirtual(Person.class, METHOD_NAME, getterMethodType);
     }
 
-    private static Function getGetterLambdaFromLambdaMetaFactory(
-        MethodHandles.Lookup lookUp,
-        MethodHandle mh
-    )
+    private static Function getGetterLambdaFromLambdaMetaFactory()
         throws Throwable {
-        CallSite callSite = LambdaMetafactory.metafactory(
-            lookUp,
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        CallSite site = LambdaMetafactory.metafactory(lookup,
             "apply",
             MethodType.methodType(Function.class),
             MethodType.methodType(Object.class, Object.class),
-            mh,
-            mh.type()
+            lookup.findVirtual(Person.class, METHOD_NAME, MethodType.methodType(String.class)),
+            MethodType.methodType(String.class, Person.class)
         );
-        return (Function) callSite.getTarget().invokeExact();
+        return (Function<Person, String>) site.getTarget().invokeExact();
     }
 
 }
