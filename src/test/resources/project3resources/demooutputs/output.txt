@@ -1,0 +1,28 @@
+General Info:
+Sources: 
+logs1.txt
+logs2.txt
+Date, from: -
+Date, to: -
+Total requests: 44
+Average transferred bytes: 800
+
+
+Additional Info:
+Frequently queried resources: 
+/downloads/product_1 queried 29 times.
+/downloads/product_2 queried 15 times.
+
+Frequently repeated remote addresses: 
+80.91.33.133 repeats 9 times.
+93.180.71.3 repeats 7 times.
+217.168.17.5 repeats 6 times.
+
+Frequently repeated response codes: 
+304 Not Modified repeats 30 times.
+404 Not Found repeats 8 times.
+200 Success/OK repeats 6 times.
+
+Most Frequently repeated request type: 
+GET repeats 44 times.
+

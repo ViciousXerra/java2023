@@ -35,6 +35,8 @@
         <junit.version>5.10.0</junit.version>
         <assertj.version>3.24.2</assertj.version>
         <jmh.version>1.37</jmh.version>
+        <bytebuddy.version>1.14.8</bytebuddy.version>
+        <asm.version>9.6</asm.version>
 
         <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
 
@@ -105,6 +107,20 @@
             <artifactId>jmh-generator-annprocess</artifactId>
             <version>${jmh.version}</version>
             <scope>provided</scope>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-agent</artifactId>
+            <version>${bytebuddy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${bytebuddy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
         </dependency>
     </dependencies>
 
